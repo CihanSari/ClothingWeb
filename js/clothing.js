@@ -5,7 +5,6 @@ null==d?void 0:d))},attrHooks:{type:{set:function(a,b){if(!o.radioValue&&"radio"
 
 // JQuery end
 
-// Base stuff
 // set up icon
 (function () {
     var link = document.querySelector("link[rel*='icon']") || document.createElement('link');
@@ -15,22 +14,7 @@ null==d?void 0:d))},attrHooks:{type:{set:function(a,b){if(!o.radioValue&&"radio"
     document.getElementsByTagName('head')[0].appendChild(link);
 })();
 
-(function () {
-	// Parse parameters
-	var s = window.location.search;
-	var reg = /([^?&=]*)=([^&]*)/g;
-	this.config = {};
-	var i = null;
-
-	while (i = reg.exec(s)) {
-		this.config[i[1]] = decodeURIComponent(i[2]);
-	}
-	
-	if (jQuery.isEmptyObject(this.config)) {
-		var rndNum = Math.random();
-		this.config.paintingIdx=Math.floor(rndNum*1400);
-	}
-})();
-
-
+$.getScript('js/clothingBase.js', function () {
+    console.log('[Page] Loading clothing base.');
+});
 
