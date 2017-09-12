@@ -21,10 +21,14 @@
 
 var ws;
 window.onload = function () {
-    ws = new WebSocket("ws://localhost:8080/echo");
-    ws.onmessage = function (evt) { console.log(evt.data); };
+    ws = new WebSocket("ws://" + location.host + ":8080/painting");
+    ws.onmessage = function (evt) {
+        window.lastevent = JSON.parse(evt.data);
+    };
     ws.onopen = function (evt) {
-        ws.send("Hello");
+        var request = {};
+        request.israndom = true;
+        ws.send(JSON.stringify(request));
     }
 }
 window.onclose = function () {
