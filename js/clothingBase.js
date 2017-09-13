@@ -35,6 +35,13 @@ function queryPainting() {
             this.src = window.lastevent.Original;
         };
 
+        leftImg.onclick = function () {
+            var res = {};
+            res.source = window.lastevent.json.Filename;
+            res.grabcutSelected = true;
+            ws.send(JSON.stringify(res));
+        }
+
         var rightImg = document.getElementById('right');
 
         rightImg.setAttribute("src", window.lastevent.Grabcut);
@@ -59,12 +66,11 @@ function queryPainting() {
 
         document.title = window.lastevent.json.title;
 
+        var painting_properties = document.getElementById('painting_properties');
+        painting_properties.innerHTML = '';
         var table = document.createElement("table");
-        document.body.appendChild(table);
+        painting_properties.appendChild(table);
 
-        /*
-                <th>Dominant Clothing Color</th>
-        */
         {// Title
             var titleRow = document.createElement("TR");
 
@@ -140,12 +146,14 @@ function queryPainting() {
 
             table.appendChild(dominantColorRow);
         }
-        ws.close();
     };
     ws.onopen = function (evt) {
         var request = {};
         request.israndom = true;
         ws.send(JSON.stringify(request));
+    }
+    window.onclose = function () {
+        ws.close();
     }
 }
 
