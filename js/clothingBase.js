@@ -42,17 +42,6 @@ function queryPainting() {
             ws.send(JSON.stringify(res));
         }
 
-        var rightImg = document.getElementById('right');
-
-        rightImg.setAttribute("src", window.lastevent.Grabcut);
-        rightImg.onmouseout = function () {
-            this.src = window.lastevent.Grabcut;
-        };
-        rightImg.onmouseover = function () {
-            this.src = window.lastevent.Original;
-        };
-
-
         var centerImg = document.getElementById('center');
 
         centerImg.setAttribute("src", window.lastevent.Grabcut);
@@ -63,6 +52,15 @@ function queryPainting() {
             this.src = window.lastevent.Original;
         };
 
+        var rightImg = document.getElementById('right');
+
+        rightImg.setAttribute("src", window.lastevent.Grabcut);
+        rightImg.onmouseout = function () {
+            this.src = window.lastevent.Grabcut;
+        };
+        rightImg.onmouseover = function () {
+            this.src = window.lastevent.Original;
+        };
 
         document.title = window.lastevent.json.title;
 
@@ -80,6 +78,7 @@ function queryPainting() {
             titleRow.appendChild(titleText);
 
             var titleValue = document.createElement("TD");
+            titleValue.className = 'ellipsis';
             var titleValueNode = document.createTextNode(window.lastevent.json.title);
             titleValue.appendChild(titleValueNode);
             titleRow.appendChild(titleValue);
@@ -95,6 +94,7 @@ function queryPainting() {
             painterRow.appendChild(painterText);
 
             var painterValue = document.createElement("TD");
+            painterValue.className = 'ellipsis';
             var painterValueNode = document.createTextNode(window.lastevent.json.Painter);
             painterValue.appendChild(painterValueNode);
             painterRow.appendChild(painterValue);
@@ -110,6 +110,7 @@ function queryPainting() {
             genderRow.appendChild(genderText);
 
             var genderValue = document.createElement("TD");
+            genderValue.className = 'ellipsis';
             var genderValueNode = document.createTextNode(window.lastevent.json.Gender);
             genderValue.appendChild(genderValueNode);
             genderRow.appendChild(genderValue);
@@ -125,6 +126,7 @@ function queryPainting() {
             yearRow.appendChild(yearText);
 
             var yearValue = document.createElement("TD");
+            yearValue.className = 'ellipsis';
             var yearValueNode = document.createTextNode(window.lastevent.json.Year);
             yearValue.appendChild(yearValueNode);
             yearRow.appendChild(yearValue);
@@ -140,6 +142,7 @@ function queryPainting() {
             dominantColorRow.appendChild(dominantColorText);
 
             var dominantColorValue = document.createElement("TD");
+            dominantColorValue.className = 'ellipsis';
             dominantColorValue.style.backgroundColor = "rgb(" + window.lastevent.json.DominantRed + "," + window.lastevent.json.DominantGreen + "," + window.lastevent.json.DominantBlue + ")";
             dominantColorValue.style.margin = "5px";
             dominantColorRow.appendChild(dominantColorValue);

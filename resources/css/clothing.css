@@ -1,1 +1,43 @@
-﻿
+﻿header h1{
+    font-size:220%;
+    text-align:center;
+}
+article h3 {
+    font-size: 170%;
+    text-align: center;
+}
+
+.holder {
+    display: -webkit-flex;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+article table {
+    font-size: 150%;
+    background: -webkit-linear-gradient(left, rgba(255,255,255,0),rgba(255,255,255,0.1),rgba(255,255,255,0)); /*Safari 5.1-6*/
+    background: -o-linear-gradient(right, rgba(255,255,255,0),rgba(255,255,255,0.1),rgba(255,255,255,0)); /*Opera 11.1-12*/
+    background: -moz-linear-gradient(right, rgba(255,255,255,0),rgba(255,255,255,0.1),rgba(255,255,255,0)); /*Fx 3.6-15*/
+    background: linear-gradient(to right, rgba(255,255,255,0),rgba(255,255,255,0.1),rgba(255,255,255,0)); /*Standard*/
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 2em;
+    border-style: solid;
+    border-width: 0.1em;
+    padding: 0.5em;
+    border-collapse: separate;
+    border-spacing: 0.5em;
+}
+    article table td {
+        text-overflow: ellipsis;
+        /* Required for text-overflow to do anything */
+        white-space: nowrap;
+        overflow: hidden;
+        max-width: 13em;
+    }
+
+.ellipsis {
+    text-align:right;
+}
