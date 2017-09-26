@@ -14,7 +14,7 @@
 
     if (jQuery.isEmptyObject(this.config)) {
         var rndNum = Math.random();
-        this.config.paintingIdx = Math.floor(rndNum * 1400);
+        window.location.href = window.location.href + '?paintingIdx=' + Math.floor(rndNum * 1400);
     }
 })();
 
