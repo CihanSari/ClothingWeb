@@ -16,42 +16,48 @@ window.config = {};
 function processPainting(evt) {
     console.log(evt);
     window.lastevent = JSON.parse(evt.data);
-    var leftImg = document.getElementById('left');
+    var originalImage = document.getElementById('original');
 
-    leftImg.setAttribute("src", window.lastevent.Grabcut);
-    leftImg.onmouseout = function () {
+    originalImage.setAttribute("src", window.lastevent.Original);
+
+    var surrealImg = document.getElementById('surreal');
+
+    surrealImg.setAttribute("src", window.lastevent.Surreal);
+    surrealImg.onmouseout = function () {
+        this.src = window.lastevent.Surreal;
+    };
+    surrealImg.onmouseover = function () {
+        this.src = window.lastevent.SurrealSeg;
+    };
+
+    surrealImg.onclick = function () {
+        var res = {};
+        res.source = window.lastevent.json.Filename;
+        res.surrealSelected = true;
+        ws.send(JSON.stringify(res));
+    }
+
+    var grabcutImg = document.getElementById('grabcut');
+
+    grabcutImg.setAttribute("src", window.lastevent.Grabcut);
+    grabcutImg.onmouseout = function () {
         this.src = window.lastevent.Grabcut;
     };
-    leftImg.onmouseover = function () {
+    grabcutImg.onmouseover = function () {
         this.src = window.lastevent.Original;
     };
 
-    leftImg.onclick = function () {
+    grabcutImg.onclick = function () {
         var res = {};
         res.source = window.lastevent.json.Filename;
         res.grabcutSelected = true;
         ws.send(JSON.stringify(res));
     }
 
-    var centerImg = document.getElementById('center');
 
-    centerImg.setAttribute("src", window.lastevent.Grabcut);
-    centerImg.onmouseout = function () {
-        this.src = window.lastevent.Grabcut;
-    };
-    centerImg.onmouseover = function () {
-        this.src = window.lastevent.Original;
-    };
+    var customImg = document.getElementById('custom');
+    customImg.setAttribute("src", window.lastevent.Original);
 
-    var rightImg = document.getElementById('right');
-
-    rightImg.setAttribute("src", window.lastevent.Grabcut);
-    rightImg.onmouseout = function () {
-        this.src = window.lastevent.Grabcut;
-    };
-    rightImg.onmouseover = function () {
-        this.src = window.lastevent.Original;
-    };
 
     document.title = window.lastevent.json.title;
 
