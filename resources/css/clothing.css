@@ -11,10 +11,15 @@ article h3 {
     display: -webkit-flex;
     display: flex;
     flex-direction: row;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
 }
 
+.holder-cell {
+    margin-bottom: auto;
+    text-align:center;
+    width:450px;
+}
 article table {
     font-size: 150%;
     background: -webkit-linear-gradient(left, rgba(255,255,255,0),rgba(255,255,255,0.1),rgba(255,255,255,0)); /*Safari 5.1-6*/
