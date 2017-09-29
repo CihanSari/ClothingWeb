@@ -32,7 +32,7 @@ function processPainting(evt) {
 
     surrealImg.onclick = function () {
         var res = {};
-        res.source = window.lastevent.json.Filename;
+        res.source = window.lastevent.paintingIdx;
         res.surrealSelected = true;
         ws.send(JSON.stringify(res));
     }
@@ -49,7 +49,7 @@ function processPainting(evt) {
 
     grabcutImg.onclick = function () {
         var res = {};
-        res.source = window.lastevent.json.Filename;
+        res.source = window.lastevent.paintingIdx;
         res.grabcutSelected = true;
         ws.send(JSON.stringify(res));
     }
