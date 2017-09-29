@@ -152,13 +152,27 @@ var ws;
 function queryPainting() {
     ws = new WebSocket("ws://" + location.host + ":8080/painting");
     ws.onmessage = function (evt) {
-        var data = JSON.parse(evt.data);
-        if (data.hasOwnProperty('json')) {
-            // painting event
-            processPainting(evt);
-        } else if (data.hasOwnProperty('paintingIdx')) {
-            // redirection request
-            window.location.href = window.location.origin + '/?paintingIdx=' + data['paintingIdx'];
+        var fail = function (err) {
+            if (err !== undefined)
+            {
+                alert(err);
+            }
+            location.reload();
+        };
+        try {
+            var data = JSON.parse(evt.data);
+            if (data.hasOwnProperty('json') && data.hasOwnProperty('Original')) {
+                // painting event
+                processPainting(evt);
+            } else if (data.hasOwnProperty('paintingIdx')) {
+                // redirection request
+                window.location.href = window.location.origin + '/?paintingIdx=' + data['paintingIdx'];
+            } else {
+                fail('Unknown');
+            }
+        }
+        catch (err) {
+            fail();
         }
 
     };
