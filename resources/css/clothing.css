@@ -42,7 +42,9 @@ article table {
         overflow: hidden;
         max-width: 13em;
     }
-
+article .clickable {
+    cursor:pointer;
+}
 .ellipsis {
     text-align:right;
 }

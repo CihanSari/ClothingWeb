@@ -14,15 +14,15 @@
     <article>
         <h3>Please select one</h3>
         <div id="holder" class="holder">
-            <div class="holder-cell"><h4>Original Painting</h4><img id="original" />
+            <div class="holder-cell"><h4>Original Painting</h4><img id="original"/>
             <div id="painting_properties"></div></div>
-            <div class="holder-cell"><h4>Surreal Segmentation</h4><img id="surreal" /><p>
+            <div class="holder-cell"><h4>Surreal Segmentation</h4><img id="surreal" class="clickable"/><div id="surrealScore"></div><p>
                 Details for the surreal method can be found on the <a href="https://github.com/gulvarol/surreal/">project github page</a>.</p>
             </div>
-            <div class="holder-cell"><h4>Fine-tuned Grabcut Segmentation</h4><img id="grabcut"/><p>
+            <div class="holder-cell"><h4>Fine-tuned Grabcut Segmentation</h4><img id="grabcut" class="clickable"/><div id="grabcutScore"></div><p>
                 Grabcut method is uses a combination of both <a href="https://github.com/CMU-Perceptual-Computing-Lab/openpose">OpenPose</a> to locate the face landmarks and <a href="http://docs.opencv.org/trunk/de/dd0/grabcut_8cpp-example.html">Grabcut implementation</a> from <a href="http://opencv.org/">OpenCV</a>.</p>
             </div>
-            <div class="holder-cell"><h4>Hand segmentation (N/A)</h4><img id="custom" /><p>
+            <div class="holder-cell"><h4>Hand segmentation (N/A)</h4><img id="custom" class="clickable"/><div id="customScore"></div><p>
                 Solution here will be very similar to <a href="https://github.com/AKSHAYUBHAT/ImageSegmentation">Image Eraser by Akshay Bhat</a> if not that solution directly. Internally it will still use Grabcut, but let the user add background or foreground pixels to iterate the algorithm further.</p>
             </div>
         </div>
