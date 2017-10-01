@@ -87,74 +87,26 @@ function processPainting(evt) {
 
     document.title = window.lastevent.json.title;
 
-    const painting_properties = document.getElementById('painting_properties');
-    painting_properties.innerHTML = '';
-    const table = document.createElement("table");
-    painting_properties.appendChild(table);
+    //const painting_properties = document.getElementById('painting_properties');
+    //painting_properties.innerHTML = '';
+    //const table = document.createElement("table");
+    //painting_properties.appendChild(table);
 
     {// Title
-        const titleRow = document.createElement("TR");
-
-        const titleText = document.createElement("TD");
-        const titleTextNode = document.createTextNode("Title");
-        titleText.appendChild(titleTextNode);
-        titleRow.appendChild(titleText);
-
-        const titleValue = document.createElement("TD");
-        titleValue.className = 'ellipsis';
-        const titleValueNode = document.createTextNode(window.lastevent.json.title);
-        titleValue.appendChild(titleValueNode);
-        titleRow.appendChild(titleValue);
-
-        table.appendChild(titleRow);
+        const painting_title = document.getElementById('painting_title');
+        painting_title.innerText = window.lastevent.json.title;
     }
     {// Painter
-        const painterRow = document.createElement("TR");
-
-        const painterText = document.createElement("TD");
-        const painterTextNode = document.createTextNode("Painter");
-        painterText.appendChild(painterTextNode);
-        painterRow.appendChild(painterText);
-
-        const painterValue = document.createElement("TD");
-        painterValue.className = 'ellipsis';
-        const painterValueNode = document.createTextNode(window.lastevent.json.Painter);
-        painterValue.appendChild(painterValueNode);
-        painterRow.appendChild(painterValue);
-
-        table.appendChild(painterRow);
+        const painting_painter = document.getElementById('painting_painter');
+        painting_painter.innerText = window.lastevent.json.Painter;
     }
     {// Gender
-        const genderRow = document.createElement("TR");
-
-        const genderText = document.createElement("TD");
-        const genderTextNode = document.createTextNode("Gender");
-        genderText.appendChild(genderTextNode);
-        genderRow.appendChild(genderText);
-
-        const genderValue = document.createElement("TD");
-        genderValue.className = 'ellipsis';
-        const genderValueNode = document.createTextNode(window.lastevent.json.Gender);
-        genderValue.appendChild(genderValueNode);
-        genderRow.appendChild(genderValue);
-
-        table.appendChild(genderRow);
+        const painting_gender = document.getElementById('painting_gender');
+        painting_gender.innerText = window.lastevent.json.Gender;
     }
     {// Year
-        const yearRow = document.createElement("TR");
-
-        const yearText = document.createElement("TD");
-        const yearTextNode = document.createTextNode("Year");
-        yearText.appendChild(yearTextNode);
-        yearRow.appendChild(yearText);
-
-        const yearValue = document.createElement("TD");
-        yearValue.className = 'ellipsis';
-        const yearValueNode = document.createTextNode(window.lastevent.json.Year);
-        yearValue.appendChild(yearValueNode);
-        yearRow.appendChild(yearValue);
-
-        table.appendChild(yearRow);
+        const painting_year = document.getElementById('painting_year');
+        painting_year.innerText = window.lastevent.json.Year;
     }
     /*
     {// Dominant color

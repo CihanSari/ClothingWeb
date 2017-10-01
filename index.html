@@ -12,74 +12,52 @@
         <h1>Clothing Segmentation</h1>
     </header>
     <article>
-        <h3>Please select one</h3>
-        <div id="holder" class="holder">
-            <div class="holder-cell">
-                <h4>Original Painting</h4>
-                <img id="original"/>
-                <div id="painting_properties"></div>
-            </div>
-            <div class="holder-cell">
-                <h4>Surreal Segmentation</h4>
-                <img id="surreal" class="clickable"/>
-                <table>
-                    <tr>
-                        <td style="text-align:left">Current Score</td>
-                        <td><div id="surrealScore" style="text-align:right"></div></td>
-                    </tr>
-                    <tr>
-                        <td colspan="2" style="text-align:justify">
-                            <h5>Please click on the image, if you think this segmentation has captured enough region to extract colors of the clothing.</h5>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td colspan="2" style="text-align:justify">
-                            <h5>Details for the surreal method can be found on the <a href="https://github.com/gulvarol/surreal/">project github page</a>.</h5>
-                        </td>
-                    </tr>
-                </table>
-            </div>
-            <div class="holder-cell">
-                <h4>Fine-tuned Grabcut Segmentation</h4>
-                <img id="grabcut" class="clickable"/>
-                <table>
-                    <tr>
-                        <td style="text-align:left">Current Score</td>
-                        <td><div id="grabcutScore" style="text-align:right"></div></td>
-                    </tr>
-                    <tr>
-                        <td colspan="2" style="text-align:justify">
-                            <h5>Please click on the image, if you think this segmentation has captured enough region to extract colors of the clothing.</h5>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td colspan="2" style="text-align:justify">
-                            <h5>Grabcut method is uses a combination of both <a href="https://github.com/CMU-Perceptual-Computing-Lab/openpose">OpenPose</a> to locate the face landmarks and <a href="http://docs.opencv.org/trunk/de/dd0/grabcut_8cpp-example.html">Grabcut implementation</a> from <a href="http://opencv.org/">OpenCV</a>.</h5>
-                        </td>
-                    </tr>
-                </table>
-            </div>
-            <div class="holder-cell">
-                <h4>Hand segmentation (N/A)</h4>
-                <img id="custom" class="clickable"/>
-                <table>
-                    <tr>
-                        <td style="text-align:left">Current Score</td>
-                        <td><div id="customScore" style="text-align:right"></div></td>
-                    </tr>
-                    <tr>
-                        <td colspan="2" style="text-align:justify">
-                            <h5>Please click on the image, if you think neither segmentation has captured enough region to extract colors of the clothing.</h5>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td colspan="2" style="text-align:justify">
-                            <h5>Solution here will be very similar to <a href="https://github.com/AKSHAYUBHAT/ImageSegmentation">Image Eraser by Akshay Bhat</a> if not that solution directly. Internally it will still use Grabcut, but let the user add background or foreground pixels to iterate the algorithm further.</h5>
-                        </td>
-                    </tr>
-                </table>
-            </div>
-        </div>
+        <table>
+            <tr>
+                <td colspan="2"><h4>Original Painting</h4></td>
+                <td colspan="2"><h4>Surreal Segmentation</h4></td>
+                <td colspan="2"><h4>Fine-tuned Grabcut Segmentation</h4></td>
+                <td colspan="2"><h4>Hand segmentation (N/A)</h4></td>
+            </tr>
+            <tr>
+                <td colspan="2"><img id="original" /></td>
+                <td colspan="2"><img id="surreal" class="clickable" /></td>
+                <td colspan="2"><img id="grabcut" class="clickable" /></td>
+                <td colspan="2"><img id="custom" class="clickable" /></td>
+            </tr>
+            <tr>
+                <td rowspan="2">Title</td><td rowspan="2"><div id="painting_title"/></td>
+                <td style="text-align:left">Current Score</td><td><div id="surrealScore" style="text-align:right"/></td>
+                <td style="text-align:left">Current Score</td><td><div id="grabcutScore" style="text-align:right"></div></td>
+                <td style="text-align:left">Current Score</td><td><div id="customScore" style="text-align:right"></div></td>
+            </tr>
+            <tr>
+                <td colspan="2" style="text-align:justify"><h5>Please click on the image, if you think this segmentation has captured enough region to extract colors of the clothing.</h5></td>
+                <td colspan="2" style="text-align:justify"><h5>Please click on the image, if you think this segmentation has captured enough region to extract colors of the clothing.</h5></td>
+                <td colspan="2" style="text-align:justify"><h5>Please click on the image, if you think neither segmentation has captured enough region to extract colors of the clothing.</h5></td>
+            </tr>
+            <tr>
+                <td>Artist</td>
+                <td><div id="painting_painter" /></td>
+                <td colspan="2" rowspan="3" style="text-align:justify">
+                    <h5>Details for the surreal method can be found on the <a href="https://github.com/gulvarol/surreal/">project github page</a>.</h5>
+                </td>
+                <td colspan="2" rowspan="3" style="text-align:justify">
+                    <h5>Grabcut method is uses a combination of both <a href="https://github.com/CMU-Perceptual-Computing-Lab/openpose">OpenPose</a> to locate the face landmarks and <a href="http://docs.opencv.org/trunk/de/dd0/grabcut_8cpp-example.html">Grabcut implementation</a> from <a href="http://opencv.org/">OpenCV</a>.</h5>
+                </td>
+                <td colspan="2" rowspan="3" style="text-align:justify">
+                    <h5>Solution here will be very similar to <a href="https://github.com/AKSHAYUBHAT/ImageSegmentation">Image Eraser by Akshay Bhat</a> if not that solution directly. Internally it will still use Grabcut, but let the user add background or foreground pixels to iterate the algorithm further.</h5>
+                </td>
+            </tr>
+            <tr>
+                <td>Year</td>
+                <td><div id="painting_year"/></td>
+            </tr>
+            <tr>
+                <td>Gender</td>
+                <td><div id="painting_gender"/></td>
+            </tr>
+        </table>
     </article>
     <footer>
     </footer>
