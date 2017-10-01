@@ -1,4 +1,7 @@
-﻿header h1{
+﻿body {
+    margin: 9px;
+}
+header h1{
     font-size:220%;
     text-align:center;
 }
@@ -8,7 +11,6 @@ article h3 {
 }
 
 .holder {
-    display: -webkit-flex;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -20,8 +22,11 @@ article h3 {
     text-align:center;
     width:450px;
 }
+.holder-cell img{
+    text-align:center;
+}
 article table {
-    font-size: 150%;
+    font-size: 120%;
     background: -webkit-linear-gradient(left, rgba(255,255,255,0),rgba(255,255,255,0.1),rgba(255,255,255,0)); /*Safari 5.1-6*/
     background: -o-linear-gradient(right, rgba(255,255,255,0),rgba(255,255,255,0.1),rgba(255,255,255,0)); /*Opera 11.1-12*/
     background: -moz-linear-gradient(right, rgba(255,255,255,0),rgba(255,255,255,0.1),rgba(255,255,255,0)); /*Fx 3.6-15*/
@@ -35,15 +40,19 @@ article table {
     border-collapse: separate;
     border-spacing: 0.5em;
 }
-    article table td {
-        text-overflow: ellipsis;
-        /* Required for text-overflow to do anything */
-        white-space: nowrap;
-        overflow: hidden;
-        max-width: 13em;
-    }
+
 article .clickable {
     cursor:pointer;
+}
+article table {
+    height:250px;
+}
+article table tr {
+    width:150px;
+}
+article table tr td {
+    vertical-align:top;
+    text-align:left;
 }
 .ellipsis {
     text-align:right;

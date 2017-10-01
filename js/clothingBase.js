@@ -22,8 +22,11 @@ function processPainting(evt) {
 
     if (window.lastevent.json.decision !== undefined) {
         const surrealScore = document.getElementById('surrealScore');
-        surrealScore.innerText = 'Current upvote count ' + window.lastevent.json.decision[0];
+        surrealScore.innerText = window.lastevent.json.decision[0];
+    } else {
+        surrealScore.innerText = 0;
     }
+
     const surrealImg = document.getElementById('surreal');
 
     surrealImg.setAttribute("src", window.lastevent.Surreal);
@@ -44,7 +47,9 @@ function processPainting(evt) {
 
     if (window.lastevent.json.decision !== undefined) {
         const grabcutScore = document.getElementById('grabcutScore');
-        grabcutScore.innerText = 'Current upvote count ' + window.lastevent.json.decision[1];
+        grabcutScore.innerText = window.lastevent.json.decision[1];
+    } else {
+        grabcutScore.innerText = 0;
     }
 
     let grabcutImg = document.getElementById('grabcut');
@@ -66,7 +71,9 @@ function processPainting(evt) {
 
     if (window.lastevent.json.decision !== undefined) {
         const customScore = document.getElementById('customScore');
-        customScore.innerText = 'Current upvote count ' + window.lastevent.json.decision[2];
+        customScore.innerText = window.lastevent.json.decision[2];
+    } else {
+        customScore.innerText = 0;
     }
     let customImg = document.getElementById('custom');
     customImg.setAttribute("src", window.lastevent.Original);
@@ -80,84 +87,85 @@ function processPainting(evt) {
 
     document.title = window.lastevent.json.title;
 
-    let painting_properties = document.getElementById('painting_properties');
+    const painting_properties = document.getElementById('painting_properties');
     painting_properties.innerHTML = '';
-    let table = document.createElement("table");
+    const table = document.createElement("table");
     painting_properties.appendChild(table);
 
     {// Title
-        let titleRow = document.createElement("TR");
+        const titleRow = document.createElement("TR");
 
-        let titleText = document.createElement("TD");
-        let titleTextNode = document.createTextNode("Title");
+        const titleText = document.createElement("TD");
+        const titleTextNode = document.createTextNode("Title");
         titleText.appendChild(titleTextNode);
         titleRow.appendChild(titleText);
 
-        let titleValue = document.createElement("TD");
+        const titleValue = document.createElement("TD");
         titleValue.className = 'ellipsis';
-        let titleValueNode = document.createTextNode(window.lastevent.json.title);
+        const titleValueNode = document.createTextNode(window.lastevent.json.title);
         titleValue.appendChild(titleValueNode);
         titleRow.appendChild(titleValue);
 
         table.appendChild(titleRow);
     }
     {// Painter
-        let painterRow = document.createElement("TR");
+        const painterRow = document.createElement("TR");
 
-        let painterText = document.createElement("TD");
-        let painterTextNode = document.createTextNode("Painter");
+        const painterText = document.createElement("TD");
+        const painterTextNode = document.createTextNode("Painter");
         painterText.appendChild(painterTextNode);
         painterRow.appendChild(painterText);
 
-        let painterValue = document.createElement("TD");
+        const painterValue = document.createElement("TD");
         painterValue.className = 'ellipsis';
-        let painterValueNode = document.createTextNode(window.lastevent.json.Painter);
+        const painterValueNode = document.createTextNode(window.lastevent.json.Painter);
         painterValue.appendChild(painterValueNode);
         painterRow.appendChild(painterValue);
 
         table.appendChild(painterRow);
     }
     {// Gender
-        let genderRow = document.createElement("TR");
+        const genderRow = document.createElement("TR");
 
-        let genderText = document.createElement("TD");
-        let genderTextNode = document.createTextNode("Gender");
+        const genderText = document.createElement("TD");
+        const genderTextNode = document.createTextNode("Gender");
         genderText.appendChild(genderTextNode);
         genderRow.appendChild(genderText);
 
-        let genderValue = document.createElement("TD");
+        const genderValue = document.createElement("TD");
         genderValue.className = 'ellipsis';
-        let genderValueNode = document.createTextNode(window.lastevent.json.Gender);
+        const genderValueNode = document.createTextNode(window.lastevent.json.Gender);
         genderValue.appendChild(genderValueNode);
         genderRow.appendChild(genderValue);
 
         table.appendChild(genderRow);
     }
     {// Year
-        let yearRow = document.createElement("TR");
+        const yearRow = document.createElement("TR");
 
-        let yearText = document.createElement("TD");
-        let yearTextNode = document.createTextNode("Year");
+        const yearText = document.createElement("TD");
+        const yearTextNode = document.createTextNode("Year");
         yearText.appendChild(yearTextNode);
         yearRow.appendChild(yearText);
 
-        let yearValue = document.createElement("TD");
+        const yearValue = document.createElement("TD");
         yearValue.className = 'ellipsis';
-        let yearValueNode = document.createTextNode(window.lastevent.json.Year);
+        const yearValueNode = document.createTextNode(window.lastevent.json.Year);
         yearValue.appendChild(yearValueNode);
         yearRow.appendChild(yearValue);
 
         table.appendChild(yearRow);
     }
+    /*
     {// Dominant color
-        let dominantColorRow = document.createElement("TR");
+        const dominantColorRow = document.createElement("TR");
 
-        let dominantColorText = document.createElement("TD");
-        let dominantColorTextNode = document.createTextNode("Color");
+        const dominantColorText = document.createElement("TD");
+        const dominantColorTextNode = document.createTextNode("Color");
         dominantColorText.appendChild(dominantColorTextNode);
         dominantColorRow.appendChild(dominantColorText);
 
-        let dominantColorValue = document.createElement("TD");
+        const dominantColorValue = document.createElement("TD");
         dominantColorValue.className = 'ellipsis';
         dominantColorValue.style.backgroundColor = "rgb(" + window.lastevent.json.DominantRed + "," + window.lastevent.json.DominantGreen + "," + window.lastevent.json.DominantBlue + ")";
         dominantColorValue.style.margin = "5px";
@@ -165,13 +173,14 @@ function processPainting(evt) {
 
         table.appendChild(dominantColorRow);
     }
+    */
 }
 
 let ws;
 function queryPainting() {
     ws = new WebSocket("ws://" + location.host + ":8080/painting");
     ws.onmessage = function (evt) {
-        let fail = function (err) {
+        const fail = function (err) {
             if (err !== undefined)
             {
                 alert(err);
