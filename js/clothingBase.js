@@ -103,57 +103,83 @@ function processPainting(evt) {
         const painting_year = document.getElementById('painting_year');
         painting_year.innerText = window.lastevent.json.Year;
     }
-    
-    {// Dominant color
-        const fncParseImofa = imofaStr => {
-            let imofaQuantaStrArray = imofaStr.slice(1, imofaStr.length - 1).split(';');
-            const fncParseImofaQuanta = imofaQuantaStr => {
-                const imofaQuantaStrPieces = imofaQuantaStr.split(' ');
-                let imofaQuanta = {};
-                imofaQuanta.perc = parseFloat(imofaQuantaStrPieces[0]);
-                imofaQuanta.red = parseFloat(imofaQuantaStrPieces[1]);
-                imofaQuanta.green = parseFloat(imofaQuantaStrPieces[2]);
-                imofaQuanta.blue = parseFloat(imofaQuantaStrPieces[3]);
-                return imofaQuanta;
-            };
+
+    const fncParseImofa = imofaStr => {
+        if (imofaStr === undefined) {
+            let imofaQuanta = {};
+            imofaQuanta.perc = 1;
+            imofaQuanta.red = 255;
+            imofaQuanta.green = 255;
+            imofaQuanta.blue = 255;
+
             let imofaQuantaArray = [];
-            for (let i = 0; i < imofaQuantaStrArray.length; ++i) {
-                imofaQuanta = fncParseImofaQuanta(imofaQuantaStrArray[i]);
-                let gotIn = false;
-                for (let j = 0; j < i; ++j) {
-                    if (imofaQuantaArray[j].perc < imofaQuanta.perc) {
-                        imofaQuantaArray.splice(j, 0, imofaQuanta);
-                        gotIn = true;
-                        break;
-                    }
-                }
-                if (gotIn === false) {
-                    imofaQuantaArray[i] = imofaQuanta;
+            imofaQuantaArray.push(imofaQuanta);
+            return imofaQuantaArray;
+        }
+        let imofaQuantaStrArray = imofaStr.slice(1, imofaStr.length - 1).split(';');
+        const fncParseImofaQuanta = imofaQuantaStr => {
+            const imofaQuantaStrPieces = imofaQuantaStr.split(' ');
+            let imofaQuanta = {};
+            imofaQuanta.perc = parseFloat(imofaQuantaStrPieces[0]);
+            imofaQuanta.red = parseFloat(imofaQuantaStrPieces[1]);
+            imofaQuanta.green = parseFloat(imofaQuantaStrPieces[2]);
+            imofaQuanta.blue = parseFloat(imofaQuantaStrPieces[3]);
+            return imofaQuanta;
+        };
+        let imofaQuantaArray = [];
+        for (let i = 0; i < imofaQuantaStrArray.length; ++i) {
+            imofaQuanta = fncParseImofaQuanta(imofaQuantaStrArray[i]);
+            let gotIn = false;
+            for (let j = 0; j < i; ++j) {
+                if (imofaQuantaArray[j].perc < imofaQuanta.perc) {
+                    imofaQuantaArray.splice(j, 0, imofaQuanta);
+                    gotIn = true;
+                    break;
                 }
             }
-            return imofaQuantaArray;
-        };
+            if (gotIn === false) {
+                imofaQuantaArray[i] = imofaQuanta;
+            }
+        }
+        return imofaQuantaArray;
+    };
+
+    {// Dominant color
         let imofaQuantaArray = fncParseImofa(window.lastevent.json.imofa);
 
-        const c = document.getElementById("myCanvas");
+        const c = document.getElementById("grabcutCanvas");
         const ctx = c.getContext("2d");
-        let width = 300;
-        let height = 20;
+        let width = c.width;
+        let height = c.height;
         let lastWidth = 0;
         for (let i = 0; i < imofaQuantaArray.length; ++i) {
             let cur = imofaQuantaArray[i];
             let curWidth = width * cur.perc;
-            let abc = "rgb(" + cur.red + "," + cur.green + "," + cur.blue + ")";
-            console.log(abc);
             ctx.fillStyle = "rgb(" + Math.floor(cur.red) + "," + Math.floor(cur.green) + "," + Math.floor(cur.blue) + ")";
             console.log(ctx.fillStyle);
             ctx.fillRect(lastWidth, 0, curWidth, height);
             lastWidth += curWidth;
-            console.log(curWidth);
             ctx.stroke();
         }
+    } // Dominant color in Grabcut
 
-        console.log(JSON.stringify(imofaQuantaArray));
+    { // Dominant color in painting
+        let imofaQuantaArray = fncParseImofa(window.lastevent.json.imofaAll);
+
+        const c = document.getElementById("handCanvas");
+        const ctx = c.getContext("2d");
+        let width = c.width;
+        let height = c.height;
+        let lastWidth = 0;
+        for (let i = 0; i < imofaQuantaArray.length; ++i) {
+            let cur = imofaQuantaArray[i];
+            let curWidth = width * cur.perc;
+            ctx.fillStyle = "rgb(" + Math.floor(cur.red) + "," + Math.floor(cur.green) + "," + Math.floor(cur.blue) + ")";
+            console.log(ctx.fillStyle);
+            ctx.fillRect(lastWidth, 0, curWidth, height);
+            lastWidth += curWidth;
+            ctx.stroke();
+        }
     }
 }
 

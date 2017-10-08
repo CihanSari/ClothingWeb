@@ -40,3 +40,14 @@ article table tr td {
     vertical-align:top;
     text-align:justify;
 }
+
+article table tr td canvas {
+    width: 100%;
+    height: 1em;
+    vertical-align:middle;
+    margin: auto;
+}
+
+article table tr td.surreal {
+    display:none;
+}
