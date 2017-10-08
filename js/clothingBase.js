@@ -98,6 +98,11 @@ function processPainting(evt) {
     {// Gender
         const painting_gender = document.getElementById('painting_gender');
         painting_gender.innerText = window.lastevent.json.Gender;
+        if (window.lastevent.json.Gender == 'Male') {
+            document.body.style.background = '#2B2B3E';
+        } else {
+            document.body.style.background = '#533D4B';
+        }
     }
     {// Year
         const painting_year = document.getElementById('painting_year');
@@ -156,7 +161,6 @@ function processPainting(evt) {
             let cur = imofaQuantaArray[i];
             let curWidth = width * cur.perc;
             ctx.fillStyle = "rgb(" + Math.floor(cur.red) + "," + Math.floor(cur.green) + "," + Math.floor(cur.blue) + ")";
-            console.log(ctx.fillStyle);
             ctx.fillRect(lastWidth, 0, curWidth, height);
             lastWidth += curWidth;
             ctx.stroke();
