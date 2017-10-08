@@ -42,7 +42,7 @@ function processPainting(evt) {
         res.source = window.lastevent.paintingIdx;
         res.surrealSelected = true;
         ws.send(JSON.stringify(res));
-    }
+    };
 
 
     if (window.lastevent.json.decision !== undefined) {
@@ -67,7 +67,7 @@ function processPainting(evt) {
         res.source = window.lastevent.paintingIdx;
         res.grabcutSelected = true;
         ws.send(JSON.stringify(res));
-    }
+    };
 
     if (window.lastevent.json.decision !== undefined) {
         const customScore = document.getElementById('customScore');
@@ -83,7 +83,7 @@ function processPainting(evt) {
         res.source = window.lastevent.paintingIdx;
         res.customSelected = true;
         ws.send(JSON.stringify(res));
-    }
+    };
 
     document.title = window.lastevent.json.title;
 
@@ -219,10 +219,10 @@ function queryPainting() {
         } else {
             ws.send(JSON.stringify(window.config));
         }
-    }
+    };
     window.onclose = function () {
         ws.close();
-    }
+    };
 }
 
 if (document.readyState === "complete") {
