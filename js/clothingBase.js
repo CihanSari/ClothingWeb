@@ -87,11 +87,6 @@ function processPainting(evt) {
 
     document.title = window.lastevent.json.title;
 
-    //const painting_properties = document.getElementById('painting_properties');
-    //painting_properties.innerHTML = '';
-    //const table = document.createElement("table");
-    //painting_properties.appendChild(table);
-
     {// Title
         const painting_title = document.getElementById('painting_title');
         painting_title.innerText = window.lastevent.json.title;
@@ -108,24 +103,58 @@ function processPainting(evt) {
         const painting_year = document.getElementById('painting_year');
         painting_year.innerText = window.lastevent.json.Year;
     }
-    /*
+    
     {// Dominant color
-        const dominantColorRow = document.createElement("TR");
+        const fncParseImofa = imofaStr => {
+            let imofaQuantaStrArray = imofaStr.slice(1, imofaStr.length - 1).split(';');
+            const fncParseImofaQuanta = imofaQuantaStr => {
+                const imofaQuantaStrPieces = imofaQuantaStr.split(' ');
+                let imofaQuanta = {};
+                imofaQuanta.perc = parseFloat(imofaQuantaStrPieces[0]);
+                imofaQuanta.red = parseFloat(imofaQuantaStrPieces[1]);
+                imofaQuanta.green = parseFloat(imofaQuantaStrPieces[2]);
+                imofaQuanta.blue = parseFloat(imofaQuantaStrPieces[3]);
+                return imofaQuanta;
+            };
+            let imofaQuantaArray = [];
+            for (let i = 0; i < imofaQuantaStrArray.length; ++i) {
+                imofaQuanta = fncParseImofaQuanta(imofaQuantaStrArray[i]);
+                let gotIn = false;
+                for (let j = 0; j < i; ++j) {
+                    if (imofaQuantaArray[j].perc < imofaQuanta.perc) {
+                        imofaQuantaArray.splice(j, 0, imofaQuanta);
+                        gotIn = true;
+                        break;
+                    }
+                }
+                if (gotIn === false) {
+                    imofaQuantaArray[i] = imofaQuanta;
+                }
+            }
+            return imofaQuantaArray;
+        };
+        let imofaQuantaArray = fncParseImofa(window.lastevent.json.imofa);
 
-        const dominantColorText = document.createElement("TD");
-        const dominantColorTextNode = document.createTextNode("Color");
-        dominantColorText.appendChild(dominantColorTextNode);
-        dominantColorRow.appendChild(dominantColorText);
+        const c = document.getElementById("myCanvas");
+        const ctx = c.getContext("2d");
+        let width = 300;
+        let height = 20;
+        let lastWidth = 0;
+        for (let i = 0; i < imofaQuantaArray.length; ++i) {
+            let cur = imofaQuantaArray[i];
+            let curWidth = width * cur.perc;
+            let abc = "rgb(" + cur.red + "," + cur.green + "," + cur.blue + ")";
+            console.log(abc);
+            ctx.fillStyle = "rgb(" + Math.floor(cur.red) + "," + Math.floor(cur.green) + "," + Math.floor(cur.blue) + ")";
+            console.log(ctx.fillStyle);
+            ctx.fillRect(lastWidth, 0, curWidth, height);
+            lastWidth += curWidth;
+            console.log(curWidth);
+            ctx.stroke();
+        }
 
-        const dominantColorValue = document.createElement("TD");
-        dominantColorValue.className = 'ellipsis';
-        dominantColorValue.style.backgroundColor = "rgb(" + window.lastevent.json.DominantRed + "," + window.lastevent.json.DominantGreen + "," + window.lastevent.json.DominantBlue + ")";
-        dominantColorValue.style.margin = "5px";
-        dominantColorRow.appendChild(dominantColorValue);
-
-        table.appendChild(dominantColorRow);
+        console.log(JSON.stringify(imofaQuantaArray));
     }
-    */
 }
 
 let ws;

@@ -39,13 +39,13 @@
             <tr>
                 <td>Artist</td>
                 <td><div id="painting_painter" /></td>
-                <td colspan="2" rowspan="3" style="text-align:justify">
+                <td colspan="2" rowspan="4" style="text-align:justify">
                     <h5>Details for the surreal method can be found on the <a href="https://github.com/gulvarol/surreal/">project github page</a>.</h5>
                 </td>
-                <td colspan="2" rowspan="3" style="text-align:justify">
+                <td colspan="2" rowspan="4" style="text-align:justify">
                     <h5>Grabcut method is uses a combination of both <a href="https://github.com/CMU-Perceptual-Computing-Lab/openpose">OpenPose</a> to locate the face landmarks and <a href="http://docs.opencv.org/trunk/de/dd0/grabcut_8cpp-example.html">Grabcut implementation</a> from <a href="http://opencv.org/">OpenCV</a>.</h5>
                 </td>
-                <td colspan="2" rowspan="3" style="text-align:justify">
+                <td colspan="2" rowspan="4" style="text-align:justify">
                     <h5>Solution here will be very similar to <a href="https://github.com/AKSHAYUBHAT/ImageSegmentation">Image Eraser by Akshay Bhat</a> if not that solution directly. Internally it will still use Grabcut, but let the user add background or foreground pixels to iterate the algorithm further.</h5>
                 </td>
             </tr>
@@ -55,7 +55,11 @@
             </tr>
             <tr>
                 <td>Gender</td>
-                <td><div id="painting_gender"/></td>
+                <td><div id="painting_gender" /></td>
+            </tr>
+            <tr>
+                <td>Color</td>
+                <td><canvas id="myCanvas" height="20", style="border:1px solid #d3d3d3"/></td>
             </tr>
         </table>
     </article>
