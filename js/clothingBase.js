@@ -137,8 +137,8 @@ function processPainting(evt) {
 
         const c = document.getElementById("myCanvas");
         const ctx = c.getContext("2d");
-        let width = 300;
-        let height = 20;
+        let width = c.width;
+        let height = c.height;
         let lastWidth = 0;
         for (let i = 0; i < imofaQuantaArray.length; ++i) {
             let cur = imofaQuantaArray[i];
