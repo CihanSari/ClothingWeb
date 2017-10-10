@@ -189,7 +189,7 @@ function processPainting(evt) {
 
 let ws;
 function queryPainting() {
-    ws = new WebSocket("ws://" + location.host + ":8080/painting");
+    ws = new WebSocket("ws://cihansari.com:8080/painting");
     ws.onmessage = function (evt) {
         const fail = function (err) {
             if (err !== undefined)
