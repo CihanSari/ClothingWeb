@@ -14,7 +14,6 @@ window.config = {};
 }());
 
 function processPainting(evt) {
-    console.log(evt);
     window.lastevent = JSON.parse(evt.data);
     const originalImage = document.getElementById('original');
 
@@ -109,6 +108,76 @@ function processPainting(evt) {
         painting_year.innerText = window.lastevent.json.Year;
     }
 
+    // Color Thief grabcut
+    {
+        let img = new Image;
+        img.onload = function () {
+            {
+                // Dom color
+                let domColor = window.colorthief.getColor(img);
+                const c = document.getElementById("grabcutThiefDominantCanvas");
+                const ctx = c.getContext("2d");
+                let width = c.width;
+                let height = c.height;
+                ctx.fillStyle = "rgb(" + domColor.join(',') + ")";
+                ctx.fillRect(0, 0, width, height);
+                ctx.stroke();
+            }
+            {
+                // Palette
+                let palette = window.colorthief.getPalette(img);
+                const c = document.getElementById("grabcutThiefPaletteCanvas");
+                const ctx = c.getContext("2d");
+                let width = c.width;
+                let height = c.height;
+                let lastWidth = 0;
+                for (let i = 0; i < palette.length; ++i) {
+                    let curWidth = width / palette.length;
+                    ctx.fillStyle = "rgb(" + palette[i].join(',') + ")";
+                    ctx.fillRect(lastWidth, 0, curWidth, height);
+                    lastWidth += curWidth;
+                    ctx.stroke();
+                }
+            }
+        };
+        img.src = window.lastevent.Grabcut;
+    }
+
+    // Color Thief painting
+    {
+        let img = new Image;
+        img.onload = function () {
+            {
+                // Dom color
+                let domColor = window.colorthief.getColor(img);
+                const c = document.getElementById("paintingThiefDominantCanvas");
+                const ctx = c.getContext("2d");
+                let width = c.width;
+                let height = c.height;
+                ctx.fillStyle = "rgb(" + domColor.join(',') + ")";
+                ctx.fillRect(0, 0, width, height);
+                ctx.stroke();
+            }
+            {
+                // Palette
+                let palette = window.colorthief.getPalette(img);
+                const c = document.getElementById("paintingThiefPaletteCanvas");
+                const ctx = c.getContext("2d");
+                let width = c.width;
+                let height = c.height;
+                let lastWidth = 0;
+                for (let i = 0; i < palette.length; ++i) {
+                    let curWidth = width / palette.length;
+                    ctx.fillStyle = "rgb(" + palette[i].join(',') + ")";
+                    ctx.fillRect(lastWidth, 0, curWidth, height);
+                    lastWidth += curWidth;
+                    ctx.stroke();
+                }
+            }
+        };
+        img.src = window.lastevent.Original;
+    }
+
     const fncParseImofa = imofaStr => {
         if (imofaStr === undefined) {
             let imofaQuanta = {};
@@ -149,10 +218,10 @@ function processPainting(evt) {
         return imofaQuantaArray;
     };
 
-    {// Dominant color
+    {// Imofa color
         let imofaQuantaArray = fncParseImofa(window.lastevent.json.imofa);
 
-        const c = document.getElementById("grabcutCanvas");
+        const c = document.getElementById("grabcutImofaPaletteCanvas");
         const ctx = c.getContext("2d");
         let width = c.width;
         let height = c.height;
@@ -170,7 +239,7 @@ function processPainting(evt) {
     { // Dominant color in painting
         let imofaQuantaArray = fncParseImofa(window.lastevent.json.imofaAll);
 
-        const c = document.getElementById("handCanvas");
+        const c = document.getElementById("paintingImofaPaletteCanvas");
         const ctx = c.getContext("2d");
         let width = c.width;
         let height = c.height;
@@ -179,7 +248,6 @@ function processPainting(evt) {
             let cur = imofaQuantaArray[i];
             let curWidth = width * cur.perc;
             ctx.fillStyle = "rgb(" + Math.floor(cur.red) + "," + Math.floor(cur.green) + "," + Math.floor(cur.blue) + ")";
-            console.log(ctx.fillStyle);
             ctx.fillRect(lastWidth, 0, curWidth, height);
             lastWidth += curWidth;
             ctx.stroke();
@@ -189,44 +257,46 @@ function processPainting(evt) {
 
 let ws;
 function queryPainting() {
-    ws = new WebSocket("ws://cihansari.com:8080/painting");
-    ws.onmessage = function (evt) {
-        const fail = function (err) {
-            if (err !== undefined)
-            {
-                alert(err);
+    loadScript('js/color-thief.min.js').done(() => {
+        window.colorthief = new ColorThief();
+        ws = new WebSocket("ws://cihansari.com:8080/painting");
+        ws.onmessage = function (evt) {
+            const fail = function (err) {
+                if (err !== undefined) {
+                    alert(err);
+                }
+                location.reload();
+            };
+            try {
+                let data = JSON.parse(evt.data);
+                if (data.hasOwnProperty('json') && data.hasOwnProperty('Original')) {
+                    // painting event
+                    processPainting(evt);
+                } else if (data.hasOwnProperty('paintingIdx')) {
+                    // redirection request
+                    window.location.href = window.location.origin + '/?paintingIdx=' + data['paintingIdx'];
+                } else {
+                    fail('Unknown');
+                }
             }
-            location.reload();
-        };
-        try {
-            let data = JSON.parse(evt.data);
-            if (data.hasOwnProperty('json') && data.hasOwnProperty('Original')) {
-                // painting event
-                processPainting(evt);
-            } else if (data.hasOwnProperty('paintingIdx')) {
-                // redirection request
-                window.location.href = window.location.origin + '/?paintingIdx=' + data['paintingIdx'];
-            } else {
-                fail('Unknown');
+            catch (err) {
+                fail();
             }
-        }
-        catch (err) {
-            fail();
-        }
 
-    };
-    ws.onopen = function (evt) {
-        if (jQuery.isEmptyObject(window.config)) {
-            let request = {};
-            request.israndom = true;
-            ws.send(JSON.stringify(request));
-        } else {
-            ws.send(JSON.stringify(window.config));
-        }
-    };
-    window.onclose = function () {
-        ws.close();
-    };
+        };
+        ws.onopen = function (evt) {
+            if (jQuery.isEmptyObject(window.config)) {
+                let request = {};
+                request.israndom = true;
+                ws.send(JSON.stringify(request));
+            } else {
+                ws.send(JSON.stringify(window.config));
+            }
+        };
+        window.onclose = function () {
+            ws.close();
+        };
+    });
 }
 
 if (document.readyState === "complete") {
