@@ -97,7 +97,7 @@ function processPainting(evt) {
     {// Gender
         const painting_gender = document.getElementById('painting_gender');
         painting_gender.innerText = window.lastevent.json.Gender;
-        if (window.lastevent.json.Gender == 'Male') {
+        if (window.lastevent.json.Gender === 'Male') {
             document.body.style.background = '#2B2B3E';
         } else {
             document.body.style.background = '#533D4B';
