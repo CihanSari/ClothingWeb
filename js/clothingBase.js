@@ -237,21 +237,24 @@ let ws;
 function queryPainting() {
     loadScript('js/color-thief.min.js').done(() => {
         window.colorthief = new ColorThief();
-        const fncLoadOffline = () => {
-            window.isonline = false;
-            $('#loadingcontent').css({ 'display': 'none' });
-            $('#content').css({ 'display': 'initial' });
-            $('.hand').css({ 'display': 'none' });
-            $('#instructionGrabcut').text('WARNING: You are browsing offline version. Please click on the image, to browse to a random image. Click on this text to check if server is back online.');
-            $('#instructionGrabcut').css({ 'color': 'rgb(237,67,55)' });
-            $('#instructionGrabcut').addClass('clickable');
-            $('#instructionGrabcut').click(() => {
-                document.location.href = window.location.origin;
+        let connectionResolved = false;
+        const fncGoToNext = () => {
+            const idx = Math.floor(Math.random() * 1257);
+            window.location.href = window.location.origin + '/?loadoffline=true&paintingIdx=' + idx;
+        };
+        const fncException = ex => {
+            $('#status').text('Something went wrong. Click here to retry on a random painting.');
+            $('#status').css({ 'color': 'rgb(237,67,55)' });
+            $('#status').addClass('clickable');
+            $('#status').click(() => {
+                fncGoToNext();
             });
-            const fncGoToNext = () => {
-                const idx = Math.floor(Math.random() * 1257);
-                window.location.href = window.location.origin + '/?loadoffline=true&paintingIdx=' + idx;
-            };
+            console.error(ex);
+        };
+        const fncLoadOffline = () => {
+            connectionResolved = true;
+            window.isonline = false;
+            $('#status').text('Connection failed. Loading read-only mode...');
             window.lastevent = {};
             if (jQuery.isEmptyObject(window.config)) {
                 fncGoToNext();
@@ -260,8 +263,16 @@ function queryPainting() {
                 $.getJSON('data/json/files.json', fileList => {
                     const file = fileList[idx];
                     $.getJSON('data/json/' + file, fullyaml => {
-                        const data = fullyaml['origin']['GrabCutData'];
-                        window.lastevent.json = fullyaml['origin'];
+                        const origin = (() => {
+                            if (fullyaml['origin'])
+                                return fullyaml['origin'];
+                            else
+                                return fullyaml;
+                        })();
+                        window.lastevent.json = origin;
+                        if (!origin['Filename']) {
+                            origin['Filename'] = file.substring(0, file.length - 4) + 'jpg';
+                        }
                         const fncParseCVYAML = yamlData => {
                             const dataWithoutHeader = yamlData.substring(35);
                             const dirtyPieces = dataWithoutHeader.split(': ');
@@ -284,27 +295,31 @@ function queryPainting() {
                             }
                             return yamlStruct;
                         };
-                        const yamlStruct = fncParseCVYAML(data);
                         const canvasOriginalImage = document.createElement('canvas');
                         canvasOriginalImage.style = 'display:none';
                         document.body.appendChild(canvasOriginalImage);
                         canvasOriginalImage.id = "canvasOriginal";
-                        canvasOriginalImage.width = yamlStruct['cols'];
-                        canvasOriginalImage.height = yamlStruct['rows'];
 
                         const canvasGrabcutImage = document.createElement('canvas');
                         canvasGrabcutImage.style = 'display:none';
                         document.body.appendChild(canvasGrabcutImage);
                         canvasGrabcutImage.id = "canvasGrabcut";
-                        canvasGrabcutImage.width = yamlStruct['cols'];
-                        canvasGrabcutImage.height = yamlStruct['rows'];
 
                         const ctxOriginalImage = canvasOriginalImage.getContext("2d");
                         const ctxGrabcutImage = canvasGrabcutImage.getContext("2d");
 
+                        let yamlStruct = null;
+                        if (origin['GrabCutData']) {
+                            yamlStruct = fncParseCVYAML(origin['GrabCutData']);
+                        }
                         // load image from data url
                         const paintingData = new Image();
                         paintingData.onload = () => {
+                            canvasOriginalImage.width = paintingData.width;
+                            canvasOriginalImage.height = paintingData.height;
+                            canvasGrabcutImage.width = paintingData.width;
+                            canvasGrabcutImage.height = paintingData.height;
+
                             ctxOriginalImage.drawImage(paintingData, 0, 0);
                             ctxOriginalImage.stroke();
                             const originalImageUrl = canvasOriginalImage.toDataURL();
@@ -313,11 +328,14 @@ function queryPainting() {
                             originalImgDom.src = originalImageUrl;
 
                             ctxGrabcutImage.drawImage(paintingData, 0, 0);
-                            for (let i = 0; i < yamlStruct['rows']; ++i) {
-                                for (let j = 0; j < yamlStruct['cols']; ++j) {
-                                    const maskVal = yamlStruct['data'][i * yamlStruct['cols'] + j];
-                                    if (maskVal !== 3) {
-                                        ctxGrabcutImage.clearRect(j, i, 1, 1);
+
+                            if (yamlStruct) {
+                                for (let i = 0; i < yamlStruct['rows']; ++i) {
+                                    for (let j = 0; j < yamlStruct['cols']; ++j) {
+                                        const maskVal = yamlStruct['data'][i * yamlStruct['cols'] + j];
+                                        if (maskVal !== 3) {
+                                            ctxGrabcutImage.clearRect(j, i, 1, 1);
+                                        }
                                     }
                                 }
                             }
@@ -332,23 +350,40 @@ function queryPainting() {
                             grabcutImgDom.onmouseover = function () {
                                 this.src = originalImageUrl;
                             };
-                            const sizeStyle = '"max-width":' + yamlStruct['cols'] + '; "max-height": ' + yamlStruct['rows'] + ';';
+                            const sizeStyle = '"max-width":' + paintingData.width + '; "max-height": ' + paintingData.height + ';';
                             const fncSetStyleAndClick = dom => {
-                                dom.style.maxWidth = yamlStruct['cols'] + 'px';
-                                dom.style.maxHeight = yamlStruct['rows'] + 'px';
+                                dom.style.maxWidth = paintingData.width + 'px';
+                                dom.style.maxHeight = paintingData.height + 'px';
                                 dom.onclick = fncGoToNext;
                             };
-                            processPainting();
+                            try {
+                                processPainting();
+                            }
+                            catch (ex) {
+                                fncException(ex);
+                            }
                             fncSetStyleAndClick(grabcutImgDom);
                             fncSetStyleAndClick(originalImgDom);
+                            $('#loadingcontent').css({ 'display': 'none' });
+                            $('#content').css({ 'display': 'initial' });
+                            $('.hand').css({ 'display': 'none' });
+                            $('#instructionGrabcut').text('WARNING: You are browsing offline version. Please click on the image, to browse to a random image. Click on this text to check if server is back online.');
+                            $('#instructionGrabcut').css({ 'color': 'rgb(237,67,55)' });
+                            $('#instructionGrabcut').addClass('clickable');
+                            $('#instructionGrabcut').click(() => {
+                                document.location.href = window.location.origin;
+                            });
+
                         };
 
-                        paintingData.src = 'data/jpg/' + fullyaml['origin']['Filename'];
+                        paintingData.src = 'data/jpg/' + origin['Filename'];
                     });
                 });
             }
         };
         const fncLoadOnline = () => {
+            $('#status').text('Connection established. Loading...');
+            connectionResolved = true;
             window.isonline = true;
 
             if (jQuery.isEmptyObject(window.config)) {
@@ -361,41 +396,53 @@ function queryPainting() {
             $('#loadingcontent').css({ 'display': 'none' });
             $('#content').css({ 'display': 'initial' });
         };
-        if (window.config['loadoffline']) {
-            fncLoadOffline();
-        }
-        else {
-            ws = new WebSocket("ws://cihansari.com:8080/painting");
-            ws.onmessage = function (evt) {
-                const fail = function (err) {
-                    if (err !== undefined) {
-                        alert(err);
+        try {
+            if (window.config['loadoffline']) {
+                fncLoadOffline();
+            }
+            else {
+                ws = new WebSocket("ws://cihansari.com:8080/painting");
+                setTimeout(() => {
+                    if (!connectionResolved) {
+                        delete ws;
+                        fncLoadOffline();
                     }
-                    location.reload();
-                };
-                try {
-                    let data = JSON.parse(evt.data);
-                    if (data.hasOwnProperty('json') && data.hasOwnProperty('Original')) {
-                        // painting event
-                        window.lastevent = JSON.parse(evt.data);
-                        processPainting(evt);
-                    } else if (data.hasOwnProperty('paintingIdx')) {
-                        // redirection request
-                        window.location.href = window.location.origin + '/?paintingIdx=' + data['paintingIdx'];
-                    } else {
-                        fail('Unknown');
+                }, 1500);
+                ws.onmessage = function (evt) {
+                    const fail = function (err) {
+                        if (err !== undefined) {
+                            alert(err);
+                        }
+                        location.reload();
+                    };
+                    try {
+                        let data = JSON.parse(evt.data);
+                        if (data.hasOwnProperty('json') && data.hasOwnProperty('Original')) {
+                            // painting event
+                            window.lastevent = JSON.parse(evt.data);
+                            processPainting(evt);
+                        } else if (data.hasOwnProperty('paintingIdx')) {
+                            // redirection request
+                            window.location.href = window.location.origin + '/?paintingIdx=' + data['paintingIdx'];
+                        } else {
+                            fail('Unknown');
+                        }
                     }
-                }
-                catch (err) {
-                    fail();
-                }
+                    catch (err) {
+                        fail();
+                    }
 
-            };
-            ws.onopen = fncLoadOnline;
-            ws.onerror = fncLoadOffline;
-            window.onclose = function () {
-                ws.close();
-            };
+                };
+                ws.onopen = fncLoadOnline;
+                ws.onerror = fncLoadOffline;
+                window.onclose = function () {
+                    ws.close();
+                };
+            }
+        }
+        catch (ex)
+        {
+            fncException();
         }
     });
 }
