@@ -13,37 +13,11 @@ window.config = {};
     }
 }());
 
-function processPainting(evt) {
-    window.lastevent = JSON.parse(evt.data);
+function processPainting() {
     const originalImage = document.getElementById('original');
 
     originalImage.setAttribute("src", window.lastevent.Original);
-
-    if (window.lastevent.json.decision !== undefined) {
-        const surrealScore = document.getElementById('surrealScore');
-        surrealScore.innerText = window.lastevent.json.decision[0];
-    } else {
-        surrealScore.innerText = 0;
-    }
-
-    const surrealImg = document.getElementById('surreal');
-
-    surrealImg.setAttribute("src", window.lastevent.Surreal);
-    surrealImg.onmouseout = function () {
-        this.src = window.lastevent.Surreal;
-    };
-    surrealImg.onmouseover = function () {
-        this.src = window.lastevent.SurrealSeg;
-    };
-
-    surrealImg.onclick = function () {
-        let res = {};
-        res.source = window.lastevent.paintingIdx;
-        res.surrealSelected = true;
-        ws.send(JSON.stringify(res));
-    };
-
-
+    
     if (window.lastevent.json.decision !== undefined) {
         const grabcutScore = document.getElementById('grabcutScore');
         grabcutScore.innerText = window.lastevent.json.decision[1];
@@ -83,6 +57,10 @@ function processPainting(evt) {
         res.customSelected = true;
         ws.send(JSON.stringify(res));
     };
+    processPaintingProperties();
+}
+
+function processPaintingProperties() {
 
     document.title = window.lastevent.json.title;
 
@@ -259,32 +237,120 @@ let ws;
 function queryPainting() {
     loadScript('js/color-thief.min.js').done(() => {
         window.colorthief = new ColorThief();
-        ws = new WebSocket("ws://cihansari.com:8080/painting");
-        ws.onmessage = function (evt) {
-            const fail = function (err) {
-                if (err !== undefined) {
-                    alert(err);
-                }
-                location.reload();
+        const fncLoadOffline = () => {
+            window.isonline = false;
+            $('#loadingcontent').css({ 'display': 'none' });
+            $('#content').css({ 'display': 'initial' });
+            $('.hand').css({ 'display': 'none' });
+            $('#instructionGrabcut').text('WARNING: You are browsing offline version. Please click on the image, to browse to a random image. Click on this text to check if server is back online.');
+            $('#instructionGrabcut').css({ 'color': 'rgb(237,67,55)' });
+            $('#instructionGrabcut').addClass('clickable');
+            $('#instructionGrabcut').click(() => {
+                document.location.href = window.location.origin;
+            });
+            const fncGoToNext = () => {
+                const idx = Math.floor(Math.random() * 1257);
+                window.location.href = window.location.origin + '/?loadoffline=true&paintingIdx=' + idx;
             };
-            try {
-                let data = JSON.parse(evt.data);
-                if (data.hasOwnProperty('json') && data.hasOwnProperty('Original')) {
-                    // painting event
-                    processPainting(evt);
-                } else if (data.hasOwnProperty('paintingIdx')) {
-                    // redirection request
-                    window.location.href = window.location.origin + '/?paintingIdx=' + data['paintingIdx'];
-                } else {
-                    fail('Unknown');
-                }
-            }
-            catch (err) {
-                fail();
-            }
+            window.lastevent = {};
+            if (jQuery.isEmptyObject(window.config)) {
+                fncGoToNext();
+            } else {
+                const idx = parseInt(window['config']['paintingIdx']);
+                $.getJSON('data/json/files.json', fileList => {
+                    const file = fileList[idx];
+                    $.getJSON('data/json/' + file, fullyaml => {
+                        const data = fullyaml['origin']['GrabCutData'];
+                        window.lastevent.json = fullyaml['origin'];
+                        const fncParseCVYAML = yamlData => {
+                            const dataWithoutHeader = yamlData.substring(35);
+                            const dirtyPieces = dataWithoutHeader.split(': ');
+                            const yamlStruct = {};
+                            let key = dirtyPieces[0];
+                            for (let i = 1; i < dirtyPieces.length; ++i) {
+                                const dirtyPiece = dirtyPieces[i];
+                                const splitIdx = dirtyPiece.lastIndexOf('\n');
+                                const value = dirtyPiece.substring(0, splitIdx);
+                                const fncTryParse = val => {
+                                    try {
+                                        return JSON.parse(val);
+                                    }
+                                    catch (e) {
+                                        return val;
+                                    }
+                                };
+                                yamlStruct[key] = fncTryParse(value);
+                                key = dirtyPiece.substring(splitIdx + 1).replace(/ /g, '');
+                            }
+                            return yamlStruct;
+                        };
+                        const yamlStruct = fncParseCVYAML(data);
+                        const canvasOriginalImage = document.createElement('canvas');
+                        canvasOriginalImage.style = 'display:none';
+                        document.body.appendChild(canvasOriginalImage);
+                        canvasOriginalImage.id = "canvasOriginal";
+                        canvasOriginalImage.width = yamlStruct['cols'];
+                        canvasOriginalImage.height = yamlStruct['rows'];
 
+                        const canvasGrabcutImage = document.createElement('canvas');
+                        canvasGrabcutImage.style = 'display:none';
+                        document.body.appendChild(canvasGrabcutImage);
+                        canvasGrabcutImage.id = "canvasGrabcut";
+                        canvasGrabcutImage.width = yamlStruct['cols'];
+                        canvasGrabcutImage.height = yamlStruct['rows'];
+
+                        const ctxOriginalImage = canvasOriginalImage.getContext("2d");
+                        const ctxGrabcutImage = canvasGrabcutImage.getContext("2d");
+
+                        // load image from data url
+                        const paintingData = new Image();
+                        paintingData.onload = () => {
+                            ctxOriginalImage.drawImage(paintingData, 0, 0);
+                            ctxOriginalImage.stroke();
+                            const originalImageUrl = canvasOriginalImage.toDataURL();
+                            window.lastevent.Original = originalImageUrl;
+                            const originalImgDom = document.getElementById('original');
+                            originalImgDom.src = originalImageUrl;
+
+                            ctxGrabcutImage.drawImage(paintingData, 0, 0);
+                            for (let i = 0; i < yamlStruct['rows']; ++i) {
+                                for (let j = 0; j < yamlStruct['cols']; ++j) {
+                                    const maskVal = yamlStruct['data'][i * yamlStruct['cols'] + j];
+                                    if (maskVal !== 3) {
+                                        ctxGrabcutImage.clearRect(j, i, 1, 1);
+                                    }
+                                }
+                            }
+                            ctxGrabcutImage.stroke();
+                            const grabcutImgUrl = canvasGrabcutImage.toDataURL();
+                            window.lastevent.Grabcut = grabcutImgUrl;
+                            const grabcutImgDom = document.getElementById('grabcut');
+                            grabcutImgDom.src = grabcutImgUrl;
+                            grabcutImgDom.onmouseout = function () {
+                                this.src = grabcutImgUrl;
+                            };
+                            grabcutImgDom.onmouseover = function () {
+                                this.src = originalImageUrl;
+                            };
+                            const sizeStyle = '"max-width":' + yamlStruct['cols'] + '; "max-height": ' + yamlStruct['rows'] + ';';
+                            const fncSetStyleAndClick = dom => {
+                                dom.style.maxWidth = yamlStruct['cols'] + 'px';
+                                dom.style.maxHeight = yamlStruct['rows'] + 'px';
+                                dom.onclick = fncGoToNext;
+                            };
+                            processPainting();
+                            fncSetStyleAndClick(grabcutImgDom);
+                            fncSetStyleAndClick(originalImgDom);
+                        };
+
+                        paintingData.src = 'data/jpg/' + fullyaml['origin']['Filename'];
+                    });
+                });
+            }
         };
-        ws.onopen = function (evt) {
+        const fncLoadOnline = () => {
+            window.isonline = true;
+
             if (jQuery.isEmptyObject(window.config)) {
                 let request = {};
                 request.israndom = true;
@@ -292,10 +358,45 @@ function queryPainting() {
             } else {
                 ws.send(JSON.stringify(window.config));
             }
+            $('#loadingcontent').css({ 'display': 'none' });
+            $('#content').css({ 'display': 'initial' });
         };
-        window.onclose = function () {
-            ws.close();
-        };
+        if (window.config['loadoffline']) {
+            fncLoadOffline();
+        }
+        else {
+            ws = new WebSocket("ws://cihansari.com:8080/painting");
+            ws.onmessage = function (evt) {
+                const fail = function (err) {
+                    if (err !== undefined) {
+                        alert(err);
+                    }
+                    location.reload();
+                };
+                try {
+                    let data = JSON.parse(evt.data);
+                    if (data.hasOwnProperty('json') && data.hasOwnProperty('Original')) {
+                        // painting event
+                        window.lastevent = JSON.parse(evt.data);
+                        processPainting(evt);
+                    } else if (data.hasOwnProperty('paintingIdx')) {
+                        // redirection request
+                        window.location.href = window.location.origin + '/?paintingIdx=' + data['paintingIdx'];
+                    } else {
+                        fail('Unknown');
+                    }
+                }
+                catch (err) {
+                    fail();
+                }
+
+            };
+            ws.onopen = fncLoadOnline;
+            ws.onerror = fncLoadOffline;
+            window.onclose = function () {
+                ws.close();
+            };
+        }
     });
 }
 

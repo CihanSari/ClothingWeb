@@ -8,64 +8,79 @@
     <title>Clothing</title>
 </head>
 <body>
-    <header>
-        <h1>Clothing Segmentation</h1>
-    </header>
     <article>
-        <table>
-            <tr>
-                <td colspan="2" class="original"><h4>Original Painting</h4></td>
-                <td colspan="2" class="surreal"><h4>Surreal Segmentation</h4></td>
-                <td colspan="2" class="grabcut"><h4>Fine-tuned Grabcut Segmentation</h4></td>
-                <td colspan="2" class="hand"><h4>Hand segmentation (N/A)</h4></td>
-            </tr>
-            <tr>
-                <td colspan="2" class="original"><img id="original" /></td>
-                <td colspan="2" class="surreal"><img id="surreal" class="clickable" /></td>
-                <td colspan="2" class="grabcut"><img id="grabcut" class="clickable" /></td>
-                <td colspan="2" class="hand"><img id="custom" class="clickable" /></td>
-            </tr>
-            <tr>
-                <td class="original">Artist</td><td class="original"><div id="painting_painter" /></td>
-                <td style="text-align:left" class="surreal">Current Score</td><td class="surreal"><div id="surrealScore" style="text-align:right"/></td>
-                <td style="text-align:left" class="grabcut">Current Score</td><td class="grabcut"><div id="grabcutScore" style="text-align:right"></div></td>
-                <td style="text-align:left" class="hand">Current Score</td><td class="hand"><div id="customScore" style="text-align:right"></div></td class="surreal">
-            </tr>
-            <tr>
-                <td class="original">Title</td><td class="original"><div id="painting_title" /></td>
-                <td colspan="2" style="text-align:justify" class="surreal"><h5>Please click on the image, if you think this segmentation has captured enough region to extract colors of the clothing.</h5></td>
-                <td colspan="2" style="text-align:justify" class="grabcut"><h5>Please click on the image, if you think this segmentation has captured enough region to extract colors of the clothing.</h5></td>
-                <td colspan="2" style="text-align:justify" class="hand"><h5>Please click on the image, if you think neither segmentation has captured enough region to extract colors of the clothing.</h5></td>
-            </tr>
-            <tr>
-                <td class="original">Year</td><td class="original"><div id="painting_year" /></td>
-                <td class="surreal" colspan="2" rowspan="2" style="text-align:justify">
-                    <h5>Details for the surreal method can be found on the <a href="https://github.com/gulvarol/surreal/">project github page</a>.</h5>
-                </td>
-                <td class="grabcut" colspan="2" rowspan="2" style="text-align:justify">
-                    <h5>Grabcut method is uses a combination of both <a href="https://github.com/CMU-Perceptual-Computing-Lab/openpose">OpenPose</a> to locate the face landmarks and <a href="http://docs.opencv.org/trunk/de/dd0/grabcut_8cpp-example.html">Grabcut implementation</a> from <a href="http://opencv.org/">OpenCV</a>.</h5>
-                </td>
-                <td class="hand" colspan="2" rowspan="2" style="text-align:justify">
-                    <h5>Solution here will be very similar to <a href="https://github.com/AKSHAYUBHAT/ImageSegmentation">Image Eraser by Akshay Bhat</a> if not that solution directly. Internally it will still use Grabcut, but let the user add background or foreground pixels to iterate the algorithm further.</h5>
-                </td>
-            </tr>
-            <tr>
-                <td class="original">Gender</td>
-                <td class="original"><div id="painting_gender" /></td>
-            </tr>
-            <tr>
-                <td class="original">Color Thief Dominant</td><td class="original"><canvas id="paintingThiefDominantCanvas" width="400" height="80" /></td>
-                <td class="grabcut">Color Thief Dominant</td><td class="grabcut"><canvas id="grabcutThiefDominantCanvas" width="400" height="80" /></td>
-            </tr>
-            <tr>
-                <td class="original">Color Thief Palette</td><td class="original"><canvas id="paintingThiefPaletteCanvas" width="400" height="80" /></td>
-                <td class="grabcut">Color Thief Palette</td><td class="grabcut"><canvas id="grabcutThiefPaletteCanvas" width="400" height="80" /></td>
-            </tr>
-            <tr>
-                <td class="original">Imofa Color Palette</td><td class="original"><canvas id="paintingImofaPaletteCanvas" width="400" height="80" /></td>
-                <td class="grabcut">Imofa Color Palette</td><td class="grabcut"><canvas id="grabcutImofaPaletteCanvas" width="400" height="80" /></td>
-            </tr>
-        </table>
+        <div id="content">
+            <h1>Clothing Segmentation</h1>
+            <table>
+                <tr>
+                    <td colspan="2" class="original"><h4>Original Painting</h4></td>
+                    <td colspan="2" class="surreal"><h4>Surreal Segmentation</h4></td>
+                    <td colspan="2" class="grabcut"><h4>Fine-tuned Grabcut Segmentation</h4></td>
+                    <td colspan="2" class="hand"><h4>Hand segmentation (N/A)</h4></td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="original"><img id="original" /></td>
+                    <td colspan="2" class="surreal"><img id="surreal" class="clickable" /></td>
+                    <td colspan="2" class="grabcut"><img id="grabcut" class="clickable" /></td>
+                    <td colspan="2" class="hand"><img id="custom" class="clickable" /></td>
+                </tr>
+                <tr>
+                    <td class="original">Artist</td>
+                    <td class="original"><div id="painting_painter" /></td>
+                    <td style="text-align:left" class="surreal">Current Score</td>
+                    <td class="surreal"><div id="surrealScore" style="text-align:right" /></td>
+                    <td style="text-align:left" class="grabcut">Current Score</td>
+                    <td class="grabcut"><div id="grabcutScore" style="text-align:right"></div></td>
+                    <td style="text-align:left" class="hand">Current Score</td>
+                    <td class="hand"><div id="customScore" style="text-align:right"></div></td>
+                </tr>
+                <tr>
+                    <td class="original">Title</td>
+                    <td class="original"><div id="painting_title" /></td>
+                    <td colspan="2" style="text-align:justify" class="surreal"><h5>Please click on the image, if you think this segmentation has captured enough region to extract colors of the clothing.</h5></td>
+                    <td colspan="2" style="text-align:justify" class="grabcut"><h5 id="instructionGrabcut">Please click on the image, if you think this segmentation has captured enough region to extract colors of the clothing.</h5></td>
+                    <td colspan="2" style="text-align:justify" class="hand"><h5>Please click on the image, if you think neither segmentation has captured enough region to extract colors of the clothing.</h5></td>
+                </tr>
+                <tr>
+                    <td class="original">Year</td>
+                    <td class="original"><div id="painting_year" /></td>
+                    <td class="surreal" colspan="2" rowspan="2" style="text-align:justify">
+                        <h5>Details for the surreal method can be found on the <a href="https://github.com/gulvarol/surreal/">project github page</a>.</h5>
+                    </td>
+                    <td class="grabcut" colspan="2" rowspan="2" style="text-align:justify">
+                        <h5>Grabcut method is uses a combination of both <a href="https://github.com/CMU-Perceptual-Computing-Lab/openpose">OpenPose</a> to locate the face landmarks and <a href="http://docs.opencv.org/trunk/de/dd0/grabcut_8cpp-example.html">Grabcut implementation</a> from <a href="http://opencv.org/">OpenCV</a>.</h5>
+                    </td>
+                    <td class="hand" colspan="2" rowspan="2" style="text-align:justify">
+                        <h5>Solution here will be very similar to <a href="https://github.com/AKSHAYUBHAT/ImageSegmentation">Image Eraser by Akshay Bhat</a> if not that solution directly. Internally it will still use Grabcut, but let the user add background or foreground pixels to iterate the algorithm further.</h5>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="original">Gender</td>
+                    <td class="original"><div id="painting_gender" /></td>
+                </tr>
+                <tr>
+                    <td class="original">Color Thief Dominant</td>
+                    <td class="original"><canvas id="paintingThiefDominantCanvas" width="400" height="80" /></td>
+                    <td class="grabcut">Color Thief Dominant</td>
+                    <td class="grabcut"><canvas id="grabcutThiefDominantCanvas" width="400" height="80" /></td>
+                </tr>
+                <tr>
+                    <td class="original">Color Thief Palette</td>
+                    <td class="original"><canvas id="paintingThiefPaletteCanvas" width="400" height="80" /></td>
+                    <td class="grabcut">Color Thief Palette</td>
+                    <td class="grabcut"><canvas id="grabcutThiefPaletteCanvas" width="400" height="80" /></td>
+                </tr>
+                <tr>
+                    <td class="original">Imofa Color Palette</td>
+                    <td class="original"><canvas id="paintingImofaPaletteCanvas" width="400" height="80" /></td>
+                    <td class="grabcut">Imofa Color Palette</td>
+                    <td class="grabcut"><canvas id="grabcutImofaPaletteCanvas" width="400" height="80" /></td>
+                </tr>
+            </table>
+        </div>
+        <div id="loadingcontent">
+            <h2>Trying to connect...</h2><div class="loader"></div>
+        </div>
     </article>
     <footer>
     </footer>
