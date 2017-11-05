@@ -17,11 +17,19 @@ article {
 
     article table tr td {
         width: 12%;
+        max-width: 10em;
+        padding-left: 4em;
+        padding-right: 4em;
+        vertical-align: top;
+        text-align: justify;
     }
 
-    article table tr td img {
-        margin:auto;
-    }
+        article table tr td img {
+            max-width: 100%;
+            max-height: 100%;
+            display: block;
+            margin: 0 auto;
+        }
 
 article table tr td h4 {
     text-align:center;
@@ -33,16 +41,10 @@ article table {
     margin-right: auto;
     margin-top: 2em;
     padding: 0.5em;
-    border-collapse: separate;
-    border-spacing: 1.5em;
 }
 
 article .clickable {
     cursor:pointer;
-}
-article table tr td {
-    vertical-align:top;
-    text-align:justify;
 }
 
 article table tr td canvas {
