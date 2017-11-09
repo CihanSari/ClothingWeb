@@ -42,6 +42,26 @@ function processPainting() {
         ws.send(JSON.stringify(res));
     };
 
+    const fncVoteDecision = i => {
+        const oldValue = window.lastevent.json.decision[i];
+        const data = encodeURIComponent(window.lastevent.jsonFile + ' ' + JSON.stringify([{ op: "replace", path: "/origin/decision/" + i, value: oldValue + 1 }]))
+        $.ajax({
+            type: 'get',
+            url: 'http://cihansari.com/cgi-bin/vote?' + data,
+            success: data => {
+                console.log(JSON.stringify(data));
+            }
+        });
+    };
+
+    document.getElementById('div_thumbsdown').onclick = () => {
+        fncVoteDecision(2);
+    };
+
+    document.getElementById('div_thumbsup').onclick = () => {
+        fncVoteDecision(1);
+    };
+    
     if (window.lastevent.json.decision !== undefined) {
         const customScore = document.getElementById('customScore');
         customScore.innerText = window.lastevent.json.decision[2];
@@ -261,6 +281,7 @@ function queryPainting() {
             } else {
                 const idx = parseInt(window['config']['paintingIdx']);
                 $.getJSON('data/json/files.json', fileList => {
+                    window.lastevent.jsonFile = fileList[idx];
                     const file = fileList[idx];
                     $.getJSON('data/json/' + file, fullyaml => {
                         const origin = (() => {

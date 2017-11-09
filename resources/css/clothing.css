@@ -83,3 +83,28 @@ article #loadingcontent h2 {
         transform: rotate(360deg);
     }
 }
+
+.thumbsdown {
+    text-align: center;
+    background-color: darkred;
+    vertical-align: middle;
+    font-size: 500%;
+    line-height: 100%;
+}
+
+    .thumbsdown:before {
+        content: "\1F593 ";
+    }
+
+
+.thumbsup {
+    text-align: center;
+    background-color: darkgreen;
+    vertical-align: middle;
+    font-size: 500%;
+    line-height: 100%;
+}
+
+    .thumbsup:after {
+        content: "\1F592 ";
+    }
