@@ -43,15 +43,34 @@ function processPainting() {
     };
 
     const fncVoteDecision = i => {
-        const oldValue = window.lastevent.json.decision[i];
-        const data = encodeURIComponent(window.lastevent.jsonFile + ' ' + JSON.stringify([{ op: "replace", path: "/origin/decision/" + i, value: oldValue + 1 }]))
-        $.ajax({
-            type: 'get',
-            url: 'http://cihansari.com/cgi-bin/vote?' + data,
-            success: data => {
-                console.log(JSON.stringify(data));
+        try {
+            const data = (() => {
+                if (window.lastevent.json.decision) {
+                    const oldValue = window.lastevent.json.decision[i];
+                    return encodeURIComponent(window.lastevent.jsonFile + ' ' + JSON.stringify([{ op: "replace", path: "/origin/decision/" + i, value: oldValue + 1 }]))
+                }
+                else {
+                    const oldValue = [0, 0, 0, 0];
+                    const newValue = oldValue;
+                    newValue[i] = 1;
+                    return encodeURIComponent(window.lastevent.jsonFile + ' ' + JSON.stringify([{ op: "add", path: "/origin/decision/", value: newValue }]))
+                }
+            })();
+            $.ajax({
+                type: 'get',
+                url: 'http://cihansari.com/cgi-bin/vote?' + data,
+                success: data => {
+                    console.log(JSON.stringify(data));
+                    window.fncGoToNext();
+                }
+            });
+        }
+        catch (ex)
+        {
+            if (confirm('Something went wrong. You will be redirected to another painting. Please report the painting incident.')) {
+                window.fncGoToNext();
             }
-        });
+        }
     };
 
     document.getElementById('div_thumbsdown').onclick = () => {
@@ -262,6 +281,7 @@ function queryPainting() {
             const idx = Math.floor(Math.random() * 1257);
             window.location.href = window.location.origin + '/?loadoffline=true&paintingIdx=' + idx;
         };
+        window.fncGoToNext = fncGoToNext;
         const fncException = ex => {
             $('#status').text('Something went wrong. Click here to retry on a random painting.');
             $('#status').css({ 'color': 'rgb(237,67,55)' });
