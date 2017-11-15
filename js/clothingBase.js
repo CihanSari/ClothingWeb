@@ -7,23 +7,6 @@
     document.getElementsByTagName('head')[0].appendChild(link);
 })();
 
-let oldPaintingList = Cookies.getJSON('paintingList');
-if (oldPaintingList === undefined) {
-    const createArray = function(length) {
-        var arr = new Array(length || 0),
-            i = length;
-
-        if (arguments.length > 1) {
-            var args = Array.prototype.slice.call(arguments, 1);
-            while (i--) arr[length - 1 - i] = createArray.apply(this, args);
-        }
-
-        return arr;
-    }
-    oldPaintingList = createArray(1257);
-}
-
-
 // Base stuff
 
 window.config = {};
@@ -69,30 +52,83 @@ function processPainting() {
 
     const fncVoteDecision = i => {
         try {
-            const data = (() => {
-                if (window.lastevent.json.decision) {
-                    const oldValue = window.lastevent.json.decision[i];
-                    return encodeURIComponent(window.lastevent.jsonFile + ' ' + JSON.stringify([{ op: "replace", path: "/origin/decision/" + i, value: oldValue + 1 }]))
-                }
-                else {
-                    const oldValue = [0, 0, 0, 0];
-                    const newValue = oldValue;
-                    newValue[i] = 1;
-                    return encodeURIComponent(window.lastevent.jsonFile + ' ' + JSON.stringify([{ op: "add", path: "/origin/decision/", value: newValue }]))
-                }
-            })();
-            $.ajax({
-                type: 'get',
-                url: 'http://cihansari.com/cgi-bin/vote?' + data,
-                success: data => {
-                    if (!oldPaintingList[window.config.paintingIdx]) {
-                        oldPaintingList[window.config.paintingIdx] = [];
+            const fncCastVote = () => {
+                const data = (() => {
+                    if (window.lastevent.json.decision) {
+                        const oldValue = window.lastevent.json.decision[i];
+                        return encodeURIComponent(window.lastevent.jsonFile + ' ' + JSON.stringify([{ op: "replace", path: "/origin/decision/" + i, value: oldValue + 1 }]))
                     }
-                    oldPaintingList[window.config.paintingIdx].push(i);
-                    Cookies.setJSON('paintingList', oldPaintingList);
-                    window.fncGoToNext();
+                    else {
+                        const oldValue = [0, 0, 0, 0];
+                        const newValue = oldValue;
+                        newValue[i] = 1;
+                        return encodeURIComponent(window.lastevent.jsonFile + ' ' + JSON.stringify([{ op: "add", path: "/origin/decision/", value: newValue }]))
+                    }
+                })();
+                $.ajax({
+                    type: 'get',
+                    url: 'http://cihansari.com/cgi-bin/vote?' + data,
+                    success: data => {
+                        window.fncGoToNext();
+                    }
+                });
+            };
+            const confirmThumbsDown = {
+                title: 'Thumbs down',
+                content: '"Color pallette is worse than original painting in representing the clothing colors."\nDo you want to submit this result and display a random painting ?',
+                type: 'darkred',
+                escapeKey:'cancel',
+                buttons: {
+                    ok: {
+                        text: 'Submit',
+                        btnClass: 'btn-danger',
+                        keys: ['enter'],
+                        action: fncCastVote
+                    },
+                    goRandom: {
+                        text: 'Skip painting',
+                        btnClass: 'btn-primary',
+                        keys: ['space'],
+                        action: window.fncGoToNext
+                    },
+                    cancel: {
+                        text: 'Cancel',
+                        btnClass: 'btn-warning'
+                    }
                 }
-            });
+            };
+
+            const confirmThumbsUp = {
+                title: 'Thumbs up',
+                content: '"Color pallette is better than original painting in representing the clothing colors."\nDo you want to submit this result and display a random painting ?',
+                type: 'darkgreen',
+                escapeKey: 'cancel',
+                buttons: {
+                    ok: {
+                        text: 'Submit',
+                        btnClass: 'btn-success',
+                        keys: ['enter'],
+                        action: fncCastVote
+                    },
+                    goRandom: {
+                        text: 'Skip painting',
+                        btnClass: 'btn-primary',
+                        keys: ['space'],
+                        action: window.fncGoToNext
+                    },
+                    cancel: {
+                        text: 'Cancel',
+                        btnClass: 'btn-warning'
+                    }
+                }
+            };
+
+            if (i === 2) {
+                $.confirm(confirmThumbsDown);
+            }
+            else {
+                $.confirm(confirmThumbsUp);
+            }
         }
         catch (ex) {
             if (confirm('Something went wrong. You will be redirected to another painting. Please report the painting incident.')) {
@@ -305,45 +341,10 @@ function queryPainting() {
     window.colorthief = new ColorThief();
     let connectionResolved = false;
     const fncGoToNext = () => {
-        const shuffleArray = array => {
-            var currentIndex = array.length, temporaryValue, randomIndex;
-
-            // While there remain elements to shuffle...
-            while (0 !== currentIndex) {
-
-                // Pick a remaining element...
-                randomIndex = Math.floor(Math.random() * currentIndex);
-                currentIndex -= 1;
-
-                // And swap it with the current element.
-                temporaryValue = array[currentIndex];
-                array[currentIndex] = array[randomIndex];
-                array[randomIndex] = temporaryValue;
-            }
-
-            return array;
-        };
-        let sequence = [];
-        for (let i = 0; i < 1257; ++i) {
-            sequence[i] = i;
-        }
-        sequence = shuffleArray(sequence);
-
         const fncGoToPainting = idx => {
             window.location.href = window.location.origin + '/?loadoffline=true&paintingIdx=' + idx;
         };
 
-        for (let i = 0; i < sequence.length; ++i) {
-            const idx = sequence[i];
-            if (!oldPaintingList[idx]) {
-                fncGoToPainting(idx);
-                return;
-            }
-            else if (oldPaintingList[idx].length === 0) {
-                fncGoToPainting(idx);
-                return;
-            }
-        }
         fncGoToPainting(Math.floor(Math.random() * 1257));
         return;
     };

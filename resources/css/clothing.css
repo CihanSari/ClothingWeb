@@ -108,3 +108,7 @@ article #loadingcontent h2 {
     .thumbsup:after {
         content: "\1F592 ";
     }
+
+.jconfirm .jconfirm-box {
+    background-color:#101010
+}
