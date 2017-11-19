@@ -1,50 +1,4 @@
 ﻿const showPaintingsOnCanvas = () => {
-    const fncParseImofa = imofaStr => {
-        if (imofaStr == null || imofaStr.length === 0) {
-            let imofaQuantaArray = [];
-            return imofaQuantaArray;
-        }
-        let imofaQuantaStrArray = imofaStr.slice(1, imofaStr.length - 1).split(';');
-        const fncParseImofaQuanta = imofaQuantaStr => {
-            const imofaQuantaStrPieces = imofaQuantaStr.split(' ');
-            let imofaQuanta = {};
-            imofaQuanta.perc = Math.min(Math.max(parseFloat(imofaQuantaStrPieces[0]), 0), 255);
-            imofaQuanta.red = Math.min(Math.max(parseFloat(imofaQuantaStrPieces[1]), 0), 255);
-            imofaQuanta.green = Math.min(Math.max(parseFloat(imofaQuantaStrPieces[2]), 0), 255);
-            imofaQuanta.blue = Math.min(Math.max(parseFloat(imofaQuantaStrPieces[3]), 0), 255);
-            return imofaQuanta;
-        };
-        let imofaQuantaArray = [];
-        for (let i = 0; i < imofaQuantaStrArray.length; ++i) {
-            imofaQuanta = fncParseImofaQuanta(imofaQuantaStrArray[i]);
-            let gotIn = false;
-            for (let j = 0; j < i; ++j) {
-                if (imofaQuantaArray[j].perc < imofaQuanta.perc) {
-                    imofaQuantaArray.splice(j, 0, imofaQuanta);
-                    gotIn = true;
-                    break;
-                }
-            }
-            if (gotIn === false) {
-                imofaQuantaArray[i] = imofaQuanta;
-            }
-        }
-        return imofaQuantaArray;
-    };
-
-    function getData(jsonDescription) {
-        let desc = jsonDescription;
-        if (Object.prototype.hasOwnProperty.call(jsonDescription, 'origin')) {
-            desc = jsonDescription.origin;
-        }
-        return {
-            color: fncParseImofa(desc.imofa),
-            year: desc.Year,
-            gender: desc.Gender,
-            imageUrl: 'data/jpg/' + desc.Filename
-        }
-    }
-
     function rgb2hsv(r, g, b) {
         var computedH = 0;
         var computedS = 0;
@@ -108,105 +62,10 @@
         return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
     }
 
-    const canvas = new fabric.Canvas('c');
-
-    function makeCanvasBackground() {
-
-        const items = [];
-        function hueToColor(hue) {
-            [red, green, blue] = hslToRgb(hue / 360, 0.5, 0.5);
-            return `rgb(${red},${green},${blue})`
-        }
-
-        for (let hue = 0; hue <= 360; hue += 10) {
-            items.push(new fabric.Rect({
-                top: hue,
-                left: 0,
-                width: canvas.width,
-                height: 11,
-                fill: hueToColor(hue),
-                lockMovementX: true,
-                lockMovementY: true,
-                lockScalingX: true,
-                lockScalingY: true,
-                lockUniScaling: true,
-                lockRotation: true
-            }))
-            items.push(new fabric.Rect({
-                top: hue + 400,
-                left: 0,
-                width: canvas.width,
-                height: 11,
-                fill: hueToColor(hue),
-                lockMovementX: true,
-                lockMovementY: true,
-                lockScalingX: true,
-                lockScalingY: true,
-                lockUniScaling: true,
-                lockRotation: true
-            }))
-        }
-
-        fabric.Image.fromURL("resources/icons/male.png", imgLoaded => {
-            const imFabricObj = imgLoaded.set({
-                left: 0,
-                top: 550,
-                width: 50,
-                height: 200,
-                lockMovementX: true,
-                lockMovementY: true,
-                lockScalingX: true,
-                lockScalingY: true,
-                lockUniScaling: true,
-                lockRotation: true
-            })
-            canvas.add(imFabricObj)
-        })
-        fabric.Image.fromURL("resources/icons/female.png", imgLoaded => {
-            const imFabricObj = imgLoaded.set({
-                left: 0,
-                top: 100,
-                width: 50,
-                height: 200,
-                lockMovementX: true,
-                lockMovementY: true,
-                lockScalingX: true,
-                lockScalingY: true,
-                lockUniScaling: true,
-                lockRotation: true
-            })
-            canvas.add(imFabricObj)
-        })
-
-
-        for (let year = 1425; year < 2000; year += 25) {
-            const left = yearToX(year);
-            items.push(new fabric.Text(String(year), {
-                top: canvas.height - 100,
-                left: left + 7,
-                fontSize: 10,
-                fill: 'white',
-                angle: 90
-            }));
-            items.push(new fabric.Rect({
-                top: 0,
-                left: left,
-                width: 1,
-                height: canvas.height - 105,
-                fill: "white"
-            }))
-        }
-
-        
-        canvas.add(...items);
-    }
-
-    makeCanvasBackground();
-
     function yearToX(year) {
         const firstYear = 1400;
         const lastYear = 2000;
-        return (year - firstYear) / (lastYear - firstYear) * canvas.width;
+        return (year - firstYear) / (lastYear - firstYear) * 1400;
     }
 
     function showImage(imageUrl) {
@@ -249,77 +108,215 @@
         });
     }
 
-    function drawData(desc) {
-        const x = yearToX(Number(desc.year));
-        const yImofa = 100;
-        const yImage = 300;
-        const width = 30;
-        const height = 30;
-        if (desc.color != null && desc.color.length != null && desc.color.length > 0) {
-            const imofaQuantaArray = desc.color;
+    function drawPainting(json, canvas) {
 
-            let [hue] = rgb2hsv(imofaQuantaArray[0].red, imofaQuantaArray[0].green, imofaQuantaArray[0].blue)
-            const items = [];
-            //for (let i = 0; i < imofaQuantaArray.length; ++i) {
-            //    const cur = imofaQuantaArray[i];
-            //    const curLeft = width * cur.perc;
-            //    items.push(new fabric.Rect({
-            //        top: hue,
-            //        left: x,
-            //        width: width * cur.perc,
-            //        height: height,
-            //        fill: "rgb(" + Math.floor(cur.red) + "," + Math.floor(cur.green) + "," + Math.floor(cur.blue) + ")"
-            //    }))
-            //}
-            canvas.add(...items);
-
-            if (desc.imageUrl != null) {
-                if (desc.gender === "Male")
-                    hue += 400;
-                fabric.Image.fromURL(desc.imageUrl, imgLoaded => {
-                    const imFabricObj = imgLoaded.set({
-                        left: x,
-                        top: hue,
-                        width: 30,
-                        height: 30,
-                        lockMovementX: true,
-                        lockMovementY: true,
-                        lockScalingX: true,
-                        lockScalingY: true,
-                        lockUniScaling: true,
-                        lockRotation: true
-                    });
-                    imFabricObj.on('selected', function (options) {
-                        showImage(desc.imageUrl);
-                    })
-                    canvas.add(imFabricObj)
-                })
+        function fncParseImofa(imofaStr) {
+            if (imofaStr == null || imofaStr.length === 0) {
+                let imofaQuantaArray = [];
+                return imofaQuantaArray;
             }
-
-
+            let imofaQuantaStrArray = imofaStr.slice(1, imofaStr.length - 1).split(';');
+            const fncParseImofaQuanta = imofaQuantaStr => {
+                const imofaQuantaStrPieces = imofaQuantaStr.split(' ');
+                let imofaQuanta = {};
+                imofaQuanta.perc = Math.min(Math.max(parseFloat(imofaQuantaStrPieces[0]), 0), 255);
+                imofaQuanta.red = Math.min(Math.max(parseFloat(imofaQuantaStrPieces[1]), 0), 255);
+                imofaQuanta.green = Math.min(Math.max(parseFloat(imofaQuantaStrPieces[2]), 0), 255);
+                imofaQuanta.blue = Math.min(Math.max(parseFloat(imofaQuantaStrPieces[3]), 0), 255);
+                return imofaQuanta;
+            };
+            let imofaQuantaArray = [];
+            for (let i = 0; i < imofaQuantaStrArray.length; ++i) {
+                imofaQuanta = fncParseImofaQuanta(imofaQuantaStrArray[i]);
+                let gotIn = false;
+                for (let j = 0; j < i; ++j) {
+                    if (imofaQuantaArray[j].perc < imofaQuanta.perc) {
+                        imofaQuantaArray.splice(j, 0, imofaQuanta);
+                        gotIn = true;
+                        break;
+                    }
+                }
+                if (gotIn === false) {
+                    imofaQuantaArray[i] = imofaQuanta;
+                }
+            }
+            return imofaQuantaArray;
+        };
+        function getData(jsonDescription) {
+            let desc = jsonDescription;
+            if (Object.prototype.hasOwnProperty.call(jsonDescription, 'origin')) {
+                desc = jsonDescription.origin;
+            }
+            return {
+                color: fncParseImofa(desc.imofa),
+                year: desc.Year,
+                gender: desc.Gender,
+                imageUrl: 'data/jpg/' + desc.Filename
+            }
         }
+        function drawData(desc, canvas) {
+            const x = yearToX(Number(desc.year));
+            const yImofa = 100;
+            const yImage = 300;
+            const width = 30;
+            const height = 30;
+            if (desc.color != null && desc.color.length != null && desc.color.length > 0) {
+                const imofaQuantaArray = desc.color;
+
+                let [hue] = rgb2hsv(imofaQuantaArray[0].red, imofaQuantaArray[0].green, imofaQuantaArray[0].blue)
+                const items = [];
+                //for (let i = 0; i < imofaQuantaArray.length; ++i) {
+                //    const cur = imofaQuantaArray[i];
+                //    const curLeft = width * cur.perc;
+                //    items.push(new fabric.Rect({
+                //        top: hue,
+                //        left: x,
+                //        width: width * cur.perc,
+                //        height: height,
+                //        fill: "rgb(" + Math.floor(cur.red) + "," + Math.floor(cur.green) + "," + Math.floor(cur.blue) + ")"
+                //    }))
+                //}
+                canvas.add(...items);
+
+                if (desc.imageUrl != null) {
+                    if (desc.gender === "Male")
+                        hue += 400;
+                    fabric.Image.fromURL(desc.imageUrl, imgLoaded => {
+                        const imFabricObj = imgLoaded.set({
+                            left: x,
+                            top: hue,
+                            width: 30,
+                            height: 30,
+                            lockMovementX: true,
+                            lockMovementY: true,
+                            lockScalingX: true,
+                            lockScalingY: true,
+                            lockUniScaling: true,
+                            lockRotation: true
+                        });
+                        imFabricObj.on('selected', function (options) {
+                            showImage(desc.imageUrl);
+                        })
+                        canvas.add(imFabricObj)
+                    })
+                }
+
+
+            }
+        }
+        drawData(getData(json), canvas);
     }
 
     // get paintings
-    function getFileIndices() {
-        const fileIndices = [];
-        for (let i = 0; i < 20; ++i) {
-            fileIndices.push(Math.floor(Math.random() * 1257));
-        }
-        return fileIndices;
-    }
-
-    function getFiles() {
-        clothFiles(files => {
-            const promises = []
-            getFileIndices().forEach(idx => {
-                promises.push($.getJSON('data/json/' + files[idx]))
-            })
-            Promise.all(promises).then(v => v.forEach(k => drawData(getData(k)))).catch(er => console.error(er));
-        })
-    }
     function run() {
-        getFiles();
+        const filterFiles = (desc) => {
+            return Math.random() > 0.8;
+        }
+
+        function makeCanvasBackground(canvas) {
+            const items = [];
+            function hueToColor(hue) {
+                [red, green, blue] = hslToRgb(hue / 360, 0.5, 0.5);
+                return `rgb(${red},${green},${blue})`
+            }
+
+            for (let hue = 0; hue <= 360; hue += 10) {
+                items.push(new fabric.Rect({
+                    top: hue,
+                    left: 0,
+                    width: canvas.width,
+                    height: 11,
+                    fill: hueToColor(hue),
+                    lockMovementX: true,
+                    lockMovementY: true,
+                    lockScalingX: true,
+                    lockScalingY: true,
+                    lockUniScaling: true,
+                    lockRotation: true
+                }))
+                items.push(new fabric.Rect({
+                    top: hue + 400,
+                    left: 0,
+                    width: canvas.width,
+                    height: 11,
+                    fill: hueToColor(hue),
+                    lockMovementX: true,
+                    lockMovementY: true,
+                    lockScalingX: true,
+                    lockScalingY: true,
+                    lockUniScaling: true,
+                    lockRotation: true
+                }))
+            }
+
+            fabric.Image.fromURL("resources/icons/male.png", imgLoaded => {
+                const imFabricObj = imgLoaded.set({
+                    left: 0,
+                    top: 550,
+                    width: 50,
+                    height: 200,
+                    lockMovementX: true,
+                    lockMovementY: true,
+                    lockScalingX: true,
+                    lockScalingY: true,
+                    lockUniScaling: true,
+                    lockRotation: true
+                })
+                canvas.add(imFabricObj)
+            })
+            fabric.Image.fromURL("resources/icons/female.png", imgLoaded => {
+                const imFabricObj = imgLoaded.set({
+                    left: 0,
+                    top: 100,
+                    width: 50,
+                    height: 200,
+                    lockMovementX: true,
+                    lockMovementY: true,
+                    lockScalingX: true,
+                    lockScalingY: true,
+                    lockUniScaling: true,
+                    lockRotation: true
+                })
+                canvas.add(imFabricObj)
+            })
+
+
+            for (let year = 1425; year < 2000; year += 25) {
+                const left = yearToX(year);
+                items.push(new fabric.Text(String(year), {
+                    top: canvas.height - 100,
+                    left: left + 7,
+                    fontSize: 10,
+                    fill: 'white',
+                    angle: 90
+                }));
+                items.push(new fabric.Rect({
+                    top: 0,
+                    left: left,
+                    width: 1,
+                    height: canvas.height - 105,
+                    fill: "white"
+                }))
+            }
+
+
+            canvas.add(...items);
+        }
+        const canvas = new fabric.Canvas('c');
+        makeCanvasBackground(canvas);
+
+        //
+        clothFiles(files => {
+            Array.from(new Array(1257), (val, index) => index).forEach(idx => {
+                const filepath = 'data/json/' + files[idx];
+                $.getJSON(filepath).then(json => {
+                    if (filterFiles(json))
+                        drawPainting(json, canvas);
+                }).catch(err => {
+                    console.error('Error on painting', filepath, err);
+                });
+            });
+        })
     }
     $(run);
 };
