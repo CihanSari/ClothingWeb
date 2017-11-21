@@ -69,21 +69,32 @@
         return (year - firstYear) / (lastYear - firstYear) * canvas.width;
     }
 
-    function showImage(imageUrl, canvas) {
+    function showImage(imageUrl, canvas, paintingIdx) {
         const dialog = $.confirm({
-            title: 'Image',
+            title: `Painting Index ${paintingIdx}`,
             content: '<image src=' + imageUrl + '/>',
             escapeKey: 'cancel',
             buttons: {
                 cancel: {
                     text: 'Cancel',
-                    action: () => { canvas.deactivateAll().renderAll(); }
-                }
+                    action: () => {
+                        canvas.deactivateAll().renderAll();
+                    }
+                },
+                goRandom: {
+                    text: 'Details in new window',
+                    btnClass: 'btn-primary',
+                    keys: ['enter'],
+                    action: () => {
+                        canvas.deactivateAll().renderAll();
+                        window.open(`${window.location.origin}/?paintingIdx=${String(paintingIdx)}`);
+                    }
+                },
             }
         });
     }
 
-    function drawPainting(json, canvas) {
+    function drawPainting(json, canvas, paintingIdx) {
 
         function fncParseImofa(imofaStr) {
             if (imofaStr == null || imofaStr.length === 0) {
@@ -129,7 +140,7 @@
                 imageUrl: 'data/jpg/' + desc.Filename
             }
         }
-        function drawData(desc, canvas) {
+        function drawData(desc, canvas, paintingIdx) {
             let canvasGender = null;
             let canvasGenderColor = null;
             if (desc.gender === "Male")
@@ -168,7 +179,7 @@
                             lockRotation: true
                         });
                         imFabricObj.on('selected', function (options) {
-                            showImage(desc.imageUrl, canvasGenderColor);
+                            showImage(desc.imageUrl, canvasGenderColor, paintingIdx);
                         })
                         canvasGenderColor.add(imFabricObj);
                     })
@@ -177,7 +188,7 @@
 
             }
         }
-        drawData(getData(json), canvas);
+        drawData(getData(json), canvas, paintingIdx);
     }
 
     // get paintings
@@ -194,7 +205,7 @@
                     top: canvas.yStart,
                     left: left,
                     width: 1,
-                    height: canvas.height + 3,
+                    height: canvas.height - 3,
                     fill: "white"
                 }))
             }
@@ -202,20 +213,20 @@
         }
 
         function addYearTextToCanvas(canvas) {
-            const yearTextHeight = 75;
+            const yearTextHeight = 25;
             const items = [];
             for (let year = 1425; year < 2000; year += 25) {
                 const left = yearToX(year, canvas);
                 items.push(new fabric.Text(String(year), {
-                    top: canvas.height - yearTextHeight,
-                    left: left + 7,
+                    top: canvas.height-5,
+                    left: left - 3,
                     fontSize: 10,
                     fill: 'white',
-                    angle: 90
+                    angle: -90
                 }));
             }
             canvas.add(...items);
-            canvas.height -= yearTextHeight;
+            canvas.height -= (yearTextHeight*2);
         }
 
         function addGenderIconToCanvas(canvas, genderImageUrl) {
@@ -243,7 +254,7 @@
             }
 
             const height = 10;
-            for (let i = 0; i < canvas.height; i += height) {
+            for (let i = 0; i < canvas.height-height; i += height) {
                 const hue = Math.floor(i / canvas.height * 360);
                 items.push(new fabric.Rect({
                     top: i + canvas.yStart,
@@ -265,7 +276,7 @@
         function addMonochromeBackgroundToCanvas(canvas) {
             const items = [];
             const height = 10;
-            for (let i = 0; i < canvas.height; i += height) {
+            for (let i = 0; i < canvas.height - height; i += height) {
                 const monoLight = Math.floor(i / canvas.height * 256);
                 items.push(new fabric.Rect({
                     top: i + canvas.yStart,
@@ -334,7 +345,7 @@
                 const filepath = 'data/json/' + files[idx];
                 $.getJSON(filepath).then(json => {
                     if (filterFiles(json))
-                        drawPainting(json, canvas);
+                        drawPainting(json, canvas, idx);
                 }).catch(err => {
                     console.error('Error on painting', filepath, err);
                 });
