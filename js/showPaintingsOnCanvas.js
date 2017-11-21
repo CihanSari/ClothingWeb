@@ -142,7 +142,7 @@
 
                 let [hue, saturation, value] = rgb2hsv(imofaQuantaArray[0].red, imofaQuantaArray[0].green, imofaQuantaArray[0].blue)
                 let y = null;
-                if (saturation < 0.05) {
+                if (saturation < 0.1) {
                     canvasGenderColor = canvasGender.mono
                     y = value;
                 }
@@ -326,7 +326,11 @@
 
         //
         clothFiles(files => {
-            Array.from(new Array(100), (val, index) => index).forEach(idx => {
+            let nPaintingsToShow = 20;
+            if (window.config.showPaintingsOnCanvas != null && Number(window.config.showPaintingsOnCanvas) > 0) {
+                nPaintingsToShow = Number(window.config.showPaintingsOnCanvas);
+            }
+            Array.from(new Array(nPaintingsToShow), (val, index) => index).forEach(idx => {
                 const filepath = 'data/json/' + files[idx];
                 $.getJSON(filepath).then(json => {
                     if (filterFiles(json))

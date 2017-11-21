@@ -12,7 +12,7 @@
                 window.config[i[1]] = decodeURIComponent(i[2]);
             }
         }());
-        if (window.config['showPaintingsOnCanvas']) {
+        if (window.location.pathname.indexOf('showPaintingsOnCanvas')!==-1 || window.config['showPaintingsOnCanvas']) {
             $(showPaintingsOnCanvas);
         }
         else {
