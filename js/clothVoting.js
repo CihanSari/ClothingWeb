@@ -15,12 +15,12 @@
         let grabcutImg = document.getElementById('grabcut');
 
         grabcutImg.setAttribute("src", window.lastevent.Grabcut);
-        grabcutImg.onmouseout = function () {
-            this.src = window.lastevent.Grabcut;
-        };
-        grabcutImg.onmouseover = function () {
-            this.src = window.lastevent.Original;
-        };
+        //grabcutImg.onmouseout = function () {
+        //    this.src = window.lastevent.Grabcut;
+        //};
+        //grabcutImg.onmouseover = function () {
+        //    this.src = window.lastevent.Original;
+        //};
 
         grabcutImg.onclick = function () {
             let res = {};
@@ -431,12 +431,12 @@
                             window.lastevent.Grabcut = grabcutImgUrl;
                             const grabcutImgDom = document.getElementById('grabcut');
                             grabcutImgDom.src = grabcutImgUrl;
-                            grabcutImgDom.onmouseout = function () {
-                                this.src = grabcutImgUrl;
-                            };
-                            grabcutImgDom.onmouseover = function () {
-                                this.src = originalImageUrl;
-                            };
+                            //grabcutImgDom.onmouseout = function () {
+                            //    this.src = grabcutImgUrl;
+                            //};
+                            //grabcutImgDom.onmouseover = function () {
+                            //    this.src = originalImageUrl;
+                            //};
                             const sizeStyle = '"max-width":' + paintingData.width + '; "max-height": ' + paintingData.height + ';';
                             const fncSetStyleAndClick = dom => {
                                 dom.style.maxWidth = paintingData.width + 'px';
