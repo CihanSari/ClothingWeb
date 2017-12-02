@@ -153,7 +153,7 @@
 
                 let [hue, saturation, value] = rgb2hsv(imofaQuantaArray[0].red, imofaQuantaArray[0].green, imofaQuantaArray[0].blue)
                 let y = null;
-                if (saturation < 0.1) {
+                if (saturation < window.thSaturation) {
                     canvasGenderColor = canvasGender.mono
                     y = value;
                 }
@@ -201,13 +201,20 @@
             const items = [];
             for (let year = 1425; year < 2000; year += 25) {
                 const left = yearToX(year, canvas);
-                items.push(new fabric.Rect({
+
+                const rect = new fabric.Rect({
                     top: canvas.yStart,
                     left: left,
                     width: 1,
                     height: canvas.height - 3,
                     fill: "white"
-                }))
+                });
+
+                rect.on('selected', () => {
+                    canvas.deactivateAll();
+                });
+
+                items.push(rect)
             }
             canvas.add(...items);
         }
@@ -217,16 +224,24 @@
             const items = [];
             for (let year = 1425; year < 2000; year += 25) {
                 const left = yearToX(year, canvas);
-                items.push(new fabric.Text(String(year), {
-                    top: canvas.height-5,
+
+
+                const text = new fabric.Text(String(year), {
+                    top: canvas.height - 5,
                     left: left - 3,
                     fontSize: 10,
                     fill: 'white',
                     angle: -90
-                }));
+                });
+
+                text.on('selected', () => {
+                    canvas.deactivateAll();
+                });
+
+                items.push(text);
             }
             canvas.add(...items);
-            canvas.height -= (yearTextHeight*2);
+            canvas.height -= (yearTextHeight * 2);
         }
 
         function addGenderIconToCanvas(canvas, genderImageUrl) {
@@ -243,6 +258,11 @@
                     lockUniScaling: true,
                     lockRotation: true
                 })
+
+                imFabricObj.on('selected', () => {
+                    canvas.deactivateAll();
+                });
+
                 canvas.add(imFabricObj)
             })
         }
@@ -254,9 +274,10 @@
             }
 
             const height = 10;
-            for (let i = 0; i < canvas.height-height; i += height) {
+            for (let i = 0; i < canvas.height - height; i += height) {
                 const hue = Math.floor(i / canvas.height * 360);
-                items.push(new fabric.Rect({
+
+                const rect = new fabric.Rect({
                     top: i + canvas.yStart,
                     left: 0,
                     width: canvas.width,
@@ -268,7 +289,13 @@
                     lockScalingY: true,
                     lockUniScaling: true,
                     lockRotation: true
-                }))
+                });
+
+                rect.on('selected', () => {
+                    canvas.deactivateAll();
+                });
+
+                items.push(rect)
             }
             canvas.add(...items);
 
@@ -278,7 +305,8 @@
             const height = 10;
             for (let i = 0; i < canvas.height - height; i += height) {
                 const monoLight = Math.floor(i / canvas.height * 256);
-                items.push(new fabric.Rect({
+
+                const rect = new fabric.Rect({
                     top: i + canvas.yStart,
                     left: 0,
                     width: canvas.width,
@@ -290,7 +318,14 @@
                     lockScalingY: true,
                     lockUniScaling: true,
                     lockRotation: true
-                }))
+                });
+
+                rect.on('selected', () => {
+                    canvas.deactivateAll();
+                });
+
+
+                items.push(rect)
             }
             canvas.add(...items);
 
@@ -337,11 +372,40 @@
 
         //
         clothFiles(files => {
-            let nPaintingsToShow = 20;
+            window.nPaintingsToShow = 20;
             if (window.config.showPaintingsOnCanvas != null && Number(window.config.showPaintingsOnCanvas) > 0) {
-                nPaintingsToShow = Number(window.config.showPaintingsOnCanvas);
+                window.nPaintingsToShow = Number(window.config.showPaintingsOnCanvas);
             }
-            Array.from(new Array(nPaintingsToShow), (val, index) => index).forEach(idx => {
+
+            window.thSaturation = 0.1;
+            if (window.config.thSaturation != null && Number(window.config.thSaturation) >= 0) {
+                window.thSaturation = Number(window.config.thSaturation);
+            }
+            
+            $('#editEditor').click(() => {
+                const dialog = $.confirm({
+                    title: `Graph settings`,
+                    content: `<form>Number of paintings to display:<br><input type="number" class="nPaintingsToShow" value="${window.nPaintingsToShow}" max="1257" min="1" step="10"><br><small>High numbers will take a long time!</small><br>Saturation Threshold:<br><input type="number" class="thSaturation" value="${window.thSaturation}" min="0" max="1" step="0.05"></form>`,
+                    escapeKey: 'cancel',
+                    buttons: {
+                        cancel: {
+                            text: 'Cancel'
+                        },
+                        go: {
+                            text: 'Apply changes',
+                            btnClass: 'btn-primary',
+                            keys: ['enter'],
+                            action: function () {
+                                let nPaintingsToShow = this.$content.find('.nPaintingsToShow').val()
+                                let thSaturation = this.$content.find('.thSaturation').val()
+                                console.log(nPaintingsToShow, thSaturation);
+                                window.location.href = `${window.location.origin}${window.location.pathname}?showPaintingsOnCanvas=${this.$content.find('.nPaintingsToShow').val()}&thSaturation=${this.$content.find('.thSaturation').val()}`
+                            }
+                        },
+                    }
+                });
+            });
+            Array.from(new Array(window.nPaintingsToShow), (val, index) => index).forEach(idx => {
                 const filepath = 'data/json/' + files[idx];
                 $.getJSON(filepath).then(json => {
                     if (filterFiles(json))
