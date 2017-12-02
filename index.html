@@ -39,8 +39,8 @@
                     <td class="original"><div id="painting_painter" /></td>
                     <td style="text-align:left" class="surreal">Current Score</td>
                     <td class="surreal"><div id="surrealScore" style="text-align:right" /></td>
-                    <td style="text-align:left" class="grabcut">Current Score</td>
-                    <td class="grabcut"><div id="grabcutScore" style="text-align:right"></div></td>
+                    <td class="grabcut" rowspan="2"><div class="thumbsdown clickable" id="div_thumbsdown"><h5 id="thumbsdown_text">0</h5></div></td>
+                    <td class="grabcut" rowspan="2"><div class="thumbsup clickable" id="div_thumbsup"><h5 id="thumbsup_text">0</h5></div></td>
                     <td style="text-align:left" class="hand">Current Score</td>
                     <td class="hand"><div id="customScore" style="text-align:right"></div></td>
                 </tr>
@@ -48,7 +48,6 @@
                     <td class="original">Title</td>
                     <td class="original"><div id="painting_title" /></td>
                     <td colspan="2" style="text-align:justify" class="surreal"><h5>Please click on the image, if you think this segmentation has captured enough region to extract colors of the clothing.</h5></td>
-                    <td colspan="2" style="text-align:justify" class="grabcut"><h5 id="instructionGrabcut">Please click on the image, if you think this segmentation has captured enough region to extract colors of the clothing.</h5></td>
                     <td colspan="2" style="text-align:justify" class="hand"><h5>Please click on the image, if you think neither segmentation has captured enough region to extract colors of the clothing.</h5></td>
                 </tr>
                 <tr>
@@ -85,11 +84,6 @@
                     <td class="original"><canvas id="paintingImofaPaletteCanvas" width="400" height="80" /></td>
                     <td class="grabcut">Imofa Color Palette</td>
                     <td class="grabcut"><canvas id="grabcutImofaPaletteCanvas" width="400" height="80" /></td>
-                </tr>
-                <tr>
-                    <td class="original" colspan="2"></td>
-                    <td class="grabcut"><div class="thumbsdown clickable" id="div_thumbsdown"></div></td>
-                    <td class="grabcut"><div class="thumbsup clickable" id="div_thumbsup"></div></td>
                 </tr>
             </table>
         </div>

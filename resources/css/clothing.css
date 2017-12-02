@@ -92,7 +92,7 @@ article #loadingcontent h2 {
     line-height: 100%;
 }
 
-    .thumbsdown:before {
+    .thumbsdown:after {
         content: "\1F593 ";
     }
 

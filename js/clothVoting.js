@@ -6,10 +6,15 @@
         originalImage.setAttribute("src", window.lastevent.Original);
 
         if (window.lastevent.json.decision !== undefined) {
-            const grabcutScore = document.getElementById('grabcutScore');
-            grabcutScore.innerText = window.lastevent.json.decision[1];
-        } else {
-            grabcutScore.innerText = 0;
+            const thumbsdownScore = document.getElementById('thumbsdown_text');
+            thumbsdownScore.innerText = window.lastevent.json.decision[2];
+            const thumbsupScore = document.getElementById('thumbsup_text');
+            thumbsupScore.innerText = window.lastevent.json.decision[0];
+		} else {
+            const thumbsdownScore = document.getElementById('thumbsdown_text');
+            thumbsdownScore.innerText = '0';
+            const thumbsupScore = document.getElementById('thumbsup_text');
+            thumbsupScore.innerText = '0';
         }
 
         let grabcutImg = document.getElementById('grabcut');
@@ -323,7 +328,7 @@
         let connectionResolved = false;
         const fncGoToNext = () => {
             const fncGoToPainting = idx => {
-                window.location.href = window.location.origin + '/?loadoffline=true&paintingIdx=' + idx;
+                window.location.href = window.location.origin + '/?paintingIdx=' + idx;
             };
 
             fncGoToPainting(Math.floor(Math.random() * 1257));
@@ -342,7 +347,8 @@
         const fncLoadOffline = () => {
             connectionResolved = true;
             window.isonline = false;
-            $('#status').text('Connection failed. Loading read-only mode...');
+            //$('#status').text('Connection failed. Loading read-only mode...');
+			$('#status').text('Connection established. Loading...');
             window.lastevent = {};
             if (jQuery.isEmptyObject(window.config)) {
                 fncGoToNext();
@@ -456,7 +462,7 @@
                             $('#loadingcontent').css({ 'display': 'none' });
                             $('#content').css({ 'display': 'initial' });
                             $('.hand').css({ 'display': 'none' });
-                            $('#instructionGrabcut').text('WARNING: You are browsing offline version. Please click on the image, to browse to a random image. Click on this text to check if server is back online.');
+                            $('#instructionGrabcut').text('');
                             $('#instructionGrabcut').css({ 'color': 'rgb(237,67,55)' });
                             $('#instructionGrabcut').addClass('clickable');
                             $('#instructionGrabcut').click(() => {
@@ -486,48 +492,48 @@
             $('#content').css({ 'display': 'initial' });
         };
         try {
-            if (window.config['loadoffline']) {
+//            if (window.config['loadoffline']) {
                 fncLoadOffline();
-            }
-            else {
-                ws = new WebSocket("ws://cihansari.com:8080/painting");
-                setTimeout(() => {
-                    if (!connectionResolved) {
-                        delete ws;
-                        fncLoadOffline();
-                    }
-                }, 1500);
-                ws.onmessage = function (evt) {
-                    const fail = function (err) {
-                        if (err !== undefined) {
-                            alert(err);
-                        }
-                        location.reload();
-                    };
-                    try {
-                        let data = JSON.parse(evt.data);
-                        if (data.hasOwnProperty('json') && data.hasOwnProperty('Original')) {
-                            // painting event
-                            window.lastevent = JSON.parse(evt.data);
-                            processPainting(evt);
-                        } else if (data.hasOwnProperty('paintingIdx')) {
-                            // redirection request
-                            window.location.href = window.location.origin + '/?paintingIdx=' + data['paintingIdx'];
-                        } else {
-                            fail('Unknown');
-                        }
-                    }
-                    catch (err) {
-                        fail();
-                    }
-
-                };
-                ws.onopen = fncLoadOnline;
-                ws.onerror = fncLoadOffline;
-                window.onclose = function () {
-                    ws.close();
-                };
-            }
+//            }
+//            else {
+//                ws = new WebSocket("ws://cihansari.com:8080/painting");
+//                setTimeout(() => {
+//                    if (!connectionResolved) {
+//                        delete ws;
+//                        fncLoadOffline();
+//                    }
+//                }, 1500);
+//                ws.onmessage = function (evt) {
+//                    const fail = function (err) {
+//                        if (err !== undefined) {
+//                            alert(err);
+//                        }
+//                        location.reload();
+//                    };
+//                    try {
+//                        let data = JSON.parse(evt.data);
+//                        if (data.hasOwnProperty('json') && data.hasOwnProperty('Original')) {
+//                            // painting event
+//                            window.lastevent = JSON.parse(evt.data);
+//                            processPainting(evt);
+//                        } else if (data.hasOwnProperty('paintingIdx')) {
+//                            // redirection request
+//                            window.location.href = window.location.origin + '/?paintingIdx=' + data['paintingIdx'];
+//                        } else {
+//                            fail('Unknown');
+//                        }
+//                    }
+//                    catch (err) {
+//                        fail();
+//                    }
+//
+//                };
+//                ws.onopen = fncLoadOnline;
+//                ws.onerror = fncLoadOffline;
+//                window.onclose = function () {
+//                    ws.close();
+//                };
+//            }
         }
         catch (ex) {
             fncException();
