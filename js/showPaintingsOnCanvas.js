@@ -73,6 +73,7 @@
         const dialog = $.confirm({
             title: `Painting Index ${paintingIdx}`,
             content: '<image src=' + imageUrl + '/>',
+            backgroundDismiss: true,
             escapeKey: 'cancel',
             buttons: {
                 cancel: {
@@ -381,12 +382,13 @@
             if (window.config.thSaturation != null && Number(window.config.thSaturation) >= 0) {
                 window.thSaturation = Number(window.config.thSaturation);
             }
-            
+
             $('#editEditor').click(() => {
                 const dialog = $.confirm({
                     title: `Graph settings`,
                     content: `<form>Number of paintings to display:<br><input type="number" class="nPaintingsToShow" value="${window.nPaintingsToShow}" max="1257" min="1" step="10"><br><small>High numbers will take a long time!</small><br>Saturation Threshold:<br><input type="number" class="thSaturation" value="${window.thSaturation}" min="0" max="1" step="0.05"></form>`,
                     escapeKey: 'cancel',
+                    backgroundDismiss: true,
                     buttons: {
                         cancel: {
                             text: 'Cancel'

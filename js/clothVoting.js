@@ -57,6 +57,7 @@
                     content: '"Color pallette is worse than original painting in representing the clothing colors."\nDo you want to submit this result and display a random painting ?',
                     type: 'darkred',
                     escapeKey: 'cancel',
+                    backgroundDismiss: true,
                     buttons: {
                         ok: {
                             text: 'Submit',
@@ -82,6 +83,7 @@
                     content: '"Color pallette is better than original painting in representing the clothing colors."\nDo you want to submit this result and display a random painting ?',
                     type: 'darkgreen',
                     escapeKey: 'cancel',
+                    backgroundDismiss: true,
                     buttons: {
                         ok: {
                             text: 'Submit',
