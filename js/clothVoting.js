@@ -1,21 +1,24 @@
 ﻿function queryPainting() {
 
+	function getVotes() {
+		if (window.lastevent.json.decision === undefined) {
+			window.decision=[0,0,0,0];
+		} else if (window.lastevent.json.decision[2]!==undefined) {
+			window.decision=window.lastevent.json.decision;
+		} else if (window.lastevvent.json.decision[""]!==undefined) {
+			window.decision=window.lastevent.json.decision[""];
+		}
+	}
+
     function processPainting() {
         const originalImage = document.getElementById('original');
 
         originalImage.setAttribute("src", window.lastevent.Original);
-
-        if (window.lastevent.json.decision !== undefined) {
-            const thumbsdownScore = document.getElementById('thumbsdown_text');
-            thumbsdownScore.innerText = window.lastevent.json.decision[2];
-            const thumbsupScore = document.getElementById('thumbsup_text');
-            thumbsupScore.innerText = window.lastevent.json.decision[0];
-		} else {
-            const thumbsdownScore = document.getElementById('thumbsdown_text');
-            thumbsdownScore.innerText = '0';
-            const thumbsupScore = document.getElementById('thumbsup_text');
-            thumbsupScore.innerText = '0';
-        }
+		getVotes();
+		const thumbsdownScore = document.getElementById('thumbsdown_text');
+		thumbsdownScore.innerText = window.decision[2];
+		const thumbsupScore = document.getElementById('thumbsup_text');
+		thumbsupScore.innerText = window.decision[0];
 
         let grabcutImg = document.getElementById('grabcut');
 
