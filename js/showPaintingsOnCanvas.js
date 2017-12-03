@@ -1,4 +1,17 @@
 ﻿const showPaintingsOnCanvas = () => {
+	
+	function getVote(desc) {
+		if (desc.origin!==undefined) {
+			desc = desc.origin;
+		}
+		if (desc.decision === undefined) {
+			return [0,0,0,0];
+		} else if (desc.decision[2]!==undefined) {
+			return desc.decision;
+		} else if (desc.decision[""]!==undefined) {
+			return desc.decision[""];
+		}
+	}
 
     function rgb2hsv(r, g, b) {
         var computedH = 0;
@@ -195,6 +208,15 @@
     // get paintings
     function run() {
         const filterFiles = (desc) => {
+			const decision = getVote(desc);
+			const upvote = decision[0] + decision[1];
+			const downvote = decision[2];
+			if (upvote<window.minUpvote) {
+				return false;
+			}
+			else if (window.maxDownvote!==-1 && window.maxDownvote<downvote) {
+				return false;
+			}
             return true;
         }
 
@@ -382,11 +404,29 @@
             if (window.config.thSaturation != null && Number(window.config.thSaturation) >= 0) {
                 window.thSaturation = Number(window.config.thSaturation);
             }
+			
+            window.minUpvote = 0;
+            if (window.config.minUpvote != null && Number(window.config.minUpvote) > 0) {
+                window.minUpvote = Number(window.config.minUpvote);
+            }
+			
+            window.maxDownvote = -1;
+            if (window.config.maxDownvote != null && Number(window.config.maxDownvote) >= 0) {
+                window.maxDownvote = Number(window.config.maxDownvote);
+            }
 
             $('#editEditor').click(() => {
                 const dialog = $.confirm({
                     title: `Graph settings`,
-                    content: `<form>Number of paintings to display:<br><input type="number" class="nPaintingsToShow" value="${window.nPaintingsToShow}" max="1257" min="1" step="10"><br><small>High numbers will take a long time!</small><br>Saturation Threshold:<br><input type="number" class="thSaturation" value="${window.thSaturation}" min="0" max="1" step="0.05"></form>`,
+                    content: `<form>
+					Number of paintings to display:<br>
+					<input type="number" class="nPaintingsToShow" value="${window.nPaintingsToShow}" max="1257" min="1" step="10"><br>
+					<small>High numbers will take a long time!</small><br>
+					Saturation Threshold:<br><input type="number" class="thSaturation" value="${window.thSaturation}" min="0" max="1" step="0.05"><br>
+					Minimum upvote:<br><input type="number" class="minUpvote" value="${window.minUpvote}" min="0"><br>
+					Maximum downvote:<br><input type="number" class="maxDownvote" value="${window.maxDownvote}" min="-1"><br>
+					<small>-1 or stupidly high number to disable!</small>
+					</form>`,
                     escapeKey: 'cancel',
                     backgroundDismiss: true,
                     buttons: {
@@ -400,8 +440,10 @@
                             action: function () {
                                 let nPaintingsToShow = this.$content.find('.nPaintingsToShow').val()
                                 let thSaturation = this.$content.find('.thSaturation').val()
+                                let minUpvote = this.$content.find('.minUpvote').val()
+                                let maxDownvote = this.$content.find('.maxDownvote').val()
                                 console.log(nPaintingsToShow, thSaturation);
-                                window.location.href = `${window.location.origin}${window.location.pathname}?showPaintingsOnCanvas=${this.$content.find('.nPaintingsToShow').val()}&thSaturation=${this.$content.find('.thSaturation').val()}`
+                                window.location.href = `${window.location.origin}${window.location.pathname}?showPaintingsOnCanvas=${nPaintingsToShow}&thSaturation=${thSaturation}&minUpvote=${minUpvote}&maxDownvote=${maxDownvote}`
                             }
                         },
                     }
