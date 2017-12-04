@@ -425,7 +425,7 @@
 					Saturation Threshold:<br><input type="number" class="thSaturation" value="${window.thSaturation}" min="0" max="1" step="0.05"><br>
 					Minimum upvote:<br><input type="number" class="minUpvote" value="${window.minUpvote}" min="0"><br>
 					Maximum downvote:<br><input type="number" class="maxDownvote" value="${window.maxDownvote}" min="-1"><br>
-					<small>-1 or stupidly high number to disable!</small>
+					<small>-1 or very high number to disable!</small>
 					</form>`,
                     escapeKey: 'cancel',
                     backgroundDismiss: true,
