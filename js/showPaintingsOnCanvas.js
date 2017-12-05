@@ -1,4 +1,26 @@
 ﻿const showPaintingsOnCanvas = () => {
+
+	function preprocessJson(desc) {
+		if (!window.years) { 
+			window.years = {
+				femaleList:[],
+				maleList:[]
+			}
+		}
+		if (desc.origin!==undefined) {
+			desc = desc.origin;
+		}
+		const paintingYear = Number(desc.Year);
+		if (paintingYear>0) {
+			const paintingIsFemale = window.lastevent.json.Gender==="Female";
+			if (paintingIsFemale) {
+				window.years.femaleList.push(paintingYear);
+			}
+			else {
+				window.years.maleList.push(paintingYear);
+			}
+		}
+	}
 	
 	function getVote(desc) {
 		if (desc.origin!==undefined) {
@@ -209,6 +231,7 @@
     function run() {
         const filterFiles = (desc) => {
 			const decision = getVote(desc);
+			preprocessJson(desc);
 			const upvote = decision[0] + decision[1];
 			const downvote = decision[2];
 			if (upvote<window.minUpvote) {
