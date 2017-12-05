@@ -466,8 +466,9 @@
 					Saturation Threshold:<br><input type="number" class="thSaturation" value="${window.thSaturation}" min="0" max="1" step="0.05"><br>
 					Minimum upvote:<br><input type="number" class="minUpvote" value="${window.minUpvote}" min="0"><br>
 					Maximum downvote:<br><input type="number" class="maxDownvote" value="${window.maxDownvote}" min="-1"><br>
-					<small>-1 or very high number to disable!</small>
-					Display paintings:<br><input type="checkbox" class="displayPaintings" value="${window.displayPaintings===1}"><br>
+					<small>-1 or very high number to disable!</small><br>
+					Display paintings:<br><input type="number" class="displayPaintings" value="${window.displayPaintings}" min="0" max="1"><br>
+					<small>1 to display thumbnails, 0 to show dots</small>
 					</form>`,
                     escapeKey: 'cancel',
                     backgroundDismiss: true,
