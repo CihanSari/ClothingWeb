@@ -214,11 +214,15 @@
                 if (desc.drawUrl != null) {
 
                     fabric.Image.fromURL(desc.drawUrl, imgLoaded => {
+						let widthheight=30;
+						if (!window.displayPaintings) {
+							widthheight=8;
+						}
                         const imFabricObj = imgLoaded.set({
-                            left: x - 15,
-                            top: y * canvasGenderColor.height - 15 + canvasGenderColor.yStart,
-                            width: 30,
-                            height: 30,
+                            left: x - widthheight/2,
+                            top: y * canvasGenderColor.height - widthheight/2 + canvasGenderColor.yStart,
+                            width: widthheight,
+                            height: widthheight,
                             lockMovementX: true,
                             lockMovementY: true,
                             lockScalingX: true,
