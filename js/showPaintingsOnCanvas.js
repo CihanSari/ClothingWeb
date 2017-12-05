@@ -169,12 +169,24 @@
             if (Object.prototype.hasOwnProperty.call(jsonDescription, 'origin')) {
                 desc = jsonDescription.origin;
             }
-            return {
-                color: fncParseImofa(desc.imofa),
-                year: desc.Year,
-                gender: desc.Gender,
-                imageUrl: 'data/jpg/' + desc.Filename
-            }
+			if (window.displayPaintings===1) {
+				return {
+					color: fncParseImofa(desc.imofa),
+					year: desc.Year,
+					gender: desc.Gender,
+					imageUrl: 'data/jpg/' + desc.Filename,
+					drawUrl: 'data/jpg/' + desc.Filename
+				}
+			}
+			else {
+				return {
+					color: fncParseImofa(desc.imofa),
+					year: desc.Year,
+					gender: desc.Gender,
+					imageUrl: 'data/jpg/' + desc.Filename,
+					drawUrl: 'resources/icons/dot.png'
+				}
+			}
         }
         function drawData(desc, canvas, paintingIdx) {
             let canvasGender = null;
@@ -199,9 +211,9 @@
                 }
                 const x = yearToX(Number(desc.year), canvasGenderColor);
 
-                if (desc.imageUrl != null) {
+                if (desc.drawUrl != null) {
 
-                    fabric.Image.fromURL(desc.imageUrl, imgLoaded => {
+                    fabric.Image.fromURL(desc.drawUrl, imgLoaded => {
                         const imFabricObj = imgLoaded.set({
                             left: x - 15,
                             top: y * canvasGenderColor.height - 15 + canvasGenderColor.yStart,
@@ -437,6 +449,12 @@
             if (window.config.maxDownvote != null && Number(window.config.maxDownvote) >= 0) {
                 window.maxDownvote = Number(window.config.maxDownvote);
             }
+			
+			window.displayPaintings = 1;
+            if (window.config.displayPaintings != null && Number(window.config.displayPaintings) >= 0) {
+                window.displayPaintings = Number(window.config.displayPaintings);
+            }
+			
 
             $('#editEditor').click(() => {
                 const dialog = $.confirm({
@@ -449,6 +467,7 @@
 					Minimum upvote:<br><input type="number" class="minUpvote" value="${window.minUpvote}" min="0"><br>
 					Maximum downvote:<br><input type="number" class="maxDownvote" value="${window.maxDownvote}" min="-1"><br>
 					<small>-1 or very high number to disable!</small>
+					Display paintings:<br><input type="checkbox" class="displayPaintings" value="${window.displayPaintings===1}"><br>
 					</form>`,
                     escapeKey: 'cancel',
                     backgroundDismiss: true,
@@ -461,12 +480,12 @@
                             btnClass: 'btn-primary',
                             keys: ['enter'],
                             action: function () {
-                                let nPaintingsToShow = this.$content.find('.nPaintingsToShow').val()
-                                let thSaturation = this.$content.find('.thSaturation').val()
-                                let minUpvote = this.$content.find('.minUpvote').val()
-                                let maxDownvote = this.$content.find('.maxDownvote').val()
-                                console.log(nPaintingsToShow, thSaturation);
-                                window.location.href = `${window.location.origin}${window.location.pathname}?showPaintingsOnCanvas=${nPaintingsToShow}&thSaturation=${thSaturation}&minUpvote=${minUpvote}&maxDownvote=${maxDownvote}`
+                                const nPaintingsToShow = this.$content.find('.nPaintingsToShow').val()
+                                const thSaturation = this.$content.find('.thSaturation').val()
+                                const minUpvote = this.$content.find('.minUpvote').val()
+                                const maxDownvote = this.$content.find('.maxDownvote').val()
+                                const displayPaintings = this.$content.find('.displayPaintings').val()
+                                window.location.href = `${window.location.origin}${window.location.pathname}?showPaintingsOnCanvas=${nPaintingsToShow}&thSaturation=${thSaturation}&minUpvote=${minUpvote}&maxDownvote=${maxDownvote}&displayPaintings=${displayPaintings}`
                             }
                         },
                     }
