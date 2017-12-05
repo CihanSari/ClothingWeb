@@ -12,7 +12,7 @@
 		}
 		const paintingYear = Number(desc.Year);
 		if (paintingYear>0) {
-			const paintingIsFemale = window.lastevent.json.Gender==="Female";
+			const paintingIsFemale = desc.Gender==="Female";
 			if (paintingIsFemale) {
 				window.years.femaleList.push(paintingYear);
 			}
