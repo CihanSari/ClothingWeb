@@ -1,4 +1,26 @@
 ﻿const showPaintingsOnCanvas = () => {
+
+	function preprocessJson(desc) {
+		if (!window.years) { 
+			window.years = {
+				femaleList:[],
+				maleList:[]
+			}
+		}
+		if (desc.origin!==undefined) {
+			desc = desc.origin;
+		}
+		const paintingYear = Number(desc.Year);
+		if (paintingYear>0) {
+			const paintingIsFemale = desc.Gender==="Female";
+			if (paintingIsFemale) {
+				window.years.femaleList.push(paintingYear);
+			}
+			else {
+				window.years.maleList.push(paintingYear);
+			}
+		}
+	}
 	
 	function getVote(desc) {
 		if (desc.origin!==undefined) {
@@ -147,12 +169,24 @@
             if (Object.prototype.hasOwnProperty.call(jsonDescription, 'origin')) {
                 desc = jsonDescription.origin;
             }
-            return {
-                color: fncParseImofa(desc.imofa),
-                year: desc.Year,
-                gender: desc.Gender,
-                imageUrl: 'data/jpg/' + desc.Filename
-            }
+			if (window.displayPaintings===1) {
+				return {
+					color: fncParseImofa(desc.imofa),
+					year: desc.Year,
+					gender: desc.Gender,
+					imageUrl: 'data/jpg/' + desc.Filename,
+					drawUrl: 'data/jpg/' + desc.Filename
+				}
+			}
+			else {
+				return {
+					color: fncParseImofa(desc.imofa),
+					year: desc.Year,
+					gender: desc.Gender,
+					imageUrl: 'data/jpg/' + desc.Filename,
+					drawUrl: 'resources/icons/dot.png'
+				}
+			}
         }
         function drawData(desc, canvas, paintingIdx) {
             let canvasGender = null;
@@ -177,14 +211,18 @@
                 }
                 const x = yearToX(Number(desc.year), canvasGenderColor);
 
-                if (desc.imageUrl != null) {
+                if (desc.drawUrl != null) {
 
-                    fabric.Image.fromURL(desc.imageUrl, imgLoaded => {
+                    fabric.Image.fromURL(desc.drawUrl, imgLoaded => {
+						let widthheight=30;
+						if (!window.displayPaintings) {
+							widthheight=8;
+						}
                         const imFabricObj = imgLoaded.set({
-                            left: x - 15,
-                            top: y * canvasGenderColor.height - 15 + canvasGenderColor.yStart,
-                            width: 30,
-                            height: 30,
+                            left: x - widthheight/2,
+                            top: y * canvasGenderColor.height - widthheight/2 + canvasGenderColor.yStart,
+                            width: widthheight,
+                            height: widthheight,
                             lockMovementX: true,
                             lockMovementY: true,
                             lockScalingX: true,
@@ -209,6 +247,7 @@
     function run() {
         const filterFiles = (desc) => {
 			const decision = getVote(desc);
+			preprocessJson(desc);
 			const upvote = decision[0] + decision[1];
 			const downvote = decision[2];
 			if (upvote<window.minUpvote) {
@@ -414,6 +453,12 @@
             if (window.config.maxDownvote != null && Number(window.config.maxDownvote) >= 0) {
                 window.maxDownvote = Number(window.config.maxDownvote);
             }
+			
+			window.displayPaintings = 1;
+            if (window.config.displayPaintings != null && Number(window.config.displayPaintings) >= 0) {
+                window.displayPaintings = Number(window.config.displayPaintings);
+            }
+			
 
             $('#editEditor').click(() => {
                 const dialog = $.confirm({
@@ -425,7 +470,9 @@
 					Saturation Threshold:<br><input type="number" class="thSaturation" value="${window.thSaturation}" min="0" max="1" step="0.05"><br>
 					Minimum upvote:<br><input type="number" class="minUpvote" value="${window.minUpvote}" min="0"><br>
 					Maximum downvote:<br><input type="number" class="maxDownvote" value="${window.maxDownvote}" min="-1"><br>
-					<small>-1 or stupidly high number to disable!</small>
+					<small>-1 or very high number to disable!</small><br>
+					Display paintings:<br><input type="number" class="displayPaintings" value="${window.displayPaintings}" min="0" max="1"><br>
+					<small>1 to display thumbnails, 0 to show dots</small>
 					</form>`,
                     escapeKey: 'cancel',
                     backgroundDismiss: true,
@@ -438,12 +485,12 @@
                             btnClass: 'btn-primary',
                             keys: ['enter'],
                             action: function () {
-                                let nPaintingsToShow = this.$content.find('.nPaintingsToShow').val()
-                                let thSaturation = this.$content.find('.thSaturation').val()
-                                let minUpvote = this.$content.find('.minUpvote').val()
-                                let maxDownvote = this.$content.find('.maxDownvote').val()
-                                console.log(nPaintingsToShow, thSaturation);
-                                window.location.href = `${window.location.origin}${window.location.pathname}?showPaintingsOnCanvas=${nPaintingsToShow}&thSaturation=${thSaturation}&minUpvote=${minUpvote}&maxDownvote=${maxDownvote}`
+                                const nPaintingsToShow = this.$content.find('.nPaintingsToShow').val()
+                                const thSaturation = this.$content.find('.thSaturation').val()
+                                const minUpvote = this.$content.find('.minUpvote').val()
+                                const maxDownvote = this.$content.find('.maxDownvote').val()
+                                const displayPaintings = this.$content.find('.displayPaintings').val()
+                                window.location.href = `${window.location.origin}${window.location.pathname}?showPaintingsOnCanvas=${nPaintingsToShow}&thSaturation=${thSaturation}&minUpvote=${minUpvote}&maxDownvote=${maxDownvote}&displayPaintings=${displayPaintings}`
                             }
                         },
                     }

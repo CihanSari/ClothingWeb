@@ -178,6 +178,7 @@
             painting_year.innerText = window.lastevent.json.Year;
         }
 
+		/*
         // Color Thief grabcut
         {
             let img = new Image;
@@ -247,6 +248,7 @@
             };
             img.src = window.lastevent.Original;
         }
+		*/
 
 
         // k-means grabcut
@@ -357,7 +359,7 @@
 
     let ws;
     function run() {
-        window.colorthief = new ColorThief();
+        //window.colorthief = new ColorThief();
         let connectionResolved = false;
         const fncGoToNext = () => {
             const fncGoToPainting = idx => {
