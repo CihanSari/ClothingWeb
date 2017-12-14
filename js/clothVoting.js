@@ -248,6 +248,36 @@
             img.src = window.lastevent.Original;
         }
 
+
+        // k-means grabcut
+        {
+            let img = new Image;
+            img.onload = function () {
+				var c = document.getElementById("myCanvas");
+				var ctx = c.getContext("2d");
+				ctx.drawImage(img, 0, 0);
+
+				
+				var imgData = ctx.getImageData(0, 0, img.width, img.height);
+				// invert colors
+				const colors = [];
+				for (var i = 0; i < imgData.data.length; i += 4)
+				{
+					const color = [];
+					if (imgData.data[i+3]>.5) {
+						color.push(imgData.data[i]);
+						color.push(imgData.data[i+1]);
+						color.push(imgData.data[i+2]);
+						colors.push(color);
+					}
+				}
+				const kRes = kmeans(colors, {k:10});
+				console.log(kRes);
+				kRes.centroids.forEach(a=>console.log(a.location()));
+            };
+            img.src = window.lastevent.Grabcut;
+        }
+
         const fncParseImofa = imofaStr => {
             if (imofaStr === undefined) {
                 let imofaQuanta = {};
