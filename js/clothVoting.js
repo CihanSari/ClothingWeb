@@ -1,24 +1,24 @@
 ﻿function queryPainting() {
 
-	function getVotes() {
-		if (window.lastevent.json.decision === undefined) {
-			window.decision=[0,0,0,0];
-		} else if (window.lastevent.json.decision[2]!==undefined) {
-			window.decision=window.lastevent.json.decision;
-		} else if (window.lastevent.json.decision[""]!==undefined) {
-			window.decision=window.lastevent.json.decision[""];
-		}
-	}
+    function getVotes() {
+        if (window.lastevent.json.decision === undefined) {
+            window.decision = [0, 0, 0, 0];
+        } else if (window.lastevent.json.decision[2] !== undefined) {
+            window.decision = window.lastevent.json.decision;
+        } else if (window.lastevent.json.decision[""] !== undefined) {
+            window.decision = window.lastevent.json.decision[""];
+        }
+    }
 
     function processPainting() {
         const originalImage = document.getElementById('original');
 
         originalImage.setAttribute("src", window.lastevent.Original);
-		getVotes();
-		const thumbsdownScore = document.getElementById('thumbsdown_text');
-		thumbsdownScore.innerText = window.decision[2];
-		const thumbsupScore = document.getElementById('thumbsup_text');
-		thumbsupScore.innerText = window.decision[1]+window.decision[0];
+        getVotes();
+        const thumbsdownScore = document.getElementById('thumbsdown_text');
+        thumbsdownScore.innerText = window.decision[2];
+        const thumbsupScore = document.getElementById('thumbsup_text');
+        thumbsupScore.innerText = window.decision[1] + window.decision[0];
 
         let grabcutImg = document.getElementById('grabcut');
 
@@ -255,27 +255,50 @@
         {
             let img = new Image;
             img.onload = function () {
-				var c = document.getElementById("myCanvas");
-				var ctx = c.getContext("2d");
-				ctx.drawImage(img, 0, 0);
+                var c = document.getElementById("myCanvas");
+                var ctx = c.getContext("2d");
+                ctx.drawImage(img, 0, 0);
 
-				
-				var imgData = ctx.getImageData(0, 0, img.width, img.height);
-				// invert colors
-				const colors = [];
-				for (var i = 0; i < imgData.data.length; i += 4)
-				{
-					const color = [];
-					if (imgData.data[i+3]>.5) {
-						color.push(imgData.data[i]);
-						color.push(imgData.data[i+1]);
-						color.push(imgData.data[i+2]);
-						colors.push(color);
-					}
-				}
-				const kRes = kmeans(colors, {k:10});
-				console.log(kRes);
-				kRes.centroids.forEach(a=>console.log(a.location()));
+
+                var imgData = ctx.getImageData(0, 0, img.width, img.height);
+                // invert colors
+                const colorPoints = [];
+                for (var i = 0; i < imgData.data.length; i += 4) {
+                    const color = [];
+                    if (imgData.data[i + 3] > .5) {
+                        color.push(imgData.data[i]);
+                        color.push(imgData.data[i + 1]);
+                        color.push(imgData.data[i + 2]);
+                        colorPoints.push(color);
+                    }
+                }
+                const setDomResult = (el, k) => {
+                    const calcDomColor = (k) => {
+                        const kRes = kmeans(colorPoints, { k: k, iterations: 5 });
+
+                        const bestRes = {
+                            centroid: null,
+                            count: -1
+                        };
+                        kRes.centroids.forEach(centroid => {
+                            const pointsWithThisCentroid = kRes.points.filter(function (point) { return point.label() == centroid.label() });
+                            if (bestRes.count < pointsWithThisCentroid.length) {
+                                bestRes.count = pointsWithThisCentroid.length;
+                                bestRes.centroid = centroid;
+                            }
+                        });
+                        bestRes.location = bestRes.centroid.location();
+                        bestRes.label = bestRes.centroid.label();
+                        return bestRes;
+                    };
+                    const res = calcDomColor(k);
+                    const color = '#'+Math.floor(res.location[0]).toString(16)+Math.floor(res.location[1]).toString(16)+Math.floor(res.location[2]).toString(16)
+                    el.value = color;
+                    el.disabled=false;
+                };
+                setDomResult(document.getElementById('k02'), 2);
+                setDomResult(document.getElementById('k05'), 5);
+                setDomResult(document.getElementById('k08'), 8);
             };
             img.src = window.lastevent.Grabcut;
         }
@@ -322,6 +345,12 @@
 
         {// Imofa color
             let imofaQuantaArray = fncParseImofa(window.lastevent.json.imofa);
+            
+            const el = document.getElementById('imo');
+
+            const color = '#'+Math.floor(imofaQuantaArray[0][0]).toString(16)+Math.floor(imofaQuantaArray[0][1]).toString(16)+Math.floor(imofaQuantaArray[0][2]).toString(16)
+            el.value = color;
+            el.disabled=false;
 
             const c = document.getElementById("grabcutImofaPaletteCanvas");
             const ctx = c.getContext("2d");
@@ -383,7 +412,7 @@
             connectionResolved = true;
             window.isonline = false;
             //$('#status').text('Connection failed. Loading read-only mode...');
-			$('#status').text('Connection established. Loading...');
+            $('#status').text('Connection established. Loading...');
             window.lastevent = {};
             if (jQuery.isEmptyObject(window.config)) {
                 fncGoToNext();
@@ -527,48 +556,48 @@
             $('#content').css({ 'display': 'initial' });
         };
         try {
-//            if (window.config['loadoffline']) {
-                fncLoadOffline();
-//            }
-//            else {
-//                ws = new WebSocket("ws://cihansari.com:8080/painting");
-//                setTimeout(() => {
-//                    if (!connectionResolved) {
-//                        delete ws;
-//                        fncLoadOffline();
-//                    }
-//                }, 1500);
-//                ws.onmessage = function (evt) {
-//                    const fail = function (err) {
-//                        if (err !== undefined) {
-//                            alert(err);
-//                        }
-//                        location.reload();
-//                    };
-//                    try {
-//                        let data = JSON.parse(evt.data);
-//                        if (data.hasOwnProperty('json') && data.hasOwnProperty('Original')) {
-//                            // painting event
-//                            window.lastevent = JSON.parse(evt.data);
-//                            processPainting(evt);
-//                        } else if (data.hasOwnProperty('paintingIdx')) {
-//                            // redirection request
-//                            window.location.href = window.location.origin + '/?paintingIdx=' + data['paintingIdx'];
-//                        } else {
-//                            fail('Unknown');
-//                        }
-//                    }
-//                    catch (err) {
-//                        fail();
-//                    }
-//
-//                };
-//                ws.onopen = fncLoadOnline;
-//                ws.onerror = fncLoadOffline;
-//                window.onclose = function () {
-//                    ws.close();
-//                };
-//            }
+            //            if (window.config['loadoffline']) {
+            fncLoadOffline();
+            //            }
+            //            else {
+            //                ws = new WebSocket("ws://cihansari.com:8080/painting");
+            //                setTimeout(() => {
+            //                    if (!connectionResolved) {
+            //                        delete ws;
+            //                        fncLoadOffline();
+            //                    }
+            //                }, 1500);
+            //                ws.onmessage = function (evt) {
+            //                    const fail = function (err) {
+            //                        if (err !== undefined) {
+            //                            alert(err);
+            //                        }
+            //                        location.reload();
+            //                    };
+            //                    try {
+            //                        let data = JSON.parse(evt.data);
+            //                        if (data.hasOwnProperty('json') && data.hasOwnProperty('Original')) {
+            //                            // painting event
+            //                            window.lastevent = JSON.parse(evt.data);
+            //                            processPainting(evt);
+            //                        } else if (data.hasOwnProperty('paintingIdx')) {
+            //                            // redirection request
+            //                            window.location.href = window.location.origin + '/?paintingIdx=' + data['paintingIdx'];
+            //                        } else {
+            //                            fail('Unknown');
+            //                        }
+            //                    }
+            //                    catch (err) {
+            //                        fail();
+            //                    }
+            //
+            //                };
+            //                ws.onopen = fncLoadOnline;
+            //                ws.onerror = fncLoadOffline;
+            //                window.onclose = function () {
+            //                    ws.close();
+            //                };
+            //            }
         }
         catch (ex) {
             fncException();
