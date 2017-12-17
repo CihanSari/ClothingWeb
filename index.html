@@ -30,16 +30,16 @@
                     <td colspan="2" class="hand"><h4>Hand segmentation (N/A)</h4></td>
                 </tr>
                 <tr>
-                    <td colspan="2" class="original"><img id="original" /></td>
-                    <td colspan="2" class="surreal"><img id="surreal" class="clickable" /></td>
-                    <td colspan="2" class="grabcut"><img id="grabcut" class="clickable" /></td>
-                    <td colspan="2" class="hand"><img id="custom" class="clickable" /></td>
+                    <td colspan="2" class="original"><img id="original"></img></td>
+                    <td colspan="2" class="surreal"><img id="surreal" class="clickable"></img></td>
+                    <td colspan="2" class="grabcut"><img id="grabcut" class="clickable"></img></td>
+                    <td colspan="2" class="hand"><img id="custom" class="clickable"></img></td>
                 </tr>
                 <tr>
                     <td class="original">Artist</td>
-                    <td class="original"><div id="painting_painter" /></td>
+                    <td class="original"><div id="painting_painter"></div></td>
                     <td style="text-align:left" class="surreal">Current Score</td>
-                    <td class="surreal"><div id="surrealScore" style="text-align:right" /></td>
+                    <td class="surreal"><div id="surrealScore" style="text-align:right"></div></td>
                     <td class="grabcut" rowspan="2"><div class="thumbsdown clickable" id="div_thumbsdown"><h5 id="thumbsdown_text">0</h5></div></td>
                     <td class="grabcut" rowspan="2"><div class="thumbsup clickable" id="div_thumbsup"><h5 id="thumbsup_text">0</h5></div></td>
                     <td style="text-align:left" class="hand">Current Score</td>
@@ -47,13 +47,13 @@
                 </tr>
                 <tr>
                     <td class="original">Title</td>
-                    <td class="original"><div id="painting_title" /></td>
+                    <td class="original"><div id="painting_title"></div></td>
                     <td colspan="2" style="text-align:justify" class="surreal"><h5>Place holder.</h5></td>
                     <td colspan="2" style="text-align:justify" class="hand"><h5>Place holder.</h5></td>
                 </tr>
                 <tr>
                     <td class="original">Year</td>
-                    <td class="original"><div id="painting_year" /></td>
+                    <td class="original"><div id="painting_year"></div></td>
                     <td class="surreal" colspan="2" rowspan="2" style="text-align:justify">
                         <h5>Place holder.</h5>
                     </td>
@@ -66,7 +66,7 @@
                 </tr>
                 <tr>
                     <td class="original">Gender</td>
-                    <td class="original"><div id="painting_gender" /></td>
+                    <td class="original"><div id="painting_gender"></div></td>
                 </tr>
                 <!--<tr>
                     <td class="original">Color Thief Dominant</td>
@@ -80,7 +80,7 @@
                     <td class="grabcut">Color Thief Palette</td>
                     <td class="grabcut"><canvas id="grabcutThiefPaletteCanvas" width="400" height="80" /></td>
                 </tr>-->
-                <tr>
+                <tr id="imofapalette" style="display:none;">
                     <td class="original">Imofa Color Palette</td>
                     <td class="original"><canvas id="paintingImofaPaletteCanvas" width="400" height="80" /></td>
                     <td class="grabcut">Imofa Color Palette</td>
@@ -89,12 +89,12 @@
                 <tr>
                     <td class="original"></td>
                     <td class="original"></td>
-                    <td class="grabcut">k-Means with k=2, 5 and 8</td>
+                    <td class="grabcut">Dominant color</td>
                     <td class="grabcut"><form>
-                        k=2:   <input type="color" name="k02" id="k02" disabled><br>
-                        k=5:   <input type="color" name="k05" id="k05" disabled><br>
-                        k=8:   <input type="color" name="k08" id="k08" disabled><br>
-                        IMoFA: <input type="color" name="imo" id="imo" disabled>
+                        k=2<input type="color" name="k02" id="k02" style="width:50px; height:50px;" disabled>
+                        k=5<input type="color" name="k05" id="k05" style="width:50px; height:50px;" disabled><br>
+                        k=8 <input type="color" name="k08" id="k08" style="width:50px; height:50px;" disabled>
+                        IMoFA <input type="color" name="imo" id="imo" style="width:50px; height:50px;" disabled>
                     </form></td>
                 </tr>
             </table>

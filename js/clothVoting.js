@@ -1,5 +1,24 @@
 ﻿function queryPainting() {
 
+    function showPalette() {
+        if (window.config.showImofa!=null) {
+            document.getElementById("imofapalette").style="";
+        }
+    }
+
+    function rgbToHex(red, green, blue) {
+        function cToHex(c) {
+            const h = Math.floor(c).toString(16);
+            if (h.length<2) {
+                return '0'+h;
+            }
+            else {
+                return h;
+            }
+        };
+        return '#'+cToHex(red)+cToHex(green)+cToHex(blue);
+    }
+
     function getVotes() {
         if (window.lastevent.json.decision === undefined) {
             window.decision = [0, 0, 0, 0];
@@ -292,7 +311,7 @@
                         return bestRes;
                     };
                     const res = calcDomColor(k);
-                    const color = '#'+Math.floor(res.location[0]).toString(16)+Math.floor(res.location[1]).toString(16)+Math.floor(res.location[2]).toString(16)
+                    const color = rgbToHex(res.location[0], res.location[1], res.location[2]);
                     el.value = color;
                     el.disabled=false;
                 };
@@ -342,13 +361,13 @@
             }
             return imofaQuantaArray;
         };
-
+        
         {// Imofa color
             let imofaQuantaArray = fncParseImofa(window.lastevent.json.imofa);
             
             const el = document.getElementById('imo');
 
-            const color = '#'+Math.floor(imofaQuantaArray[0][0]).toString(16)+Math.floor(imofaQuantaArray[0][1]).toString(16)+Math.floor(imofaQuantaArray[0][2]).toString(16)
+            const color = rgbToHex(imofaQuantaArray[0].red, imofaQuantaArray[0].green, imofaQuantaArray[0].blue);
             el.value = color;
             el.disabled=false;
 
@@ -365,6 +384,7 @@
                 lastWidth += curWidth;
                 ctx.stroke();
             }
+            showPalette();
         } // Dominant color in Grabcut
 
         { // Dominant color in painting
