@@ -506,7 +506,7 @@
         window.nPaintingsToShow = Number(window.config.showPaintingsOnCanvas);
       }
 
-      window.thSaturation = 0.1;
+      window.thSaturation = 0.05;
       if (window.config.thSaturation != null && Number(window.config.thSaturation) >= 0) {
         window.thSaturation = Number(window.config.thSaturation);
       }
@@ -550,7 +550,7 @@
                       Display paintings:<br><input type="number" class="displayPaintings" value="${window.displayPaintings}" min="0" max="1"><br>
                       <small>1 to display thumbnails, 0 to show dots</small>
                       Color extraction method:<br><input type="text" class="clustering" value="${window.clustering}"><br>
-                      <small>Valid values: imofa, annotated</small>
+                      <small>Valid values: imofa, annotated, k2, k5, k8</small>
                       </form>`,
           escapeKey: 'cancel',
           backgroundDismiss: true,
