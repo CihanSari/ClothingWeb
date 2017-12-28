@@ -501,11 +501,6 @@
     }
 
     function prepareDisplay() {
-      window.nPaintingsToShow = 20;
-      if (window.config.showPaintingsOnCanvas != null && Number(window.config.showPaintingsOnCanvas) > 0) {
-        window.nPaintingsToShow = Number(window.config.showPaintingsOnCanvas);
-      }
-
       window.thSaturation = 0.05;
       if (window.config.thSaturation != null && Number(window.config.thSaturation) >= 0) {
         window.thSaturation = Number(window.config.thSaturation);
@@ -550,7 +545,7 @@
                       Display paintings:<br><input type="number" class="displayPaintings" value="${window.displayPaintings}" min="0" max="1"><br>
                       <small>1 to display thumbnails, 0 to show dots</small>
                       Color extraction method:<br><input type="text" class="clustering" value="${window.clustering}"><br>
-                      <small>Valid values: imofa, annotated, k2, k5, k8</small>
+                      <small>Valid values: imofa, annotated, k2, k5, k8, k11, k14, k17</small>
                       </form>`,
           escapeKey: 'cancel',
           backgroundDismiss: true,
@@ -563,7 +558,6 @@
               btnClass: 'btn-primary',
               keys: ['enter'],
               action: function () {
-                const nPaintingsToShow = this.$content.find('.nPaintingsToShow').val()
                 const thSaturation = this.$content.find('.thSaturation').val()
                 const thIntensity = this.$content.find('.thIntensity').val()
                 const minUpvote = this.$content.find('.minUpvote').val()
@@ -669,7 +663,7 @@
           }
         });
       }
-      else if (window.clustering == "k2" || window.clustering == "k5" || window.clustering == "k8") {
+      else if (window.clustering == "k2" || window.clustering == "k5" || window.clustering == "k8" || window.clustering == "k11" || window.clustering == "k14" || window.clustering == "k17") {
         $.getJSON('data/json/filesKMeans.json', annotatedFileList => {
           for (let i = 0; i < annotatedFileList.length; i += 1) {
             const idxFiles = annotatedFileList[i].Index;
@@ -681,6 +675,15 @@
             }
             else if (window.clustering == "k8") {
               displayByIdx('data/json/' + files[idxFiles], canvas, idxFiles, getDominantColorFromH1H2SI(annotatedFileList[i].kMeans[2].domColor));
+            }
+            else if (window.clustering == "k11") {
+              displayByIdx('data/json/' + files[idxFiles], canvas, idxFiles, getDominantColorFromH1H2SI(annotatedFileList[i].kMeans[3].domColor));
+            }
+            else if (window.clustering == "k14") {
+              displayByIdx('data/json/' + files[idxFiles], canvas, idxFiles, getDominantColorFromH1H2SI(annotatedFileList[i].kMeans[4].domColor));
+            }
+            else if (window.clustering == "k17") {
+              displayByIdx('data/json/' + files[idxFiles], canvas, idxFiles, getDominantColorFromH1H2SI(annotatedFileList[i].kMeans[5].domColor));
             }
             else {
               alert(`Unknown option: clustering=${window.clustering}`);
