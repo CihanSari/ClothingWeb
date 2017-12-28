@@ -301,12 +301,14 @@
       else {
         canvasGender = canvas.female;
       }
+      let hueCanvas=true;
       if (desc.color != null && desc.color.length != null && desc.color.length > 0) {
         let [hue, saturation, intensity] = desc.color;
         let y = null;
         if (saturation < window.thSaturation || intensity < window.thIntensity) {
           canvasGenderColor = canvasGender.mono
           y = intensity;
+          hueCanvas=false;
         }
         else {
           canvasGenderColor = canvasGender.hsv
@@ -357,7 +359,7 @@
             top: y * canvasGenderColor.height - widthheight / 2 + canvasGenderColor.yStart,
             width: widthheight,
             height: widthheight,
-            fill: hueToColor(hue),
+            fill: hueCanvas?hueToColor(hue):`rgb(${Math.round(intensity*255)},${Math.round(intensity*255)},${Math.round(intensity*255)})`,
             lockMovementX: true,
             lockMovementY: true,
             lockScalingX: true,
