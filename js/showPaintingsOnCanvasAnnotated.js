@@ -118,68 +118,17 @@
     return [backR, backG, backB];
   }
 
-  // function rgb2hsv(r, g, b) {
-  //   var computedH = 0;
-  //   var computedS = 0;
-  //   var computedV = 0;
-
-  //   //remove spaces from input RGB values, convert to int
-  //   var r = parseInt(('' + r).replace(/\s/g, ''), 10);
-  //   var g = parseInt(('' + g).replace(/\s/g, ''), 10);
-  //   var b = parseInt(('' + b).replace(/\s/g, ''), 10);
-
-  //   if (r == null || g == null || b == null ||
-  //     isNaN(r) || isNaN(g) || isNaN(b)) {
-  //     alert('Please enter numeric RGB values!');
-  //     return;
-  //   }
-  //   if (r < 0 || g < 0 || b < 0 || r > 255 || g > 255 || b > 255) {
-  //     alert('RGB values must be in the range 0 to 255.');
-  //     return;
-  //   }
-  //   r = r / 255; g = g / 255; b = b / 255;
-  //   var minRGB = Math.min(r, Math.min(g, b));
-  //   var maxRGB = Math.max(r, Math.max(g, b));
-
-  //   // Black-gray-white
-  //   if (minRGB == maxRGB) {
-  //     computedV = minRGB;
-  //     return [0, 0, computedV];
-  //   }
-
-  //   // Colors other than black-gray-white:
-  //   var d = (r == minRGB) ? g - b : ((b == minRGB) ? r - g : b - r);
-  //   var h = (r == minRGB) ? 3 : ((b == minRGB) ? 1 : 5);
-  //   computedH = 60 * (h - d / (maxRGB - minRGB));
-  //   computedS = (maxRGB - minRGB) / maxRGB;
-  //   computedV = maxRGB;
-  //   return [computedH, computedS, computedV];
-  // }
-
-  // function hslToRgb(h, s, l) {
-  //   var r, g, b;
-
-  //   if (s == 0) {
-  //     r = g = b = l; // achromatic
-  //   } else {
-  //     var hue2rgb = function hue2rgb(p, q, t) {
-  //       if (t < 0) t += 1;
-  //       if (t > 1) t -= 1;
-  //       if (t < 1 / 6) return p + (q - p) * 6 * t;
-  //       if (t < 1 / 2) return q;
-  //       if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
-  //       return p;
-  //     }
-
-  //     var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
-  //     var p = 2 * l - q;
-  //     r = hue2rgb(p, q, h + 1 / 3);
-  //     g = hue2rgb(p, q, h);
-  //     b = hue2rgb(p, q, h - 1 / 3);
-  //   }
-
-  //   return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
-  // }
+  function checkIfHue(hue, saturation, intensity) {
+    if (saturation < window.thSaturation || intensity < window.thIntensityDark || intensity > window.thIntensityBright) {
+      return false;
+    }
+    else if (saturation < window.thSaturationHigh) {
+      if ((intensity < window.thIntensityDarkHigh) || (intensity > window.thIntensityBrightLow)) {
+        return false;
+      }
+    }
+    return true;
+  }
 
   function yearToX(year, canvas) {
     const firstYear = 1400;
@@ -301,22 +250,22 @@
       else {
         canvasGender = canvas.female;
       }
-      let hueCanvas=true;
+      let hueCanvas = true;
       if (desc.color != null && desc.color.length != null && desc.color.length > 0) {
         let [hue, saturation, intensity] = desc.color;
         let y = null;
-        if (saturation < window.thSaturation || intensity < window.thIntensity) {
-          canvasGenderColor = canvasGender.mono
-          y = intensity;
-          hueCanvas=false;
-        }
-        else {
+        if (checkIfHue(hue, saturation, intensity)) {
           canvasGenderColor = canvasGender.hsv
           while (hue < 0)
             hue += 360;
           while (hue > 360)
             hue -= 360;
           y = hue / 360;
+        }
+        else {
+          canvasGenderColor = canvasGender.mono
+          y = intensity;
+          hueCanvas = false;
         }
         const x = yearToX(Number(desc.year), canvasGenderColor);
 
@@ -346,7 +295,7 @@
             })
           }
         }
-        else if (window.graphMethod == 'patchHue') {
+        else if (window.graphMethod == 'hue') {
           let widthheight = 16;
 
           function hueToColor(hue) {
@@ -359,7 +308,7 @@
             top: y * canvasGenderColor.height - widthheight / 2 + canvasGenderColor.yStart,
             width: widthheight,
             height: widthheight,
-            fill: hueCanvas?hueToColor(hue):`rgb(${Math.round(intensity*255)},${Math.round(intensity*255)},${Math.round(intensity*255)})`,
+            fill: hueCanvas ? hueToColor(hue) : `rgb(${Math.round(intensity * 255)},${Math.round(intensity * 255)},${Math.round(intensity * 255)})`,
             lockMovementX: true,
             lockMovementY: true,
             lockScalingX: true,
@@ -372,7 +321,7 @@
           })
           canvasGenderColor.add(rect);
         }
-        else if (window.graphMethod == 'patchHSI') {
+        else if (window.graphMethod == 'color') {
           let widthheight = 16;
           function hsiToColor(hue, saturation, intensity) {
             [red, green, blue] = hsi2rgb(hue, saturation, intensity);
@@ -566,9 +515,30 @@
         window.thSaturation = Number(window.config.thSaturation);
       }
 
-      window.thIntensity = 0.1;
-      if (window.config.thIntensity != null && Number(window.config.thIntensity) >= 0) {
-        window.thIntensity = Number(window.config.thIntensity);
+
+      window.thSaturationHigh = 0.15;
+      if (window.config.thSaturationHigh != null && Number(window.config.thSaturationHigh) >= 0) {
+        window.thSaturationHigh = Number(window.config.thSaturationHigh);
+      }
+
+      window.thIntensityDark = 0.10;
+      if (window.config.thIntensityDark != null && Number(window.config.thIntensityDark) >= 0) {
+        window.thIntensityDark = Number(window.config.thIntensityDark);
+      }
+
+      window.thIntensityDarkHigh = 0.15;
+      if (window.config.thIntensityDarkHigh != null && Number(window.config.thIntensityDarkHigh) >= 0) {
+        window.thIntensityDarkHigh = Number(window.config.thIntensityDarkHigh);
+      }
+
+      window.thIntensityBright = 0.85;
+      if (window.config.thIntensityBright != null && Number(window.config.thIntensityBright) >= 0) {
+        window.thIntensityBright = Number(window.config.thIntensityBright);
+      }
+
+      window.thIntensityBrightLow = 0.75;
+      if (window.config.thIntensityBrightLow != null && Number(window.config.thIntensityBrightLow) >= 0) {
+        window.thIntensityBrightLow = Number(window.config.thIntensityBrightLow);
       }
 
       window.minUpvote = 0;
@@ -598,7 +568,7 @@
           content: `<form>
                       Number of paintings to display:<br>
                       Saturation Threshold:<br><input type="number" class="thSaturation" value="${window.thSaturation}" min="0" max="1" step="0.05"><br>
-                      Intensity Threshold:<br><input type="number" class="thIntensity" value="${window.thIntensity}" min="0" max="1" step="0.05"><br>
+                      Intensity Threshold:<br><input type="number" class="thIntensityDark" value="${window.thIntensityDark}" min="0" max="1" step="0.05"><br>
                       Minimum upvote:<br><input type="number" class="minUpvote" value="${window.minUpvote}" min="0"><br>
                       Maximum downvote:<br><input type="number" class="maxDownvote" value="${window.maxDownvote}" min="-1"><br>
                       <small>-1 or very high number to disable!</small><br>
@@ -619,12 +589,12 @@
               keys: ['enter'],
               action: function () {
                 const thSaturation = this.$content.find('.thSaturation').val()
-                const thIntensity = this.$content.find('.thIntensity').val()
+                const thIntensityDark = this.$content.find('.thIntensityDark').val()
                 const minUpvote = this.$content.find('.minUpvote').val()
                 const maxDownvote = this.$content.find('.maxDownvote').val()
                 const displayPaintings = this.$content.find('.displayPaintings').val()
                 const clustering = this.$content.find('.clustering').val()
-                window.location.href = `${window.location.origin}${window.location.pathname}?thSaturation=${thSaturation}&thIntensity=${thIntensity}&minUpvote=${minUpvote}&maxDownvote=${maxDownvote}&displayPaintings=${displayPaintings}&clustering=${clustering}`
+                window.location.href = `${window.location.origin}${window.location.pathname}?thSaturation=${thSaturation}&thIntensityDark=${thIntensityDark}&minUpvote=${minUpvote}&maxDownvote=${maxDownvote}&displayPaintings=${displayPaintings}&clustering=${clustering}`
               }
             },
           }
