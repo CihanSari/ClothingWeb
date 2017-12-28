@@ -1,110 +1,19 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
     <link rel="stylesheet" href="resources/css/bootstrap.min.css">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
     <link rel="stylesheet" href="resources/css/clothing.css">
-    <link rel="icon" href="resources/icons/clothingfork.ico">    
+    <link rel="icon" href="resources/icons/clothingfork.ico">
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/fabric.js/1.7.20/fabric.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/color-thief/2.0.1/color-thief.min.js"></script>
-    <script src="js/clothFiles.js"></script>
-    <script src="js/clothingBase.js"></script>
-    <script src="js/clothVoting.js"></script>
-    <script src="js/clusters.js"></script>
-    <script src="js/showPaintingsOnCanvas.js"></script>
-    <title>Clothing</title>
+    <title>Redirecting</title>
 </head>
 <body>
-    <article>
-        <div id="content">
-            <h1>Clothing Segmentation</h1>
-            <h3><a href="showPaintingsOnCanvas.html">See paintings in graph</a></h3>
-            <table>
-                <tr>
-                    <td colspan="2" class="original"><h4>Original Painting</h4></td>
-                    <td colspan="2" class="surreal"><h4>Surreal Segmentation</h4></td>
-                    <td colspan="2" class="grabcut"><h4>Fine-tuned Grabcut Segmentation</h4></td>
-                    <td colspan="2" class="hand"><h4>Hand segmentation (N/A)</h4></td>
-                </tr>
-                <tr>
-                    <td colspan="2" class="original"><img id="original"></img></td>
-                    <td colspan="2" class="surreal"><img id="surreal" class="clickable"></img></td>
-                    <td colspan="2" class="grabcut"><img id="grabcut" class="clickable"></img></td>
-                    <td colspan="2" class="hand"><img id="custom" class="clickable"></img></td>
-                </tr>
-                <tr>
-                    <td class="original">Artist</td>
-                    <td class="original"><div id="painting_painter"></div></td>
-                    <td style="text-align:left" class="surreal">Current Score</td>
-                    <td class="surreal"><div id="surrealScore" style="text-align:right"></div></td>
-                    <td class="grabcut" rowspan="2"><div class="thumbsdown clickable" id="div_thumbsdown"><h5 id="thumbsdown_text">0</h5></div></td>
-                    <td class="grabcut" rowspan="2"><div class="thumbsup clickable" id="div_thumbsup"><h5 id="thumbsup_text">0</h5></div></td>
-                    <td style="text-align:left" class="hand">Current Score</td>
-                    <td class="hand"><div id="customScore" style="text-align:right"></div></td>
-                </tr>
-                <tr>
-                    <td class="original">Title</td>
-                    <td class="original"><div id="painting_title"></div></td>
-                    <td colspan="2" style="text-align:justify" class="surreal"><h5>Place holder.</h5></td>
-                    <td colspan="2" style="text-align:justify" class="hand"><h5>Place holder.</h5></td>
-                </tr>
-                <tr>
-                    <td class="original">Year</td>
-                    <td class="original"><div id="painting_year"></div></td>
-                    <td class="surreal" colspan="2" rowspan="2" style="text-align:justify">
-                        <h5>Place holder.</h5>
-                    </td>
-                    <td class="grabcut" colspan="2" rowspan="2" style="text-align:justify">
-                        <h5>Grabcut method uses a combination of both <a href="http://www.humansensing.cs.cmu.edu/intraface/">IntraFace</a> to locate the face landmarks and <a href="http://docs.opencv.org/trunk/de/dd0/grabcut_8cpp-example.html">Grabcut implementation</a> from <a href="http://opencv.org/">OpenCV</a>.</h5>
-                    </td>
-                    <td class="hand" colspan="2" rowspan="2" style="text-align:justify">
-                        <h5>Place holder.</h5>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="original">Gender</td>
-                    <td class="original"><div id="painting_gender"></div></td>
-                </tr>
-                <!--<tr>
-                    <td class="original">Color Thief Dominant</td>
-                    <td class="original"><canvas id="paintingThiefDominantCanvas" width="400" height="80" /></td>
-                    <td class="grabcut">Color Thief Dominant</td>
-                    <td class="grabcut"><canvas id="grabcutThiefDominantCanvas" width="400" height="80" /></td>
-                </tr>
-                <tr>
-                    <td class="original">Color Thief Palette</td>
-                    <td class="original"><canvas id="paintingThiefPaletteCanvas" width="400" height="80" /></td>
-                    <td class="grabcut">Color Thief Palette</td>
-                    <td class="grabcut"><canvas id="grabcutThiefPaletteCanvas" width="400" height="80" /></td>
-                </tr>-->
-                <tr id="imofapalette" style="display:none;">
-                    <td class="original">Imofa Color Palette</td>
-                    <td class="original"><canvas id="paintingImofaPaletteCanvas" width="400" height="80" /></td>
-                    <td class="grabcut">Imofa Color Palette</td>
-                    <td class="grabcut"><canvas id="grabcutImofaPaletteCanvas" width="400" height="80" /></td>
-                </tr>
-                <tr>
-                    <td class="original"></td>
-                    <td class="original"></td>
-                    <td class="grabcut">Dominant color</td>
-                    <td class="grabcut"><form>
-                        k=2<input type="color" name="k02" id="k02" style="width:50px; height:50px;" disabled>
-                        k=5<input type="color" name="k05" id="k05" style="width:50px; height:50px;" disabled><br>
-                        k=8 <input type="color" name="k08" id="k08" style="width:50px; height:50px;" disabled>
-                        IMoFA <input type="color" name="imo" id="imo" style="width:50px; height:50px;" disabled>
-                    </form></td>
-                </tr>
-            </table>
-        </div>
-        <div id="loadingcontent">
-            <h2 id="status">Trying to connect...</h2><div class="loader"></div>
-			<canvas id="myCanvas" width="1200" height="1200"/>
-        </div>
-    </article>
-    <footer>
-    </footer>
+    <a href="showPaintingsOnCanvasAnnotated.html">Click here if redirect fails.</a>
+    <script>window.location=`${window.location.origin}/showPaintingsOnCanvasAnnotated.html`</script>
 </body>
 </html>

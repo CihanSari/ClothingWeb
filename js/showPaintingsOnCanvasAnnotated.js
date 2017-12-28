@@ -118,68 +118,68 @@
     return [backR, backG, backB];
   }
 
-  function rgb2hsv(r, g, b) {
-    var computedH = 0;
-    var computedS = 0;
-    var computedV = 0;
+  // function rgb2hsv(r, g, b) {
+  //   var computedH = 0;
+  //   var computedS = 0;
+  //   var computedV = 0;
 
-    //remove spaces from input RGB values, convert to int
-    var r = parseInt(('' + r).replace(/\s/g, ''), 10);
-    var g = parseInt(('' + g).replace(/\s/g, ''), 10);
-    var b = parseInt(('' + b).replace(/\s/g, ''), 10);
+  //   //remove spaces from input RGB values, convert to int
+  //   var r = parseInt(('' + r).replace(/\s/g, ''), 10);
+  //   var g = parseInt(('' + g).replace(/\s/g, ''), 10);
+  //   var b = parseInt(('' + b).replace(/\s/g, ''), 10);
 
-    if (r == null || g == null || b == null ||
-      isNaN(r) || isNaN(g) || isNaN(b)) {
-      alert('Please enter numeric RGB values!');
-      return;
-    }
-    if (r < 0 || g < 0 || b < 0 || r > 255 || g > 255 || b > 255) {
-      alert('RGB values must be in the range 0 to 255.');
-      return;
-    }
-    r = r / 255; g = g / 255; b = b / 255;
-    var minRGB = Math.min(r, Math.min(g, b));
-    var maxRGB = Math.max(r, Math.max(g, b));
+  //   if (r == null || g == null || b == null ||
+  //     isNaN(r) || isNaN(g) || isNaN(b)) {
+  //     alert('Please enter numeric RGB values!');
+  //     return;
+  //   }
+  //   if (r < 0 || g < 0 || b < 0 || r > 255 || g > 255 || b > 255) {
+  //     alert('RGB values must be in the range 0 to 255.');
+  //     return;
+  //   }
+  //   r = r / 255; g = g / 255; b = b / 255;
+  //   var minRGB = Math.min(r, Math.min(g, b));
+  //   var maxRGB = Math.max(r, Math.max(g, b));
 
-    // Black-gray-white
-    if (minRGB == maxRGB) {
-      computedV = minRGB;
-      return [0, 0, computedV];
-    }
+  //   // Black-gray-white
+  //   if (minRGB == maxRGB) {
+  //     computedV = minRGB;
+  //     return [0, 0, computedV];
+  //   }
 
-    // Colors other than black-gray-white:
-    var d = (r == minRGB) ? g - b : ((b == minRGB) ? r - g : b - r);
-    var h = (r == minRGB) ? 3 : ((b == minRGB) ? 1 : 5);
-    computedH = 60 * (h - d / (maxRGB - minRGB));
-    computedS = (maxRGB - minRGB) / maxRGB;
-    computedV = maxRGB;
-    return [computedH, computedS, computedV];
-  }
+  //   // Colors other than black-gray-white:
+  //   var d = (r == minRGB) ? g - b : ((b == minRGB) ? r - g : b - r);
+  //   var h = (r == minRGB) ? 3 : ((b == minRGB) ? 1 : 5);
+  //   computedH = 60 * (h - d / (maxRGB - minRGB));
+  //   computedS = (maxRGB - minRGB) / maxRGB;
+  //   computedV = maxRGB;
+  //   return [computedH, computedS, computedV];
+  // }
 
-  function hslToRgb(h, s, l) {
-    var r, g, b;
+  // function hslToRgb(h, s, l) {
+  //   var r, g, b;
 
-    if (s == 0) {
-      r = g = b = l; // achromatic
-    } else {
-      var hue2rgb = function hue2rgb(p, q, t) {
-        if (t < 0) t += 1;
-        if (t > 1) t -= 1;
-        if (t < 1 / 6) return p + (q - p) * 6 * t;
-        if (t < 1 / 2) return q;
-        if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
-        return p;
-      }
+  //   if (s == 0) {
+  //     r = g = b = l; // achromatic
+  //   } else {
+  //     var hue2rgb = function hue2rgb(p, q, t) {
+  //       if (t < 0) t += 1;
+  //       if (t > 1) t -= 1;
+  //       if (t < 1 / 6) return p + (q - p) * 6 * t;
+  //       if (t < 1 / 2) return q;
+  //       if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+  //       return p;
+  //     }
 
-      var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
-      var p = 2 * l - q;
-      r = hue2rgb(p, q, h + 1 / 3);
-      g = hue2rgb(p, q, h);
-      b = hue2rgb(p, q, h - 1 / 3);
-    }
+  //     var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+  //     var p = 2 * l - q;
+  //     r = hue2rgb(p, q, h + 1 / 3);
+  //     g = hue2rgb(p, q, h);
+  //     b = hue2rgb(p, q, h - 1 / 3);
+  //   }
 
-    return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
-  }
+  //   return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
+  // }
 
   function yearToX(year, canvas) {
     const firstYear = 1400;
@@ -318,30 +318,83 @@
         }
         const x = yearToX(Number(desc.year), canvasGenderColor);
 
-        if (desc.drawUrl != null) {
-
-          fabric.Image.fromURL(desc.drawUrl, imgLoaded => {
-            let widthheight = 30;
-            if (!window.displayPaintings) {
-              widthheight = 8;
-            }
-            const imFabricObj = imgLoaded.set({
-              left: x - widthheight / 2,
-              top: y * canvasGenderColor.height - widthheight / 2 + canvasGenderColor.yStart,
-              width: widthheight,
-              height: widthheight,
-              lockMovementX: true,
-              lockMovementY: true,
-              lockScalingX: true,
-              lockScalingY: true,
-              lockUniScaling: true,
-              lockRotation: true
-            });
-            imFabricObj.on('selected', function (options) {
-              showImage(desc.imageUrl, canvasGenderColor, paintingIdx, hue, saturation, intensity);
+        if (window.graphMethod == 'portrait') {
+          if (desc.drawUrl != null) {
+            fabric.Image.fromURL(desc.drawUrl, imgLoaded => {
+              let widthheight = 30;
+              if (!window.displayPaintings) {
+                widthheight = 8;
+              }
+              const imFabricObj = imgLoaded.set({
+                left: x - widthheight / 2,
+                top: y * canvasGenderColor.height - widthheight / 2 + canvasGenderColor.yStart,
+                width: widthheight,
+                height: widthheight,
+                lockMovementX: true,
+                lockMovementY: true,
+                lockScalingX: true,
+                lockScalingY: true,
+                lockUniScaling: true,
+                lockRotation: true
+              });
+              imFabricObj.on('selected', function (options) {
+                showImage(desc.imageUrl, canvasGenderColor, paintingIdx, hue, saturation, intensity);
+              })
+              canvasGenderColor.add(imFabricObj);
             })
-            canvasGenderColor.add(imFabricObj);
+          }
+        }
+        else if (window.graphMethod == 'patchHue') {
+          let widthheight = 16;
+
+          function hueToColor(hue) {
+            [red, green, blue] = hsi2rgb(hue, 0.5, 0.5);
+            return `rgb(${red},${green},${blue})`
+          }
+
+          const rect = new fabric.Rect({
+            left: x - widthheight / 2,
+            top: y * canvasGenderColor.height - widthheight / 2 + canvasGenderColor.yStart,
+            width: widthheight,
+            height: widthheight,
+            fill: hueToColor(hue),
+            lockMovementX: true,
+            lockMovementY: true,
+            lockScalingX: true,
+            lockScalingY: true,
+            lockUniScaling: true,
+            lockRotation: true
+          });
+          rect.on('selected', function (options) {
+            showImage(desc.imageUrl, canvasGenderColor, paintingIdx, hue, saturation, intensity);
           })
+          canvasGenderColor.add(rect);
+        }
+        else if (window.graphMethod == 'patchHSI') {
+          let widthheight = 16;
+          function hsiToColor(hue, saturation, intensity) {
+            [red, green, blue] = hsi2rgb(hue, saturation, intensity);
+            return `rgb(${red},${green},${blue})`
+          }
+          const rect = new fabric.Rect({
+            left: x - widthheight / 2,
+            top: y * canvasGenderColor.height - widthheight / 2 + canvasGenderColor.yStart,
+            width: widthheight,
+            height: widthheight,
+            fill: hsiToColor(hue, saturation, intensity),
+            lockMovementX: true,
+            lockMovementY: true,
+            lockScalingX: true,
+            lockScalingY: true,
+            lockUniScaling: true,
+            lockRotation: true
+          });
+
+
+          rect.on('selected', function (options) {
+            showImage(desc.imageUrl, canvasGenderColor, paintingIdx, hue, saturation, intensity);
+          })
+          canvasGenderColor.add(rect);
         }
 
 
@@ -438,7 +491,7 @@
     function addHSVBackgroundToCanvas(canvas) {
       const items = [];
       function hueToColor(hue) {
-        [red, green, blue] = hslToRgb(hue / 360, 0.5, 0.5);
+        [red, green, blue] = hsi2rgb(hue, 0.5, 0.5);
         return `rgb(${red},${green},${blue})`
       }
 
@@ -500,7 +553,12 @@
 
     }
 
-    function prepareDisplay() {
+    function parseParameters() {
+      window.graphMethod = 'portrait';
+      if (window.config.graphMethod != null && window.graphMethod.length > 0) {
+        window.graphMethod = window.config.graphMethod;
+      }
+
       window.thSaturation = 0.05;
       if (window.config.thSaturation != null && Number(window.config.thSaturation) >= 0) {
         window.thSaturation = Number(window.config.thSaturation);
@@ -526,7 +584,7 @@
         window.displayPaintings = Number(window.config.displayPaintings);
       }
 
-      window.clustering = "imofa";
+      window.clustering = "annotated";
       if (window.config.clustering != null && window.config.clustering.length > 0) {
         window.clustering = window.config.clustering;
       }
@@ -572,6 +630,23 @@
       });
     };
 
+    function prepareDisplay() {
+      addYearTextToCanvas(canvas.male.mono);
+      addYearTextToCanvas(canvas.female.mono);
+      if (window.graphMethod == 'portrait') {
+        addHSVBackgroundToCanvas(canvas.male.hsv);
+        addHSVBackgroundToCanvas(canvas.female.hsv);
+        addMonochromeBackgroundToCanvas(canvas.male.mono);
+        addMonochromeBackgroundToCanvas(canvas.female.mono);
+      }
+      addGenderIconToCanvas(canvas.male.hsv, 'resources/icons/male.png')
+      addGenderIconToCanvas(canvas.female.hsv, 'resources/icons/female.png')
+      addYearMarkers(canvas.male.hsv);
+      addYearMarkers(canvas.male.mono);
+      addYearMarkers(canvas.female.hsv);
+      addYearMarkers(canvas.female.mono);
+    }
+
     function displayByIdx(filepath, canvas, idx, domColor) {
       $.getJSON(filepath).then(json => {
         if (filterFiles(json))
@@ -616,19 +691,7 @@
       }
     }
 
-
-    addYearTextToCanvas(canvas.male.mono);
-    addYearTextToCanvas(canvas.female.mono);
-    addHSVBackgroundToCanvas(canvas.male.hsv);
-    addHSVBackgroundToCanvas(canvas.female.hsv);
-    addMonochromeBackgroundToCanvas(canvas.male.mono);
-    addMonochromeBackgroundToCanvas(canvas.female.mono);
-    addGenderIconToCanvas(canvas.male.hsv, 'resources/icons/male.png')
-    addGenderIconToCanvas(canvas.female.hsv, 'resources/icons/female.png')
-    addYearMarkers(canvas.male.hsv);
-    addYearMarkers(canvas.male.mono);
-    addYearMarkers(canvas.female.hsv);
-    addYearMarkers(canvas.female.mono);
+    parseParameters();
     prepareDisplay();
 
     //
