@@ -67,7 +67,6 @@
       h = 360 - h;
     }
     var s = 1 - (3 / (r + g + b)) * minRGB;
-    console.log([h, s, i]);
     return [h, s, i];
   }
 
@@ -136,6 +135,58 @@
     return (year - firstYear) / (lastYear - firstYear) * canvas.width;
   }
 
+  const hueList = [0, 60, 360];
+  const hueYList = [0, 0.6, 1];
+
+  const intList = [0, 0.2, 0.8, 1];
+  const intYList = [0, 0.6, 0.7, 1];
+
+  function mapPair(list1, list2, list1Value) {
+    for (let k = 0; k < list1.length; k += 1) {
+      if (list1[k] > list1Value) {
+        if (k == 0) {
+          return list2[0];
+        }
+        else {
+          const list1Before = list1[k - 1];
+          const list1After = list1[k];
+          const list1Dist = list1After - list1Before;
+          const list2Before = list2[k - 1];
+          const list2After = list2[k];
+          const list2Dist = list2After - list2Before;
+
+          const distBefore = list1Value - list1Before;
+          if (distBefore == 0) {
+            return list2[k - 1];
+          }
+          const ratio = distBefore / list1Dist;
+          return list2Dist * ratio + list2Before;
+        }
+      }
+    }
+    return list2[list2.length - 1];
+  }
+
+  function yToHue(y) {
+    return mapPair(hueYList, hueList, y);
+  }
+
+  function hueToY(hue, canvas) {
+    while (hue > 360)
+      hue -= 360;
+    while (hue < 0)
+      hue += 360;
+    return mapPair(hueList, hueYList, hue) * canvas.height;
+  }
+
+  function yToInt(i) {
+    return mapPair(intYList, intList, i) * 255;
+  }
+
+  function intToY(i, canvas) {
+    return mapPair(intList, intYList, i) * canvas.height;
+  }
+
   function rgbToHex(red, green, blue) {
     function cToHex(c) {
       const h = Math.floor(c).toString(16);
@@ -149,7 +200,8 @@
     return '#' + cToHex(red) + cToHex(green) + cToHex(blue);
   }
 
-  function showImage(desc, canvas, h, s, i) {
+  function showImage(desc, canvas) {
+    const [h, s, i] = desc.color;
     const [r, g, b] = hsi2rgb(h, s, i);
     const dialog = $.confirm({
       title: desc.title,
@@ -178,17 +230,13 @@
       escapeKey: 'cancel',
       buttons: {
         cancel: {
-          text: 'Cancel',
-          action: () => {
-            canvas.deactivateAll().renderAll();
-          }
+          text: 'Cancel'
         },
         goRandom: {
           text: 'Details in new window',
           btnClass: 'btn-primary',
           keys: ['enter'],
           action: () => {
-            canvas.deactivateAll().renderAll();
             window.open(`${window.location.origin}/?paintingIdx=${String(desc.paintingIdx)}`);
           }
         },
@@ -279,111 +327,76 @@
         canvasGender = canvas.female;
       }
       let hueCanvas = true;
-      if (desc.color != null && desc.color.length != null && desc.color.length > 0) {
-        let [hue, saturation, intensity] = desc.color;
-        let y = null;
-        if (checkIfHue(hue, saturation, intensity)) {
-          canvasGenderColor = canvasGender.hsv
-          while (hue < 0)
-            hue += 360;
-          while (hue > 360)
-            hue -= 360;
-          y = hue / 360;
-        }
-        else {
-          canvasGenderColor = canvasGender.mono
-          y = intensity;
-          hueCanvas = false;
-        }
-        const x = yearToX(Number(desc.year), canvasGenderColor);
-
-        if (window.graphMethod == 'portrait') {
-          if (desc.drawUrl != null) {
-            fabric.Image.fromURL(desc.drawUrl, imgLoaded => {
-              let widthheight = 30;
-              if (!window.displayPaintings) {
-                widthheight = 8;
-              }
-              const imFabricObj = imgLoaded.set({
-                left: x - widthheight / 2,
-                top: y * canvasGenderColor.height - widthheight / 2 + canvasGenderColor.yStart,
-                width: widthheight,
-                height: widthheight,
-                lockMovementX: true,
-                lockMovementY: true,
-                lockScalingX: true,
-                lockScalingY: true,
-                lockUniScaling: true,
-                lockRotation: true
-              });
-              imFabricObj.on('selected', function (options) {
-                showImage(desc.imageUrl, canvasGenderColor, paintingIdx, hue, saturation, intensity);
-              })
-              canvasGenderColor.add(imFabricObj);
-              callback();
-            })
-          }
-        }
-        else if (window.graphMethod == 'hue') {
-          let widthheight = 16;
-
-          function hueToColor(hue) {
-            [red, green, blue] = hsi2rgb(hue, 0.5, 0.5);
-            return `rgb(${red},${green},${blue})`
-          }
-
-          const rect = new fabric.Rect({
-            left: x - widthheight / 2,
-            top: y * canvasGenderColor.height - widthheight / 2 + canvasGenderColor.yStart,
-            width: widthheight,
-            height: widthheight,
-            fill: hueCanvas ? hueToColor(hue) : `rgb(${Math.round(intensity * 255)},${Math.round(intensity * 255)},${Math.round(intensity * 255)})`,
-            stroke: 'black',
-            strokeWidth: 1,
-            lockMovementX: true,
-            lockMovementY: true,
-            lockScalingX: true,
-            lockScalingY: true,
-            lockUniScaling: true,
-            lockRotation: true
-          });
-          rect.on('selected', function (options) {
-            showImage(desc, canvasGenderColor, hue, saturation, intensity);
-          })
-          canvasGenderColor.add(rect);
-          callback();
-        }
-        else if (window.graphMethod == 'color') {
-          let widthheight = 16;
-          function hsiToColor(hue, saturation, intensity) {
-            [red, green, blue] = hsi2rgb(hue, saturation, intensity);
-            return `rgb(${red},${green},${blue})`
-          }
-          const rect = new fabric.Rect({
-            left: x - widthheight / 2,
-            top: y * canvasGenderColor.height - widthheight / 2 + canvasGenderColor.yStart,
-            width: widthheight,
-            height: widthheight,
-            fill: hsiToColor(hue, saturation, intensity),
-            stroke: 'black',
-            strokeWidth: 1,
-            lockMovementX: true,
-            lockMovementY: true,
-            lockScalingX: true,
-            lockScalingY: true,
-            lockUniScaling: true,
-            lockRotation: true
-          });
-
-
-          rect.on('selected', function (options) {
-            showImage(desc, canvasGenderColor, hue, saturation, intensity);
-          })
-          canvasGenderColor.add(rect);
-          callback();
-        }
+      let [hue, saturation, intensity] = desc.color;
+      let y = null;
+      if (checkIfHue(hue, saturation, intensity)) {
+        canvasGenderColor = canvasGender.hsv
+        y = hueToY(hue, canvasGenderColor);
       }
       else {
+        canvasGenderColor = canvasGender.mono
+        y = intToY(intensity, canvasGenderColor);
+        hueCanvas = false;
+      }
+      const x = yearToX(Number(desc.year), canvasGenderColor);
+
+      function displayProperties() {
+        const defaultProperties = {
+          stroke: 'black',
+          strokeWidth: 1,
+          lockMovementX: true,
+          lockMovementY: true,
+          lockScalingX: true,
+          lockScalingY: true,
+          lockUniScaling: true,
+          lockRotation: true
+        }
+        function hueToColor(hue) {
+          [red, green, blue] = hsi2rgb(hue, 0.5, 0.5);
+          return `rgb(${red},${green},${blue})`
+        }
+
+        function hsiToColor(hue, saturation, intensity) {
+          [red, green, blue] = hsi2rgb(hue, saturation, intensity);
+          return `rgb(${red},${green},${blue})`
+        }
+        function properties(widthheight, options) {
+          if (options == null) {
+            options = {};
+          }
+          options.left = x - widthheight / 2;
+          options.top = y - widthheight / 2 + canvasGenderColor.yStart;
+          options.width = widthheight;
+          options.height = widthheight;
+          return $.extend({}, defaultProperties, options);
+        };
+        if (window.graphMethod == 'hue') {
+          return properties(16, { fill: hueCanvas ? hueToColor(hue) : `rgb(${Math.round(intensity * 255)},${Math.round(intensity * 255)},${Math.round(intensity * 255)})` });
+        }
+        else if (window.graphMethod == 'color') {
+          return properties(16, { fill: hsiToColor(hue, saturation, intensity) });
+        }
+        else if (window.graphMethod == 'portrait') {
+          return properties(30);
+        }
+      }
+
+      function addFabric(fabricObj) {
+        fabricObj.on('selected', () => {
+          canvasGenderColor.deactivateAll().renderAll();
+          showImage(desc, canvasGenderColor);
+        });
+        canvasGenderColor.add(fabricObj);
+      }
+
+      if (window.graphMethod == 'portrait') {
+        fabric.Image.fromURL(desc.drawUrl, imgLoaded => {
+          addFabric(imgLoaded.set(displayProperties()));
+          callback();
+        })
+      }
+      else {
+        addFabric(new fabric.Rect(displayProperties()));
         callback();
       }
     }
@@ -431,7 +444,6 @@
       }
       canvas.add(...items);
     }
-
     function addYearTextToCanvas(canvas) {
       const yearTextHeight = 25;
       const items = [];
@@ -457,7 +469,6 @@
       canvas.add(...items);
       canvas.height -= (yearTextHeight * 2);
     }
-
     function addGenderIconToCanvas(canvas, genderImageUrl) {
       fabric.Image.fromURL(genderImageUrl, imgLoaded => {
         const imFabricObj = imgLoaded.set({
@@ -489,7 +500,7 @@
 
       const height = 10;
       for (let i = 0; i < canvas.height - height; i += height) {
-        const hue = Math.floor(i / canvas.height * 360);
+        const hue = yToHue(i / canvas.height);
 
         const rect = new fabric.Rect({
           top: i + canvas.yStart,
@@ -518,7 +529,7 @@
       const items = [];
       const height = 10;
       for (let i = 0; i < canvas.height - height; i += height) {
-        const monoLight = Math.floor(i / canvas.height * 256);
+        const monoLight = yToInt(i / canvas.height);
 
         const rect = new fabric.Rect({
           top: i + canvas.yStart,
@@ -646,12 +657,10 @@
     function prepareDisplay() {
       addYearTextToCanvas(canvas.male.mono);
       addYearTextToCanvas(canvas.female.mono);
-      if (window.graphMethod == 'portrait') {
-        addHSVBackgroundToCanvas(canvas.male.hsv);
-        addHSVBackgroundToCanvas(canvas.female.hsv);
-        addMonochromeBackgroundToCanvas(canvas.male.mono);
-        addMonochromeBackgroundToCanvas(canvas.female.mono);
-      }
+      addHSVBackgroundToCanvas(canvas.male.hsv);
+      addHSVBackgroundToCanvas(canvas.female.hsv);
+      addMonochromeBackgroundToCanvas(canvas.male.mono);
+      addMonochromeBackgroundToCanvas(canvas.female.mono);
       addGenderIconToCanvas(canvas.male.hsv, 'resources/icons/maleDark.png')
       addGenderIconToCanvas(canvas.female.hsv, 'resources/icons/femaleDark.png')
       addYearMarkers(canvas.male.hsv);
