@@ -1,5 +1,6 @@
 ﻿body {
     margin: 9px;
+    background-color:#D3D3D3;
 }
 
 article h1{
@@ -110,7 +111,7 @@ article #loadingcontent h2 {
     }
 
 .jconfirm .jconfirm-box {
-    background-color:white
+    background-color:#d3d3d3
 }
 
 .canvas-container {
