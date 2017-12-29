@@ -250,7 +250,7 @@
           title: desc.title,
           painter: desc.Painter,
           publisher: desc.publisher,
-          rights:desc.rights,
+          rights: desc.rights,
           imageUrl: 'data/jpg/' + desc.Filename,
           drawUrl: 'data/jpg/' + desc.Filename
         }
@@ -263,7 +263,7 @@
           title: desc.title,
           painter: desc.Painter,
           publisher: desc.publisher,
-          rights:desc.rights,
+          rights: desc.rights,
           imageUrl: 'data/jpg/' + desc.Filename,
           drawUrl: 'resources/icons/dot.png'
         }
@@ -338,8 +338,8 @@
             width: widthheight,
             height: widthheight,
             fill: hueCanvas ? hueToColor(hue) : `rgb(${Math.round(intensity * 255)},${Math.round(intensity * 255)},${Math.round(intensity * 255)})`,
-            stroke : 'black',
-            strokeWidth : 1,
+            stroke: 'black',
+            strokeWidth: 1,
             lockMovementX: true,
             lockMovementY: true,
             lockScalingX: true,
@@ -365,8 +365,8 @@
             width: widthheight,
             height: widthheight,
             fill: hsiToColor(hue, saturation, intensity),
-            stroke : 'black',
-            strokeWidth : 1,
+            stroke: 'black',
+            strokeWidth: 1,
             lockMovementX: true,
             lockMovementY: true,
             lockScalingX: true,
@@ -409,7 +409,7 @@
     function addYearMarkers(canvas) {
       const items = [];
       for (let year = 1425; year < 2000; year += 25) {
-        if (year<1450 || year>1950) {
+        if (year < 1450 || year > 1950) {
           //thisIsFirstLineToSkipForGenderIconsToDisplayProperly and cosmetic reasons;
           continue;
         }
@@ -709,36 +709,39 @@
     //
 
     //
-    let progressRequestSentCount=0;
-    let progressRequestReceivedCount=0;
-    let goingOnceGoingTwice=false;
+    let progressRequestSentCount = 0;
+    let progressRequestReceivedCount = 0;
+    let goingOnceGoingTwice = false;
     function fncUpdateProgress() {
-      if (progressRequestReceivedCount==progressRequestSentCount) {
+      if (progressRequestReceivedCount == progressRequestSentCount) {
         if (goingOnceGoingTwice) {
-          $( "#progressbar" ).hide();
+          $("#progressbar").hide();
           return;
         }
-        goingOnceGoingTwice=true;
-        setTimeout(()=> {
+        goingOnceGoingTwice = true;
+        setTimeout(() => {
           fncUpdateProgress()
         }, 100);
       }
       else {
-        goingOnceGoingTwice=false;
+        goingOnceGoingTwice = false;
       }
-      $( "#progressbar" ).progressbar({
-        value: Math.ceil(progressRequestReceivedCount/progressRequestSentCount*100)
+      $("#progressbar").progressbar({
+        value: Math.ceil(progressRequestReceivedCount / progressRequestSentCount * 100)
       });
     }
     function fncProgressGenCallback() {
-      progressRequestSentCount+=1;
+      progressRequestSentCount += 1;
       fncUpdateProgress();
       return () => {
-        progressRequestReceivedCount+=1;
+        progressRequestReceivedCount += 1;
         fncUpdateProgress();
       }
     }
-    setTimeout(fncProgressGenCallback(),500);
+    function initProgress() {
+      setTimeout(fncProgressGenCallback(), 500);
+    }
+    initProgress();
     clothFiles(files => {
       if (window.clustering == "annotated") {
         $.getJSON('data/json/filesAnnotated.json', annotatedFileList => {

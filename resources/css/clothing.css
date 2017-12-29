@@ -117,3 +117,17 @@ article #loadingcontent h2 {
     margin-left:auto;
     margin-right:auto;
 }
+.progressBar {
+    width:80%;
+    margin:auto;
+    position:relative;
+    height:50px;
+    line-height:50px;
+    text-align:center;
+    }
+.progressBarText {
+    color: black;
+    position: absolute;
+    width: 50%;
+    left:25%;
+}
