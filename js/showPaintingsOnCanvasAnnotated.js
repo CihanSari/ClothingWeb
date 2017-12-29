@@ -209,7 +209,7 @@
     return '#' + cToHex(red) + cToHex(green) + cToHex(blue);
   }
 
-  function showImage(desc, canvas) {
+  function showImage(desc, canvas, paintingIdx) {
     const [h, s, i] = desc.color;
     const [r, g, b] = hsi2rgb(h, s, i);
     const dialog = $.confirm({
@@ -246,7 +246,7 @@
           btnClass: 'btn-primary',
           keys: ['enter'],
           action: () => {
-            window.open(`${window.location.origin}/?paintingIdx=${String(desc.paintingIdx)}`);
+            window.open(`${window.location.origin}/voting.html?paintingIdx=${String(paintingIdx)}`);
           }
         },
       }
@@ -375,22 +375,22 @@
         }
       }
 
-      function addFabric(fabricObj) {
+      function addFabric(fabricObj, paintingIdx) {
         fabricObj.on('selected', () => {
           canvasGenderColor.deactivateAll().renderAll();
-          showImage(desc, canvasGenderColor);
+          showImage(desc, canvasGenderColor, paintingIdx);
         });
         canvasGenderColor.add(fabricObj);
       }
 
       if (window.settings.graphMethod == 'portrait') {
         fabric.Image.fromURL(desc.drawUrl, imgLoaded => {
-          addFabric(imgLoaded.set(displayProperties()));
+          addFabric(imgLoaded.set(displayProperties()),paintingIdx);
           callback();
         })
       }
       else {
-        addFabric(new fabric.Rect(displayProperties()));
+        addFabric(new fabric.Rect(displayProperties()),paintingIdx);
         callback();
       }
     }
