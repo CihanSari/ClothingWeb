@@ -436,9 +436,11 @@
       const yearTextHeight = 25;
       const items = [];
       for (let year = 1425; year < 2000; year += 25) {
+        if (year < 1450 || year > 1950) {
+          //thisIsFirstLineToSkipForGenderIconsToDisplayProperly and cosmetic reasons;
+          continue;
+        }
         const left = yearToX(year, canvas);
-
-
         const text = new fabric.Text(String(year), {
           top: canvas.height - 20,
           left: left - 14,
@@ -491,8 +493,8 @@
 
         const rect = new fabric.Rect({
           top: i + canvas.yStart,
-          left: 0,
-          width: canvas.width,
+          left: 90,
+          width: 10,
           height: height + 1,
           fill: hueToColor(hue),
           lockMovementX: true,
@@ -520,8 +522,8 @@
 
         const rect = new fabric.Rect({
           top: i + canvas.yStart,
-          left: 0,
-          width: canvas.width,
+          left: 90,
+          width: 10,
           height: height + 1,
           fill: `rgb(${monoLight},${monoLight},${monoLight})`,
           lockMovementX: true,
