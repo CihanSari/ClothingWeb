@@ -299,31 +299,16 @@
       else {
         color = domColor;
       }
-      if (window.displayPaintings === 1) {
-        return {
-          color: color,
-          year: desc.Year,
-          gender: desc.Gender,
-          title: desc.title,
-          painter: desc.Painter,
-          publisher: desc.publisher,
-          rights: desc.rights,
-          imageUrl: 'data/jpg/' + desc.Filename,
-          drawUrl: 'data/jpg/' + desc.Filename
-        }
-      }
-      else {
-        return {
-          color: color,
-          year: desc.Year,
-          gender: desc.Gender,
-          title: desc.title,
-          painter: desc.Painter,
-          publisher: desc.publisher,
-          rights: desc.rights,
-          imageUrl: 'data/jpg/' + desc.Filename,
-          drawUrl: 'resources/icons/dot.png'
-        }
+      return {
+        color: color,
+        year: desc.Year,
+        gender: desc.Gender,
+        title: desc.title,
+        painter: desc.Painter,
+        publisher: desc.publisher,
+        rights: desc.rights,
+        imageUrl: 'data/jpg/' + desc.Filename,
+        drawUrl: 'data/jpg/' + desc.Filename
       }
     }
 
