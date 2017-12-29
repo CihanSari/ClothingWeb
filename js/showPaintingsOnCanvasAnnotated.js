@@ -149,11 +149,31 @@
     return '#' + cToHex(red) + cToHex(green) + cToHex(blue);
   }
 
-  function showImage(imageUrl, canvas, paintingIdx, h, s, i) {
+  function showImage(desc, canvas, h, s, i) {
     const [r, g, b] = hsi2rgb(h, s, i);
     const dialog = $.confirm({
-      title: `Painting Index ${paintingIdx}`,
-      content: '<image src=' + imageUrl + `/><form>Hue=${h.toFixed(2)}, Saturation=${s.toFixed(2)}, Intensity=${i.toFixed(2)}<br> <input type="color" style="width:50px; height:50px;" value="${rgbToHex(r, g, b)}"></form>`,
+      title: desc.title,
+      publisher: desc.publisher,
+      rights: desc.rights,
+      content: `<table>
+                <tr>
+                <th>Painter</th> 
+                <td>${desc.painter}</td> 
+                </tr>
+                <tr>
+                <th>Publisher</th> 
+                <td>${desc.publisher}</td>
+                </tr>
+                <tr>
+                <th>Rights</th> 
+                <td><a href="${desc.rights}">Creative Commons</a></td>
+                </tr>
+                <tr>
+                <th>Color</th> 
+                <td><form>HSI=(${h.toFixed(2)},${s.toFixed(2)},${i.toFixed(2)})<input type="color" style="width:50px; height:2em;" value="${rgbToHex(r, g, b)}"></form></td>
+                </tr>
+                </table>
+                <image src='${desc.imageUrl}'></image>`,
       backgroundDismiss: true,
       escapeKey: 'cancel',
       buttons: {
@@ -169,14 +189,14 @@
           keys: ['enter'],
           action: () => {
             canvas.deactivateAll().renderAll();
-            window.open(`${window.location.origin}/?paintingIdx=${String(paintingIdx)}`);
+            window.open(`${window.location.origin}/?paintingIdx=${String(desc.paintingIdx)}`);
           }
         },
       }
     });
   }
 
-  function drawPainting(json, canvas, paintingIdx, domColor) {
+  function drawPainting(json, canvas, paintingIdx, domColor, callback) {
     function fncParseImofa(imofaStr) {
       if (imofaStr == null || imofaStr.length === 0) {
         let imofaQuantaArray = [];
@@ -227,6 +247,10 @@
           color: color,
           year: desc.Year,
           gender: desc.Gender,
+          title: desc.title,
+          painter: desc.Painter,
+          publisher: desc.publisher,
+          rights:desc.rights,
           imageUrl: 'data/jpg/' + desc.Filename,
           drawUrl: 'data/jpg/' + desc.Filename
         }
@@ -236,13 +260,17 @@
           color: color,
           year: desc.Year,
           gender: desc.Gender,
+          title: desc.title,
+          painter: desc.Painter,
+          publisher: desc.publisher,
+          rights:desc.rights,
           imageUrl: 'data/jpg/' + desc.Filename,
           drawUrl: 'resources/icons/dot.png'
         }
       }
     }
 
-    function drawData(desc, canvas, paintingIdx) {
+    function drawData(desc, canvas, paintingIdx, callback) {
       let canvasGender = null;
       let canvasGenderColor = null;
       if (desc.gender === "Male")
@@ -292,6 +320,7 @@
                 showImage(desc.imageUrl, canvasGenderColor, paintingIdx, hue, saturation, intensity);
               })
               canvasGenderColor.add(imFabricObj);
+              callback();
             })
           }
         }
@@ -309,6 +338,8 @@
             width: widthheight,
             height: widthheight,
             fill: hueCanvas ? hueToColor(hue) : `rgb(${Math.round(intensity * 255)},${Math.round(intensity * 255)},${Math.round(intensity * 255)})`,
+            stroke : 'black',
+            strokeWidth : 1,
             lockMovementX: true,
             lockMovementY: true,
             lockScalingX: true,
@@ -317,9 +348,10 @@
             lockRotation: true
           });
           rect.on('selected', function (options) {
-            showImage(desc.imageUrl, canvasGenderColor, paintingIdx, hue, saturation, intensity);
+            showImage(desc, canvasGenderColor, hue, saturation, intensity);
           })
           canvasGenderColor.add(rect);
+          callback();
         }
         else if (window.graphMethod == 'color') {
           let widthheight = 16;
@@ -333,6 +365,8 @@
             width: widthheight,
             height: widthheight,
             fill: hsiToColor(hue, saturation, intensity),
+            stroke : 'black',
+            strokeWidth : 1,
             lockMovementX: true,
             lockMovementY: true,
             lockScalingX: true,
@@ -343,15 +377,17 @@
 
 
           rect.on('selected', function (options) {
-            showImage(desc.imageUrl, canvasGenderColor, paintingIdx, hue, saturation, intensity);
+            showImage(desc, canvasGenderColor, hue, saturation, intensity);
           })
           canvasGenderColor.add(rect);
+          callback();
         }
-
-
+      }
+      else {
+        callback();
       }
     }
-    drawData(getData(json, domColor), canvas, paintingIdx);
+    drawData(getData(json, domColor), canvas, paintingIdx, callback);
   }
 
   // get paintings
@@ -373,6 +409,10 @@
     function addYearMarkers(canvas) {
       const items = [];
       for (let year = 1425; year < 2000; year += 25) {
+        if (year<1450 || year>1950) {
+          //thisIsFirstLineToSkipForGenderIconsToDisplayProperly and cosmetic reasons;
+          continue;
+        }
         const left = yearToX(year, canvas);
 
         const rect = new fabric.Rect({
@@ -380,7 +420,7 @@
           left: left,
           width: 1,
           height: canvas.height - 3,
-          fill: "white"
+          fill: "rgba(127,127,127,0.4)"
         });
 
         rect.on('selected', () => {
@@ -400,11 +440,10 @@
 
 
         const text = new fabric.Text(String(year), {
-          top: canvas.height - 5,
-          left: left - 3,
-          fontSize: 10,
-          fill: 'white',
-          angle: -90
+          top: canvas.height - 20,
+          left: left - 14,
+          fontSize: 13,
+          fill: "black"
         });
 
         text.on('selected', () => {
@@ -611,20 +650,21 @@
         addMonochromeBackgroundToCanvas(canvas.male.mono);
         addMonochromeBackgroundToCanvas(canvas.female.mono);
       }
-      addGenderIconToCanvas(canvas.male.hsv, 'resources/icons/male.png')
-      addGenderIconToCanvas(canvas.female.hsv, 'resources/icons/female.png')
+      addGenderIconToCanvas(canvas.male.hsv, 'resources/icons/maleDark.png')
+      addGenderIconToCanvas(canvas.female.hsv, 'resources/icons/femaleDark.png')
       addYearMarkers(canvas.male.hsv);
       addYearMarkers(canvas.male.mono);
       addYearMarkers(canvas.female.hsv);
       addYearMarkers(canvas.female.mono);
     }
 
-    function displayByIdx(filepath, canvas, idx, domColor) {
+    function displayByIdx(filepath, canvas, idx, domColor, callback) {
       $.getJSON(filepath).then(json => {
         if (filterFiles(json))
-          drawPainting(json, canvas, idx, domColor);
+          drawPainting(json, canvas, idx, domColor, callback);
       }).catch(err => {
         console.error('Error on painting', filepath, err);
+        callback();
       });
     }
 
@@ -669,12 +709,42 @@
     //
 
     //
+    let progressRequestSentCount=0;
+    let progressRequestReceivedCount=0;
+    let goingOnceGoingTwice=false;
+    function fncUpdateProgress() {
+      if (progressRequestReceivedCount==progressRequestSentCount) {
+        if (goingOnceGoingTwice) {
+          $( "#progressbar" ).hide();
+          return;
+        }
+        goingOnceGoingTwice=true;
+        setTimeout(()=> {
+          fncUpdateProgress()
+        }, 100);
+      }
+      else {
+        goingOnceGoingTwice=false;
+      }
+      $( "#progressbar" ).progressbar({
+        value: Math.ceil(progressRequestReceivedCount/progressRequestSentCount*100)
+      });
+    }
+    function fncProgressGenCallback() {
+      progressRequestSentCount+=1;
+      fncUpdateProgress();
+      return () => {
+        progressRequestReceivedCount+=1;
+        fncUpdateProgress();
+      }
+    }
+    setTimeout(fncProgressGenCallback(),500);
     clothFiles(files => {
       if (window.clustering == "annotated") {
         $.getJSON('data/json/filesAnnotated.json', annotatedFileList => {
           for (let i = 0; i < annotatedFileList.length; i += 1) {
             const idxFiles = annotatedFileList[i].Index;
-            displayByIdx('data/json/' + files[idxFiles], canvas, idxFiles, annotatedFileList[i].domColor);
+            displayByIdx('data/json/' + files[idxFiles], canvas, idxFiles, annotatedFileList[i].domColor, fncProgressGenCallback());
           }
         });
       }
@@ -693,7 +763,7 @@
                   [domImofaWeight, domImofaColor[0], domImofaColor[1], domImofaColor[2], domImofaColor[3]] = currentImofaColor;
                 }
               }
-              displayByIdx('data/json/' + files[idxFiles], canvas, idxFiles, getDominantColorFromH1H2SI(domImofaColor));
+              displayByIdx('data/json/' + files[idxFiles], canvas, idxFiles, getDominantColorFromH1H2SI(domImofaColor), fncProgressGenCallback());
             }
           }
         });
@@ -703,22 +773,22 @@
           for (let i = 0; i < annotatedFileList.length; i += 1) {
             const idxFiles = annotatedFileList[i].Index;
             if (window.clustering == "k2") {
-              displayByIdx('data/json/' + files[idxFiles], canvas, idxFiles, getDominantColorFromH1H2SI(annotatedFileList[i].kMeans[0].domColor));
+              displayByIdx('data/json/' + files[idxFiles], canvas, idxFiles, getDominantColorFromH1H2SI(annotatedFileList[i].kMeans[0].domColor), fncProgressGenCallback());
             }
             else if (window.clustering == "k5") {
-              displayByIdx('data/json/' + files[idxFiles], canvas, idxFiles, getDominantColorFromH1H2SI(annotatedFileList[i].kMeans[1].domColor));
+              displayByIdx('data/json/' + files[idxFiles], canvas, idxFiles, getDominantColorFromH1H2SI(annotatedFileList[i].kMeans[1].domColor), fncProgressGenCallback());
             }
             else if (window.clustering == "k8") {
-              displayByIdx('data/json/' + files[idxFiles], canvas, idxFiles, getDominantColorFromH1H2SI(annotatedFileList[i].kMeans[2].domColor));
+              displayByIdx('data/json/' + files[idxFiles], canvas, idxFiles, getDominantColorFromH1H2SI(annotatedFileList[i].kMeans[2].domColor), fncProgressGenCallback());
             }
             else if (window.clustering == "k11") {
-              displayByIdx('data/json/' + files[idxFiles], canvas, idxFiles, getDominantColorFromH1H2SI(annotatedFileList[i].kMeans[3].domColor));
+              displayByIdx('data/json/' + files[idxFiles], canvas, idxFiles, getDominantColorFromH1H2SI(annotatedFileList[i].kMeans[3].domColor), fncProgressGenCallback());
             }
             else if (window.clustering == "k14") {
-              displayByIdx('data/json/' + files[idxFiles], canvas, idxFiles, getDominantColorFromH1H2SI(annotatedFileList[i].kMeans[4].domColor));
+              displayByIdx('data/json/' + files[idxFiles], canvas, idxFiles, getDominantColorFromH1H2SI(annotatedFileList[i].kMeans[4].domColor), fncProgressGenCallback());
             }
             else if (window.clustering == "k17") {
-              displayByIdx('data/json/' + files[idxFiles], canvas, idxFiles, getDominantColorFromH1H2SI(annotatedFileList[i].kMeans[5].domColor));
+              displayByIdx('data/json/' + files[idxFiles], canvas, idxFiles, getDominantColorFromH1H2SI(annotatedFileList[i].kMeans[5].domColor), fncProgressGenCallback());
             }
             else {
               alert(`Unknown option: clustering=${window.clustering}`);
