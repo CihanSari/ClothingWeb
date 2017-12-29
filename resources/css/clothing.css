@@ -114,6 +114,10 @@ article #loadingcontent h2 {
     background-color:#d3d3d3
 }
 
+.ui-widget-content {
+    background-color:#d3d3d3    
+}
+
 .canvas-container {
     margin-left:auto;
     margin-right:auto;
