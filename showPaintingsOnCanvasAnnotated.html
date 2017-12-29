@@ -48,43 +48,45 @@
                 $("#clustering").selectmenu({
                     change: function (event, data) {
                         const method = $('#clustering').val();
-                        window.location = `${window.location.origin}/showPaintingsOnCanvasAnnotated.html?clustering=${method.toLowerCase()}&graphMethod=${window.graphMethod}`
+                        window.settings.clustering=method.toLowerCase();
+                        window.clothing.drawResults();
                     }
                 });
                 $("#graphMethod").selectmenu({
                     change: function (event, data) {
                         const method = $('#graphMethod').val();
-                        window.location = `${window.location.origin}/showPaintingsOnCanvasAnnotated.html?graphMethod=${method.toLowerCase()}&clustering=${window.clustering}`
+                        window.settings.graphMethod=method.toLowerCase();
+                        window.clothing.drawResults();
                     }
                 });
                 setTimeout(() => {
-                    if (window.clustering=='imofa') {
+                    if (window.settings.clustering=='imofa') {
                         $('#clustering').val('IMoFA');
                     } 
-                    else if (window.clustering=='annotated') {
+                    else if (window.settings.clustering=='annotated') {
                         $('#clustering').val('Annotated');
                     } else {
-                        $('#clustering').val(window.clustering);
+                        $('#clustering').val(window.settings.clustering);
                     }
                     $("#clustering").selectmenu("refresh");
-                    if (window.graphMethod=='hue') {
+                    if (window.settings.graphMethod=='hue') {
                         $('#graphMethod').val('Hue');
                     }
-                    else if (window.graphMethod=='color') {
+                    else if (window.settings.graphMethod=='color') {
                         $('#graphMethod').val('Color');
                     }
-                    else if (window.graphMethod=='portrait') {
+                    else if (window.settings.graphMethod=='portrait') {
                         $('#graphMethod').val('Portrait');
                     }
                     else {
-                        alert(`Unknown graph method: ${window.graphMethod}!`);
+                        alert(`Unknown graph method: ${window.settings.graphMethod}!`);
                     }
                     $("#graphMethod").selectmenu("refresh");
                 }, 500);
             });</script>
-        <canvas id="femaleCanvasHSV" width="1400" height="200"></canvas>
+        <canvas id="femaleCanvasHSI" width="1400" height="200"></canvas>
         <canvas id="femaleCanvasMonochrome" width="1400" height="150"></canvas>
-        <canvas id="maleCanvasHSV" width="1400" height="200"></canvas>
+        <canvas id="maleCanvasHSI" width="1400" height="200"></canvas>
         <canvas id="maleCanvasMonochrome" width="1400" height="150"></canvas>
     </article>
     <footer></footer>
