@@ -24,7 +24,9 @@
 <body>
     <article>
         <h1>Clothing Graph</h1>
-        <div id="progressbar" class="progressBar"><span class="progressBarText">Loading...</span></div>
+        <div id="progressbar" class="progressBar">
+            <span class="progressBarText">Loading...</span>
+        </div>
 
         <fieldset style='margin-left:auto;margin-right:auto;width:500px;'>
             <label for="clustering" style='width:250px;'>Select a color extraction method</label>
@@ -50,34 +52,34 @@
                 $("#clustering").selectmenu({
                     change: function (event, data) {
                         const method = $('#clustering').val();
-                        window.settings.clustering=method.toLowerCase();
+                        window.settings.clustering = method.toLowerCase();
                         window.clothing.drawResults();
                     }
                 });
                 $("#graphMethod").selectmenu({
                     change: function (event, data) {
                         const method = $('#graphMethod').val();
-                        window.settings.graphMethod=method.toLowerCase();
+                        window.settings.graphMethod = method.toLowerCase();
                         window.clothing.drawResults();
                     }
                 });
                 setTimeout(() => {
-                    if (window.settings.clustering=='imofa') {
+                    if (window.settings.clustering == 'imofa') {
                         $('#clustering').val('IMoFA');
-                    } 
-                    else if (window.settings.clustering=='annotated') {
+                    }
+                    else if (window.settings.clustering == 'annotated') {
                         $('#clustering').val('Annotated');
                     } else {
                         $('#clustering').val(window.settings.clustering);
                     }
                     $("#clustering").selectmenu("refresh");
-                    if (window.settings.graphMethod=='hue') {
+                    if (window.settings.graphMethod == 'hue') {
                         $('#graphMethod').val('Hue');
                     }
-                    else if (window.settings.graphMethod=='color') {
+                    else if (window.settings.graphMethod == 'color') {
                         $('#graphMethod').val('Color');
                     }
-                    else if (window.settings.graphMethod=='portrait') {
+                    else if (window.settings.graphMethod == 'portrait') {
                         $('#graphMethod').val('Portrait');
                     }
                     else {
@@ -92,6 +94,70 @@
         <canvas id="maleCanvasMonochrome" width="1400" height="150"></canvas>
     </article>
     <footer></footer>
+    <script>
+        function displayFiles(files) {
+            const fncProgressGenCallback = () => window.clothing.progressBar.fncProgressGenCallback();
+            if (window.settings.clustering == "annotated") {
+                $.getJSON('data/json/filesAnnotated.json', annotatedFileList => {
+                    for (let i = 0; i < annotatedFileList.length; i += 1) {
+                        const idxFiles = annotatedFileList[i].Index;
+                        displayByIdx('data/json/' + files[idxFiles], idxFiles, annotatedFileList[i].domColor, fncProgressGenCallback());
+                    }
+                });
+            }
+            else if (window.settings.clustering == "imofa") {
+                $.getJSON('data/json/filesImofa.json', annotatedFileList => {
+                    for (let i = 0; i < annotatedFileList.length; i += 1) {
+                        if (annotatedFileList[i] != null) {
+                            const idxFiles = annotatedFileList[i].Index;
+                            //console.log(annotatedFileList[i]);
+                            const imofaColors = annotatedFileList[i].imofaColor;
+                            let domImofaColor = [0, 0, 0, 0];
+                            let domImofaWeight = 0;
+                            for (let c = 0; c < imofaColors.length; ++c) {
+                                const currentImofaColor = imofaColors[c];
+                                if (currentImofaColor[0] > domImofaWeight) {
+                                    [domImofaWeight, domImofaColor[0], domImofaColor[1], domImofaColor[2], domImofaColor[3]] = currentImofaColor;
+                                }
+                            }
+                            displayByIdx('data/json/' + files[idxFiles], idxFiles, getDominantColorFromH1H2SI(domImofaColor), fncProgressGenCallback());
+                        }
+                    }
+                });
+            }
+            else if (window.settings.clustering == "k2" || window.settings.clustering == "k5" || window.settings.clustering == "k8" || window.settings.clustering == "k11" || window.settings.clustering == "k14" || window.settings.clustering == "k17") {
+                $.getJSON('data/json/filesKMeans.json', annotatedFileList => {
+                    for (let i = 0; i < annotatedFileList.length; i += 1) {
+                        const idxFiles = annotatedFileList[i].Index;
+                        if (window.settings.clustering == "k2") {
+                            displayByIdx('data/json/' + files[idxFiles], idxFiles, getDominantColorFromH1H2SI(annotatedFileList[i].kMeans[0].domColor), fncProgressGenCallback());
+                        }
+                        else if (window.settings.clustering == "k5") {
+                            displayByIdx('data/json/' + files[idxFiles], idxFiles, getDominantColorFromH1H2SI(annotatedFileList[i].kMeans[1].domColor), fncProgressGenCallback());
+                        }
+                        else if (window.settings.clustering == "k8") {
+                            displayByIdx('data/json/' + files[idxFiles], idxFiles, getDominantColorFromH1H2SI(annotatedFileList[i].kMeans[2].domColor), fncProgressGenCallback());
+                        }
+                        else if (window.settings.clustering == "k11") {
+                            displayByIdx('data/json/' + files[idxFiles], idxFiles, getDominantColorFromH1H2SI(annotatedFileList[i].kMeans[3].domColor), fncProgressGenCallback());
+                        }
+                        else if (window.settings.clustering == "k14") {
+                            displayByIdx('data/json/' + files[idxFiles], idxFiles, getDominantColorFromH1H2SI(annotatedFileList[i].kMeans[4].domColor), fncProgressGenCallback());
+                        }
+                        else if (window.settings.clustering == "k17") {
+                            displayByIdx('data/json/' + files[idxFiles], idxFiles, getDominantColorFromH1H2SI(annotatedFileList[i].kMeans[5].domColor), fncProgressGenCallback());
+                        }
+                        else {
+                            alert(`Unknown option: clustering=${window.settings.clustering}`);
+                        }
+                    }
+                });
+            }
+            else {
+                alert(`Unknown option: clustering=${window.settings.clustering}`);
+            }
+        };
+    </script>
 </body>
 
 </html>
