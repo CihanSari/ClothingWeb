@@ -547,12 +547,12 @@ function preprocessJson(desc) {
 
 
   function applyParametersFromConfig(config) {
-    $.each(window.defaultSettings, settingsKey => {
+    $.each(window.clothing.defaultSettings, settingsKey => {
       if (window.settings == null) {
         window.settings = {};
       }
       if (config[settingsKey] != null) {
-        if (isNaN(window.defaultSettings[settingsKey])) {
+        if (isNaN(window.clothing.defaultSettings[settingsKey])) {
           window.settings[settingsKey] = config[settingsKey];
         }
         else {
@@ -560,7 +560,7 @@ function preprocessJson(desc) {
         }
       }
       else {
-        window.settings[settingsKey] = window.defaultSettings[settingsKey];
+        window.settings[settingsKey] = window.clothing.defaultSettings[settingsKey];
       }
     });
   }
