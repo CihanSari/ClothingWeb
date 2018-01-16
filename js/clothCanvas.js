@@ -717,3 +717,15 @@ function getImofaWithThreshold(imofaColors, areaThreshold) {
     }
     return domImofaColors;
 }
+
+function updateCluster(c1, c2) {
+    // c1 and c2 has first element weight, rest of the values will be scaled off the weights...
+    const cOut = [c1[0] + c2[0]];
+
+    const fncUpdateValueWithWeight = (x1, w1, x2, w2) => (x1 * w1 + x2 * w2) / (w1 + w2);
+
+    for (let i = 1; i < c1.length; i += 1) {
+        cOut[i] = fncUpdateValueWithWeight(c1[i], c1[0], c2[i], c2[0]);
+    }
+    return cOut;
+}
