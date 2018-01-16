@@ -18,6 +18,7 @@
     <script src="js/clothFiles.js"></script>
     <script src="js/clothingBase.js"></script>
     <script src="js/showPaintingsOnCanvasAnnotated.js"></script>
+    <script src="js/dominantImofaColor.js"></script>
     <title>Clothing</title>
 </head>
 
@@ -95,77 +96,10 @@
     </article>
     <footer></footer>
     <script>
-        function updateCluster(c1, c2) {
-            // c1 and c2 has first element weight, rest of the values will be scaled off the weights...
-            const cOut = [c1[0] + c2[0]];
-
-            const fncUpdateValueWithWeight = (x1, w1, x2, w2) => (x1 * w1 + x2 * w2) / (w1 + w2);
-
-            for (let i = 1; i < c1.length; i += 1) {
-                cOut[i] = fncUpdateValueWithWeight(c1[i], c1[0], c2[i], c2[0]);
-            }
-            return cOut;
-        }
         function displayFiles(files) {
             const fncProgressGenCallback = () => window.clothing.progressBar.fncProgressGenCallback();
             $.getJSON('data/json/filesImofa.json', annotatedFileList => {
-                const areaThreshold = 0.1;
-                const hueGroupThreshold = 30;
-                const intGroupThreshold = 0.2;
-                for (let idxFile = 0; idxFile < annotatedFileList.length; idxFile += 10) {
-                    if (annotatedFileList[idxFile] != null) {
-                        const idxFiles = annotatedFileList[idxFile].Index;
-                        const imofaColors = annotatedFileList[idxFile].imofaColor;
-                        const imofaHueCenters = [];
-                        const imofaIntCenters = [];
-                        for (let idxColor = 0; idxColor < imofaColors.length; idxColor += 1) {
-                            const [weight, h1, h2, saturation, intensity] = imofaColors[idxColor];
-                            const hue = getDominantColorFromH1H2SI([h1, h2, saturation, intensity])[0];
-                            if (checkIfHue(hue, saturation, intensity)) {
-                                let assignedToACluster = false;
-                                for (let idxHueCenter = 0; idxHueCenter < imofaHueCenters.length; idxHueCenter += 1) {
-                                    const [centerWeight, centerHue, centerSaturation, centerIntensity] = imofaHueCenters[idxHueCenter];
-                                    let hueDif = (centerHue - hue) % 360;
-                                    while (hueDif < 0) {
-                                        hueDif += 360;
-                                    }
-                                    // Hue difference should be between 0 and 360 now...
-                                    if (hueDif > (360 - hueGroupThreshold) || hueDif < hueGroupThreshold) {
-                                        imofaHueCenters[idxHueCenter] = updateCluster(imofaHueCenters[idxHueCenter], [weight, hue, saturation, intensity]);
-                                        assignedToACluster = true;
-                                        break;
-                                    }
-                                }
-                                if (!assignedToACluster) {
-                                    // Did not assign to any cluster...
-                                    imofaHueCenters.push([weight, hue, saturation, intensity]);
-                                }
-                            }
-                            else {
-                                let assignedToACluster = false;
-                                for (let idxIntCenter = 0; idxIntCenter < imofaIntCenters.length; idxIntCenter += 1) {
-                                    const [centerWeight, centerHue, centerSaturation, centerIntensity] = imofaIntCenters[idxIntCenter];
-                                    if (Math.abs(centerIntensity - intensity) < intGroupThreshold) {
-                                        imofaIntCenters[idxIntCenter] = updateCluster(imofaIntCenters[idxIntCenter], [weight, hue, saturation, intensity]);
-                                        assignedToACluster = true;
-                                        break;
-                                    }
-                                }
-                                if (!assignedToACluster) {
-                                    // Did not assign to any cluster...
-                                    imofaIntCenters.push([weight, hue, saturation, intensity]);
-                                }
-                            }
-                        }
-                        function disp(whsi) {
-                            if (whsi[0] > areaThreshold) {
-                                displayByIdx('data/json/' + files[idxFiles], idxFiles, [whsi[1], whsi[2], whsi[3]], fncProgressGenCallback())
-                            }
-                        };
-                        imofaHueCenters.forEach(disp);
-                        imofaIntCenters.forEach(disp);
-                    }
-                }
+                displayImofaFileList(annotatedFileList,files,fncProgressGenCallback);
             });
         }
     </script>
