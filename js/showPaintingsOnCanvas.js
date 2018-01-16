@@ -173,7 +173,7 @@
             keys: ['enter'],
             action: () => {
               canvas.deactivateAll().renderAll();
-              window.open(`${window.location.origin}/?paintingIdx=${String(paintingIdx)}`);
+              window.open(`${window.location.origin}/voting.html?paintingIdx=${String(paintingIdx)}`);
             }
           },
         }
