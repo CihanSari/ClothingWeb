@@ -56,3 +56,22 @@ function dominantImofaColors(imofaColors, hueGroupThreshold = 30, intGroupThresh
     }
     return imofaHueCenters.concat(imofaIntCenters);
 }
+
+function displayTfidfFileList(annotatedFileList, files, fncProgressGenCallback=()=>{}, areaThreshold=0.1, hueGroupThreshold = 30, intGroupThreshold = 0.2, fileStep=1) {
+    for (let idxFile = 0; idxFile < annotatedFileList.length; idxFile += fileStep) {
+        if (annotatedFileList[idxFile] != null) {
+            const idxFiles = annotatedFileList[idxFile].Index;
+            function disp(whsi) {
+                if (whsi[0] > areaThreshold) {
+                    displayByIdx('data/json/' + files[idxFiles], idxFiles, [whsi[1], whsi[2], whsi[3]], fncProgressGenCallback())
+                }
+            };
+            if (isNaN(annotatedFileList[idxFile].tfidfColors[0])) {
+                annotatedFileList[idxFile].tfidfColors.forEach(disp);
+            }
+            else {
+                disp(annotatedFileList[idxFile].tfidfColors)
+            }
+        }
+    }
+}

@@ -6,6 +6,7 @@
     window.clothing.defaultSettings = {
       graphMethod: 'hue',
       clustering: 'imofa',
+      tfidf:'12',
       scaleYAxis: 1,//0 or 1
       thSaturation: 0.05,
       thSaturationHigh: 0.15,
