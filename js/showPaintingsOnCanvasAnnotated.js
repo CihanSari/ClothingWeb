@@ -1,21 +1,23 @@
 ﻿const showPaintingsOnCanvas = () => {
   // get paintings
   function run() {
-    window.clothing = {};
+    window.clothing = window.clothing || {};
 
+    window.clothing.defaultSettings = window.clothing.defaultSettings || {};
     window.clothing.defaultSettings = {
-      graphMethod: 'hue',
-      clustering: 'imofa',
-      tfidf:'12',
-      scaleYAxis: 1,//0 or 1
-      thSaturation: 0.05,
-      thSaturationHigh: 0.15,
-      thIntensityDark: 0.1,
-      thIntensityDarkHigh: 0.15,
-      thIntensityBright: 0.85,
-      thIntensityBrightLow: 0.75,
-      minUpvote: 0,
-      maxDownvote: -1
+      graphMethod: window.clothing.defaultSettings.graphMethod || 'hue',
+      clustering: window.clothing.defaultSettings.clustering || 'imofa',
+      colorMethod: window.clothing.defaultSettings.colorMethod || 'tfidf',
+      tfidf: window.clothing.defaultSettings.tfidf || '12',
+      scaleYAxis: window.clothing.defaultSettings.scaleYAxis || 1,//0 or 1
+      thSaturation: window.clothing.defaultSettings.thSaturation || 0.05,
+      thSaturationHigh: window.clothing.defaultSettings.thSaturationHigh || 0.15,
+      thIntensityDark: window.clothing.defaultSettings.thIntensityDark || 0.1,
+      thIntensityDarkHigh: window.clothing.defaultSettings.thIntensityDarkHigh || 0.15,
+      thIntensityBright: window.clothing.defaultSettings.thIntensityBright || 0.85,
+      thIntensityBrightLow: window.clothing.defaultSettings.thIntensityBrightLow || 0.75,
+      minUpvote: window.clothing.defaultSettings.minUpvote || 0,
+      maxDownvote: window.clothing.defaultSettings.maxDownvote || -1
     };
     window.clothing.canvas = {
       male: {

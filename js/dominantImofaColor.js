@@ -1,6 +1,7 @@
+multipleDominantColorsAreaThreshold = 0.1;
 function displayImofaFileList(fileList, files, fncProgressGenCallback = () => { }, fncFilter = (dominantColors, fncDisplayColor) => {
     dominantColors.forEach(whsi => {
-        if (whsi[0] > areaThreshold) {
+        if (whsi[0] > multipleDominantColorsAreaThreshold) {
             fncDisplayColor(whsi);
         }
     });
@@ -11,7 +12,7 @@ function displayImofaFileList(fileList, files, fncProgressGenCallback = () => { 
             function fncDisplayColor(whsi) {
                 displayByIdx('data/json/' + files[idxFiles], idxFiles, [whsi[1], whsi[2], whsi[3]], fncProgressGenCallback())
             };
-            fncFilter(dominantImofaColors(fileList[idxFile].imofaColor, hueGroupThreshold, intGroupThreshold), disp);
+            fncFilter(dominantImofaColors(fileList[idxFile].imofaColor, hueGroupThreshold, intGroupThreshold), fncDisplayColor);
         }
     }
 }
@@ -63,7 +64,7 @@ function dominantImofaColors(imofaColors, hueGroupThreshold = 30, intGroupThresh
 
 function displayTfidfFileList(fileList, files, fncProgressGenCallback = () => { }, fncFilter = (dominantColors, fncDisplayColor) => {
     dominantColors.forEach(whsi => {
-        if (whsi[0] > areaThreshold) {
+        if (whsi[0] > multipleDominantColorsAreaThreshold) {
             fncDisplayColor(whsi);
         }
     });

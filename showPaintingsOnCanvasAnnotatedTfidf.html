@@ -137,20 +137,20 @@
                         }
                     };
             if (window.settings.colorMethod == 'dominant-colors') {
-                $.getJSON('data/json/filesImofa.json', annotatedFileList => {
-                    displayImofaFileList(annotatedFileList, files, fncProgressGenCallback);
+                $.getJSON('data/json/filesNotfidf.json', fileList => {
+                    displayTfidfFileList(fileList, files, fncProgressGenCallback);
                 });
             } else if (window.settings.colorMethod == 'tfidfs') {
-                $.getJSON(`data/json/filesTfidf${window.settings.tfidf}.json`, annotatedFileList => {
-                    displayTfidfFileList(annotatedFileList, files, fncProgressGenCallback);
+                $.getJSON(`data/json/filesTfidf${window.settings.tfidf}.json`, fileList => {
+                    displayTfidfFileList(fileList, files, fncProgressGenCallback);
                 });
             } else if (window.settings.colorMethod == 'dominant-color') {
-                $.getJSON(`data/json/filesImofa${window.settings.tfidf}.json`, annotatedFileList => {
-                    displayImofaFileList(annotatedFileList, files, fncProgressGenCallback, fncSelectHighestWeightToDisplay);
+                $.getJSON(`data/json/filesNotfidf.json`, fileList => {
+                    displayTfidfFileList(fileList, files, fncProgressGenCallback, fncSelectHighestWeightToDisplay);
                 });
             } else if (window.settings.colorMethod == 'tfidf') {
-                $.getJSON(`data/json/filesTfidf${window.settings.tfidf}.json`, annotatedFileList => {
-                    displayTfidfFileList(annotatedFileList, files, fncProgressGenCallback, fncSelectHighestWeightToDisplay);
+                $.getJSON(`data/json/filesTfidf${window.settings.tfidf}.json`, fileList => {
+                    displayTfidfFileList(fileList, files, fncProgressGenCallback, fncSelectHighestWeightToDisplay);
                 });
             }
         }
