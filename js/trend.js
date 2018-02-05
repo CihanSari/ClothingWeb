@@ -1,11 +1,11 @@
-async function displayFiles(files) {
+async function displayFiles() {
     const fncProgressGenCallback = () => window.clothing.progressBar.fncProgressGenCallback();
     const fncCallbackAfterFiles = fncProgressGenCallback();
     const files = await clothFiles2();
     fncCallbackAfterFiles();
-    forEach((file, idx) => {
+    files.forEach((file, idx) => {
       if (file!=null) {
-        getImofaFromFilesIdx(clothFiles, idx, fncProgressGenCallback());
+        getImofaFromFilesIdx(files, idx, fncProgressGenCallback);
       }
     })
   }
@@ -19,12 +19,28 @@ function getJSON(filepath) {
   return $.getJSON(`${basepath}${filepath}`)
 }
 
-async function getImofaFromFilesIdx(clothFiles2, idx, callback) {
+async function getImofaFromFilesIdx(clothFiles2, idx, genCallback) {
   const fileContent2Promise = getJSON(clothFiles2[idx].json2);
   const imofa2Promise = getJSON(clothFiles2[idx].imofa2Color);
-  return drawPainting(await fileContent2Promise, idx, await imofa2Promise, callback);
-}
-
-async function displayClothFiles2(fileContent, idx) {
-  drawPainting(fileContent, idx, domColor, callback);
+  const callbackForImofaColor = genCallback();
+  const imofa2Color = await imofa2Promise;
+  callbackForImofaColor();
+  const color1 = imofa2Color[0];
+  if ($.isArray(color1)) {
+    // there are multiple colors
+    const promises = [];
+    const callbacks = [];
+    for (let i=0; i<imofa2Color.length; i+=1) {
+      callbacks.push(genCallback());
+      promises.push(drawPaintingAsync(fileContent2Promise, idx, imofa2Color[i].slice(1,4)));
+    }
+    await Promise.all(promises);
+    callbacks.forEach(callback=>callback());
+  }
+  else {
+    // There is only one dom color
+    const callback = genCallback();
+    await drawPaintingAsync(fileContent2Promise, idx, imofa2Color.slice(1,4));
+    callback();
+  }  
 }

@@ -395,6 +395,104 @@ function drawPainting(json, paintingIdx, domColor, callback) {
     drawData(getData(json, domColor), paintingIdx, callback);
 }
 
+
+async function drawPaintingAsync(jsonPromise, paintingIdx, domColor) {
+    async function getData() {
+        const desc = await jsonPromise;
+        return {
+            color: domColor,
+            year: desc.Year,
+            gender: desc.Gender,
+            title: desc.title,
+            painter: desc.Painter,
+            imageUrl: 'data/jpg/' + desc.Filename,
+            drawUrl: 'data/jpg/' + desc.Filename
+        }
+    }
+
+    async function drawData(descPromise) {
+        let canvasGender = null;
+        let canvasGenderColor = null;
+        const desc = await getData();
+        if (desc.gender === "Male")
+            canvasGender = window.clothing.canvas.male;
+        else {
+            canvasGender = window.clothing.canvas.female;
+        }
+        let hueCanvas = true;
+        let [hue, saturation, intensity] = desc.color;
+        let y = null;
+        if (checkIfHue(hue, saturation, intensity)) {
+            canvasGenderColor = canvasGender.color
+            y = hueToY(hue, canvasGenderColor);
+        }
+        else {
+            canvasGenderColor = canvasGender.mono
+            y = intToY(intensity, canvasGenderColor);
+            hueCanvas = false;
+        }
+        const x = yearToX(Number(desc.year), canvasGenderColor);
+
+        function displayProperties() {
+            const defaultProperties = {
+                stroke: 'black',
+                strokeWidth: 1,
+                lockMovementX: true,
+                lockMovementY: true,
+                lockScalingX: true,
+                lockScalingY: true,
+                lockUniScaling: true,
+                lockRotation: true
+            }
+            function hueToColor(hue) {
+                [red, green, blue] = hsi2rgb(hue, 0.5, 0.5);
+                return `rgb(${red},${green},${blue})`
+            }
+
+            function hsiToColor(hue, saturation, intensity) {
+                [red, green, blue] = hsi2rgb(hue, saturation, intensity);
+                return `rgb(${red},${green},${blue})`
+            }
+            function properties(widthheight, options) {
+                if (options == null) {
+                    options = {};
+                }
+                options.left = x - widthheight / 2;
+                options.top = y - widthheight / 2 + canvasGenderColor.yStart;
+                options.width = widthheight;
+                options.height = widthheight;
+                return $.extend({}, defaultProperties, options);
+            };
+            if (window.settings.graphMethod == 'hue') {
+                return properties(16, { fill: hueCanvas ? hueToColor(hue) : `rgb(${Math.round(intensity * 255)},${Math.round(intensity * 255)},${Math.round(intensity * 255)})` });
+            }
+            else if (window.settings.graphMethod == 'color') {
+                return properties(16, { fill: hsiToColor(hue, saturation, intensity) });
+            }
+            else if (window.settings.graphMethod == 'portrait') {
+                return properties(30);
+            }
+        }
+
+        function addFabric(fabricObj, paintingIdx) {
+            fabricObj.on('selected', () => {
+                canvasGenderColor.deactivateAll().renderAll();
+                showImage(desc, canvasGenderColor, paintingIdx);
+            });
+            canvasGenderColor.add(fabricObj);
+        }
+
+        if (window.settings.graphMethod == 'portrait') {
+            const imgLoaded = await fabric.Image.fromURL(desc.drawUrl);
+            addFabric(imgLoaded.set(displayProperties()), paintingIdx);
+        }
+        else {
+            addFabric(new fabric.Rect(displayProperties()), paintingIdx);
+        }
+    }
+    drawData();
+}
+
 function filterFiles(desc) {
     const decision = getVote(desc);
     preprocessJson(desc);

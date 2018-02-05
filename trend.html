@@ -13,11 +13,11 @@
     <script src="//cdnjs.cloudflare.com/ajax/libs/fabric.js/1.7.20/fabric.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/color-thief/2.0.1/color-thief.min.js"></script>
     <script src="//code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-    <script src="js/clothCanvas.js"></script>
+    <script src="js/common.js"></script>
     <script src="js/clothProgressBar.js"></script>
+    <script src="js/prepareCanvas.js"></script>
+    <script src="js/clothCanvas.js"></script>
     <script src="js/clothFiles.js"></script>
-    <script src="js/clothingBase.js"></script>
-    <script src="js/showPaintingsOnCanvasAnnotated.js"></script>
     <script src="js/dominantImofaColor.js"></script>
     <script src="js/trend.js"></script>
     <title>Clothing</title>
@@ -52,8 +52,9 @@
             <a id="editEditor" href="javascript:void(0)">Advanced graph settings</a>
         </fieldset>
         <script>
-            window.settings = {};
-            window.settings.colorMethod = 'tfidf';
+            window.settings = window.settings||{};
+            window.settings.colorMethod = window.settings.colorMethod || 'tfidf';
+            window.settings.graphMethod = window.settings.graphMethod || 'hue';
             $(function () {
                 $("#clustering").selectmenu({
                     change: function (event, data) {
@@ -116,7 +117,12 @@
                     }
                     $("#colorMethod").selectmenu("refresh");
                 }, 500);
-            });</script>
+            });
+            $(function () {
+                showPaintingsOnCanvas();
+                displayFiles();
+            });
+            </script>
         <canvas id="femaleCanvasHSI" width="1400" height="200"></canvas>
         <canvas id="femaleCanvasMonochrome" width="1400" height="150"></canvas>
         <canvas id="maleCanvasHSI" width="1400" height="200"></canvas>
