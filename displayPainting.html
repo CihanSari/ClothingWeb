@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-beta/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="resources/css/clothing.css">
+    <link rel="icon" href="resources/icons/clothingfork.ico">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/fabric.js/1.7.20/fabric.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/color-thief/2.0.1/color-thief.min.js"></script>
+    <script src="//code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="js/displayPainting.js"></script>
+    <title>Display Painting</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+        }
+
+        /* Style the tab */
+
+        .tab {
+            border: 1px solid #ccc;
+            background-color: #f1f1f1;
+            width: 7.5em;
+            height: 100%;
+            overflow: auto;
+        }
+
+        /* Style the buttons inside the tab */
+
+        .tab button {
+            overflow:hidden;
+            background-color: inherit;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 14px 16px;
+            transition: 0.3s;
+            font-size: 17px;
+            height: 4em;
+            width: 100%;
+        }
+
+        /* Change background color of buttons on hover */
+
+        .tab button:hover {
+            background-color: #ddd;
+        }
+
+        /* Create an active/current tablink class */
+
+        .tab button.active {
+            background-color: #ccc;
+        }
+
+        /* Style the tab content */
+
+        .tabcontent {
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-top: none;
+        }
+    </style>
+</head>
+
+<body>
+    <script>
+        $(function () {
+            const init = async () => {
+                const files = await $.getJSON('data/json/files_v2.json');
+                $("#loading").html("Loading files...");
+                const tabsJQ = $('<div class="tab"/>');
+                let previousDivContainer = null;
+                files.forEach((file, fileIndex) => {
+                    if (file != null) {
+                        const tabId = `${fileIndex + 1}`;
+                        const jButton = $(`<button class="tablinks">${tabId}</button>`);
+                        let currentDivContainer = null;
+                        jButton.click(async () => {
+                            if (currentDivContainer === null) {
+                                currentDivContainer = await displayPainting(file);
+                            }
+                            if (previousDivContainer !== currentDivContainer) {
+                                if (previousDivContainer !== null) {
+                                    previousDivContainer.remove();
+                                }
+                                currentDivContainer.appendTo("body");
+                                previousDivContainer = currentDivContainer;
+                            }
+                        });
+                        tabsJQ.append(jButton);
+                    }
+                });
+                tabsJQ.appendTo("body");
+
+                $("#loading").hide();
+
+            };
+            init();
+        });
+    </script>
+    <div id="loading">Getting file list...</div>
+</body>
+
+</html>
