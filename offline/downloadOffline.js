@@ -10,7 +10,6 @@ async function downloadFile(url) {
             res.on('data', function (chunk) {
                 body += chunk;
             });
-
             res.on('end', function () {
                 resolve(body);
             });
