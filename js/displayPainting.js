@@ -19,7 +19,7 @@ async function getImage(imagePath) {
     });
 }
 
-async function getGrabcutImage(paintingData, grabcut, maskValue = 3) {
+async function getGrabcutImage(paintingData, grabcut, showOld = false) {
     const fncParseCVYAML = yamlData => {
         const dataWithoutHeader = yamlData.substring(35);
         const dirtyPieces = dataWithoutHeader.split(': ');
@@ -32,8 +32,7 @@ async function getGrabcutImage(paintingData, grabcut, maskValue = 3) {
             const fncTryParse = val => {
                 try {
                     return JSON.parse(val);
-                }
-                catch (e) {
+                } catch (e) {
                     return val;
                 }
             };
@@ -53,8 +52,14 @@ async function getGrabcutImage(paintingData, grabcut, maskValue = 3) {
         for (let i = 0; i < yamlStruct['rows']; ++i) {
             for (let j = 0; j < yamlStruct['cols']; ++j) {
                 const maskVal = yamlStruct['data'][i * yamlStruct['cols'] + j];
-                if (maskVal !== maskValue) {
-                    bufferCtx.clearRect(j, i, 1, 1);
+                if (showOld) {
+                    if (maskVal === 0) {
+                        bufferCtx.clearRect(j, i, 1, 1);
+                    }
+                } else {
+                    if (maskVal < 1) {
+                        bufferCtx.clearRect(j, i, 1, 1);
+                    }
                 }
             }
         }
@@ -62,6 +67,7 @@ async function getGrabcutImage(paintingData, grabcut, maskValue = 3) {
     bufferCtx.stroke();
     return bufferCanvas.toDataURL();
 };
+
 function hsi2rgb(resultHue, resultSaturation, resultIntensity) {
     while (resultHue > 360)
         resultHue -= 360;
@@ -76,38 +82,30 @@ function hsi2rgb(resultHue, resultSaturation, resultIntensity) {
         backR = Math.floor((resultIntensity + (2 * resultIntensity * resultSaturation)));
         backG = Math.floor((resultIntensity - (resultIntensity * resultSaturation)));
         backB = Math.floor((resultIntensity - (resultIntensity * resultSaturation)));
-    }
-    else if ((0 < resultHue) && (resultHue < 120)) {
+    } else if ((0 < resultHue) && (resultHue < 120)) {
         backR = Math.floor((resultIntensity + (resultIntensity * resultSaturation) * cos(resultHue) / cos(60 - resultHue)));
         backG = Math.floor((resultIntensity + (resultIntensity * resultSaturation) * (1 - cos(resultHue) / cos(60 - resultHue))));
         backB = Math.floor((resultIntensity - (resultIntensity * resultSaturation)));
-    }
-
-    else if (resultHue == 120) {
+    } else if (resultHue == 120) {
         backR = Math.floor((resultIntensity - (resultIntensity * resultSaturation)));
         backG = Math.floor((resultIntensity + (2 * resultIntensity * resultSaturation)));
         backB = Math.floor((resultIntensity - (resultIntensity * resultSaturation)));
-    }
-
-    else if ((120 < resultHue) && (resultHue < 240)) {
+    } else if ((120 < resultHue) && (resultHue < 240)) {
         backR = Math.floor((resultIntensity - (resultIntensity * resultSaturation)));
         backG = Math.floor((resultIntensity + (resultIntensity * resultSaturation) * cos(resultHue - 120) / cos(180 - resultHue)));
         backB = Math.floor((resultIntensity + (resultIntensity * resultSaturation) * (1 - cos(resultHue - 120) / cos(180 - resultHue))));
-    }
-
-    else if (resultHue == 240) {
+    } else if (resultHue == 240) {
         backR = Math.floor((resultIntensity - (resultIntensity * resultSaturation)));
         backG = Math.floor((resultIntensity - (resultIntensity * resultSaturation)));
         backB = Math.floor((resultIntensity + (2 * resultIntensity * resultSaturation)));
-    }
-
-    else if ((240 < resultHue) && (resultHue < 360)) {
+    } else if ((240 < resultHue) && (resultHue < 360)) {
         backR = Math.floor((resultIntensity + (resultIntensity * resultSaturation) * (1 - cos(resultHue - 240) / cos(300 - resultHue))));
         backG = Math.floor((resultIntensity - (resultIntensity * resultSaturation)));
         backB = Math.floor((resultIntensity + (resultIntensity * resultSaturation) * cos(resultHue - 240) / cos(300 - resultHue)));
     }
     return [backR, backG, backB];
 }
+
 function parseImofa(imofaJson) {
     function imofaWHSIArray2WRGBArray(WHSIArray) {
         const wrgbArray = [];
@@ -120,8 +118,7 @@ function parseImofa(imofaJson) {
     if ($.isArray(color1)) {
         // there are multiple colors
         return imofaWHSIArray2WRGBArray(imofaJson);
-    }
-    else {
+    } else {
         return imofaWHSIArray2WRGBArray([imofaJson]);
     }
 }
@@ -144,10 +141,10 @@ async function displayPainting(paintingConfig) {
         const imofa2WRGB = promises.imofa2Color ? parseImofa(await promises.imofa2Color) : null;
 
         const grabcutJson = promises.grabcut ? (await promises.grabcut).GrabCutData : null;
-        const grabcutSrc = promises.grabcut ? await getGrabcutImage(image, grabcutJson, 3) : `https://placeholdit.imgix.net/~text?txtsize=56&txt=Not%20Available&w=${image.width}&h=${image.height}&txttrack=0`;
+        const grabcutSrc = promises.grabcut ? await getGrabcutImage(image, grabcutJson, true) : `https://placeholdit.imgix.net/~text?txtsize=56&txt=Not%20Available&w=${image.width}&h=${image.height}&txttrack=0`;
 
         const grabcut2Json = promises.grabcut2 ? (await promises.grabcut2).GrabCutDataV2 : null;
-        const grabcut2Src = promises.grabcut2 ? await getGrabcutImage(image, grabcut2Json, 1) : `https://placeholdit.imgix.net/~text?txtsize=56&txt=Not%20Available&w=${image.width}&h=${image.height}&txttrack=0`;
+        const grabcut2Src = promises.grabcut2 ? await getGrabcutImage(image, grabcut2Json, false) : `https://placeholdit.imgix.net/~text?txtsize=56&txt=Not%20Available&w=${image.width}&h=${image.height}&txttrack=0`;
 
 
         function toHex(d) {
@@ -157,8 +154,7 @@ async function displayPainting(paintingConfig) {
         function imofaToJQ(imofaJson) {
             if (imofaJson == null) {
                 return `<h4>No color extracted</h4>`;
-            }
-            else {
+            } else {
                 let imofaHTML = '<table>';
                 imofaJson.sort((a, b) => {
                     return a[0] < b[0];
@@ -202,8 +198,7 @@ async function displayPainting(paintingConfig) {
         </tr>
     </table></div>`);
         return jDispContent;
-    }
-    catch (ex) {
+    } catch (ex) {
         alert('Something went wrong. Please report the incident to cihan.sari@boun.edu.tr if issue persists. Check console for details (F12 is the default key to open console.).');
         console.error(ex);
         return $(`<div/>`)

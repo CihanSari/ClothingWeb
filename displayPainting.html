@@ -83,7 +83,7 @@
                 let previousDivContainer = null;
                 files.forEach((file, fileIndex) => {
                     if (file != null) {
-                        const tabId = `${fileIndex + 1}`;
+                        const tabId = `${fileIndex}`;
                         const jButton = $(`<button class="tablinks">${tabId}</button>`);
                         let currentDivContainer = null;
                         jButton.click(async () => {

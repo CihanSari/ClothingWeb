@@ -144,7 +144,7 @@ const axisMapping = [
         hueList: [0, 60, 360],
         hueYList: [0, 0.6, 0.88],
         intList: [0, 0.2, 0.8, 1],
-        intYList: [0, 0.6, 0.7, 1]
+        intYList: [0, 0.4, 0.6, 1]
     }
 ];
 
