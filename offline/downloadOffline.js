@@ -21,6 +21,7 @@ async function downloadFile(url) {
 
 function ensureDirectoryExistence(filePath) {
     var dirname = path.dirname(filePath);
+    console.log(`Ensure directory: ${filePath} => ${dirname}`);
     if (fs.existsSync(dirname)) {
         return true;
     }
@@ -40,8 +41,7 @@ async function downloadFileToDisk(relativePath, notLogDownload) {
             console.log(`Downloaded file ${relativePath} successfully.`);
         }
         return fileContent;
-    }
-    catch (ex) {
+    } catch (ex) {
         console.log(ex);
         process.abort();
     }
@@ -64,8 +64,7 @@ async function downloadImage(relativePath, notLogDownload) {
         if (!notLogDownload) {
             console.log(`Downloaded file ${relativePath} successfully.`);
         }
-    }
-    catch (ex) {
+    } catch (ex) {
         console.log(ex);
         process.abort();
     }
@@ -94,8 +93,18 @@ async function downloadOfflineClothingBrowser() {
         const json2Content = await downloadDataToDisk(content.json2);
         const json2 = JSON.parse(json2Content);
         const imagePath = `data/jpg/${json2.Filename}`;
-        filePromises.push(download.image({url:'http://cihansari.com/'+imagePath,dest:imagePath}));
+        ensureDirectoryExistence(imagePath);
+        filePromises.push(download.image({
+            url: 'http://cihansari.com/' + imagePath,
+            dest: imagePath
+        }));
+        try {
         await Promise.all(filePromises);
+        }
+        catch (ex) {
+            console.error(ex);
+            process.abort();
+        }
     }
     downloadFileToDisk(`index.html`);
     downloadFileToDisk(`displayPainting.html`);
