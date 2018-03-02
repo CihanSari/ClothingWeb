@@ -39,7 +39,7 @@
     prepareDisplay();
     //
     window.clothing.progressBar.initProgress();
-    clothFiles(files => displayFiles(files))
+    displayFiles();
   };
   window.clothing.drawResults();
 };

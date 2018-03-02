@@ -144,7 +144,7 @@ const axisMapping = [
         hueList: [0, 60, 360],
         hueYList: [0, 0.6, 0.88],
         intList: [0, 0.2, 0.8, 1],
-        intYList: [0, 0.4, 0.6, 1]
+        intYList: [0, 0.4, 0.8, 1]
     }
 ];
 
@@ -187,7 +187,7 @@ function hueToY(hue, canvas) {
 }
 
 function yToInt(i) {
-    return mapPair(axisMapping[window.settings.scaleYAxis].intYList, axisMapping[window.settings.scaleYAxis].intList, i) * 255;
+    return mapPair(axisMapping[window.settings.scaleYAxis].intYList, axisMapping[window.settings.scaleYAxis].intList, i);
 }
 
 function intToY(i, canvas) {
@@ -617,7 +617,8 @@ function addMonochromeBackgroundToCanvas(canvas) {
     const items = [];
     const height = 10;
     for (let i = 0; i < canvas.height - height; i += height) {
-        const monoLight = yToInt(i / canvas.height);
+        const monoLight = Math.round(yToInt(i / canvas.height)*255);
+        console.log(`(iPerc,int):(${i / canvas.height}/${monoLight})`);
 
         const rect = new fabric.Rect({
             top: i + canvas.yStart,
