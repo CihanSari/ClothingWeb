@@ -13,8 +13,7 @@ function preprocessJson(desc) {
         const paintingIsFemale = desc.Gender === "Female";
         if (paintingIsFemale) {
             window.years.femaleList.push(paintingYear);
-        }
-        else {
+        } else {
             window.years.maleList.push(paintingYear);
         }
     }
@@ -48,7 +47,9 @@ function rgb2hsi(r, g, b) {
         alert('RGB values must be in the range 0 to 255.');
         return;
     }
-    r = r / 255; g = g / 255; b = b / 255;
+    r = r / 255;
+    g = g / 255;
+    b = b / 255;
     var minRGB = Math.min(r, Math.min(g, b));
     var maxRGB = Math.max(r, Math.max(g, b));
 
@@ -82,32 +83,23 @@ function hsi2rgb(resultHue, resultSaturation, resultIntensity) {
         backR = Math.floor((resultIntensity + (2 * resultIntensity * resultSaturation)));
         backG = Math.floor((resultIntensity - (resultIntensity * resultSaturation)));
         backB = Math.floor((resultIntensity - (resultIntensity * resultSaturation)));
-    }
-    else if ((0 < resultHue) && (resultHue < 120)) {
+    } else if ((0 < resultHue) && (resultHue < 120)) {
         backR = Math.floor((resultIntensity + (resultIntensity * resultSaturation) * cos(resultHue) / cos(60 - resultHue)));
         backG = Math.floor((resultIntensity + (resultIntensity * resultSaturation) * (1 - cos(resultHue) / cos(60 - resultHue))));
         backB = Math.floor((resultIntensity - (resultIntensity * resultSaturation)));
-    }
-
-    else if (resultHue == 120) {
+    } else if (resultHue == 120) {
         backR = Math.floor((resultIntensity - (resultIntensity * resultSaturation)));
         backG = Math.floor((resultIntensity + (2 * resultIntensity * resultSaturation)));
         backB = Math.floor((resultIntensity - (resultIntensity * resultSaturation)));
-    }
-
-    else if ((120 < resultHue) && (resultHue < 240)) {
+    } else if ((120 < resultHue) && (resultHue < 240)) {
         backR = Math.floor((resultIntensity - (resultIntensity * resultSaturation)));
         backG = Math.floor((resultIntensity + (resultIntensity * resultSaturation) * cos(resultHue - 120) / cos(180 - resultHue)));
         backB = Math.floor((resultIntensity + (resultIntensity * resultSaturation) * (1 - cos(resultHue - 120) / cos(180 - resultHue))));
-    }
-
-    else if (resultHue == 240) {
+    } else if (resultHue == 240) {
         backR = Math.floor((resultIntensity - (resultIntensity * resultSaturation)));
         backG = Math.floor((resultIntensity - (resultIntensity * resultSaturation)));
         backB = Math.floor((resultIntensity + (2 * resultIntensity * resultSaturation)));
-    }
-
-    else if ((240 < resultHue) && (resultHue < 360)) {
+    } else if ((240 < resultHue) && (resultHue < 360)) {
         backR = Math.floor((resultIntensity + (resultIntensity * resultSaturation) * (1 - cos(resultHue - 240) / cos(300 - resultHue))));
         backG = Math.floor((resultIntensity - (resultIntensity * resultSaturation)));
         backB = Math.floor((resultIntensity + (resultIntensity * resultSaturation) * cos(resultHue - 240) / cos(300 - resultHue)));
@@ -118,8 +110,7 @@ function hsi2rgb(resultHue, resultSaturation, resultIntensity) {
 function checkIfHue(hue, saturation, intensity) {
     if (saturation < window.settings.thSaturation || intensity < window.settings.thIntensityDark || intensity > window.settings.thIntensityBright) {
         return false;
-    }
-    else if (saturation < window.settings.thSaturationHigh) {
+    } else if (saturation < window.settings.thSaturationHigh) {
         if ((intensity < window.settings.thIntensityDarkHigh) || (intensity > window.settings.thIntensityBrightLow)) {
             return false;
         }
@@ -133,8 +124,7 @@ function yearToX(year, canvas) {
     return (year - firstYear) / (lastYear - firstYear) * canvas.width;
 }
 
-const axisMapping = [
-    {
+const axisMapping = [{
         hueList: [0, 360],
         hueYList: [0, 1],
         intList: [0, 1],
@@ -153,8 +143,7 @@ function mapPair(list1, list2, list1Value) {
         if (list1[k] > list1Value) {
             if (k == 0) {
                 return list2[0];
-            }
-            else {
+            } else {
                 const list1Before = list1[k - 1];
                 const list1After = list1[k];
                 const list1Dist = list1After - list1Before;
@@ -199,8 +188,7 @@ function rgbToHex(red, green, blue) {
         const h = Math.floor(c).toString(16);
         if (h.length < 2) {
             return '0' + h;
-        }
-        else {
+        } else {
             return h;
         }
     };
@@ -284,6 +272,7 @@ function drawPainting(json, paintingIdx, domColor, callback) {
         }
         return imofaQuantaArray;
     };
+
     function getData(jsonDescription, domColor) {
         let desc = jsonDescription;
         if (Object.prototype.hasOwnProperty.call(jsonDescription, 'origin')) {
@@ -293,8 +282,7 @@ function drawPainting(json, paintingIdx, domColor, callback) {
         if (domColor == null) {
             const imofaQuantaArray = fncParseImofa(desc.imofa);
             color = rgb2hsi(imofaQuantaArray[0].red, imofaQuantaArray[0].green, imofaQuantaArray[0].blue)
-        }
-        else {
+        } else {
             color = domColor;
         }
         return {
@@ -324,8 +312,7 @@ function drawPainting(json, paintingIdx, domColor, callback) {
         if (checkIfHue(hue, saturation, intensity)) {
             canvasGenderColor = canvasGender.color
             y = hueToY(hue, canvasGenderColor);
-        }
-        else {
+        } else {
             canvasGenderColor = canvasGender.mono
             y = intToY(intensity, canvasGenderColor);
             hueCanvas = false;
@@ -343,6 +330,7 @@ function drawPainting(json, paintingIdx, domColor, callback) {
                 lockUniScaling: true,
                 lockRotation: true
             }
+
             function hueToColor(hue) {
                 [red, green, blue] = hsi2rgb(hue, 0.5, 0.5);
                 return `rgb(${red},${green},${blue})`
@@ -352,6 +340,7 @@ function drawPainting(json, paintingIdx, domColor, callback) {
                 [red, green, blue] = hsi2rgb(hue, saturation, intensity);
                 return `rgb(${red},${green},${blue})`
             }
+
             function properties(widthheight, options) {
                 if (options == null) {
                     options = {};
@@ -363,12 +352,14 @@ function drawPainting(json, paintingIdx, domColor, callback) {
                 return $.extend({}, defaultProperties, options);
             };
             if (window.settings.graphMethod == 'hue') {
-                return properties(16, { fill: hueCanvas ? hueToColor(hue) : `rgb(${Math.round(intensity * 255)},${Math.round(intensity * 255)},${Math.round(intensity * 255)})` });
-            }
-            else if (window.settings.graphMethod == 'color') {
-                return properties(16, { fill: hsiToColor(hue, saturation, intensity) });
-            }
-            else if (window.settings.graphMethod == 'portrait') {
+                return properties(16, {
+                    fill: hueCanvas ? hueToColor(hue) : `rgb(${Math.round(intensity * 255)},${Math.round(intensity * 255)},${Math.round(intensity * 255)})`
+                });
+            } else if (window.settings.graphMethod == 'color') {
+                return properties(16, {
+                    fill: hsiToColor(hue, saturation, intensity)
+                });
+            } else if (window.settings.graphMethod == 'portrait') {
                 return properties(30);
             }
         }
@@ -386,8 +377,7 @@ function drawPainting(json, paintingIdx, domColor, callback) {
                 addFabric(imgLoaded.set(displayProperties()), paintingIdx);
                 callback();
             })
-        }
-        else {
+        } else {
             addFabric(new fabric.Rect(displayProperties()), paintingIdx);
             callback();
         }
@@ -425,8 +415,7 @@ async function drawPaintingAsync(jsonPromise, paintingIdx, domColor) {
         if (checkIfHue(hue, saturation, intensity)) {
             canvasGenderColor = canvasGender.color
             y = hueToY(hue, canvasGenderColor);
-        }
-        else {
+        } else {
             canvasGenderColor = canvasGender.mono
             y = intToY(intensity, canvasGenderColor);
             hueCanvas = false;
@@ -444,6 +433,7 @@ async function drawPaintingAsync(jsonPromise, paintingIdx, domColor) {
                 lockUniScaling: true,
                 lockRotation: true
             }
+
             function hueToColor(hue) {
                 [red, green, blue] = hsi2rgb(hue, 0.5, 0.5);
                 return `rgb(${red},${green},${blue})`
@@ -453,6 +443,7 @@ async function drawPaintingAsync(jsonPromise, paintingIdx, domColor) {
                 [red, green, blue] = hsi2rgb(hue, saturation, intensity);
                 return `rgb(${red},${green},${blue})`
             }
+
             function properties(widthheight, options) {
                 if (options == null) {
                     options = {};
@@ -464,12 +455,14 @@ async function drawPaintingAsync(jsonPromise, paintingIdx, domColor) {
                 return $.extend({}, defaultProperties, options);
             };
             if (window.settings.graphMethod == 'hue') {
-                return properties(16, { fill: hueCanvas ? hueToColor(hue) : `rgb(${Math.round(intensity * 255)},${Math.round(intensity * 255)},${Math.round(intensity * 255)})` });
-            }
-            else if (window.settings.graphMethod == 'color') {
-                return properties(16, { fill: hsiToColor(hue, saturation, intensity) });
-            }
-            else if (window.settings.graphMethod == 'portrait') {
+                return properties(16, {
+                    fill: hueCanvas ? hueToColor(hue) : `rgb(${Math.round(intensity * 255)},${Math.round(intensity * 255)},${Math.round(intensity * 255)})`
+                });
+            } else if (window.settings.graphMethod == 'color') {
+                return properties(16, {
+                    fill: hsiToColor(hue, saturation, intensity)
+                });
+            } else if (window.settings.graphMethod == 'portrait') {
                 return properties(30);
             }
         }
@@ -483,10 +476,14 @@ async function drawPaintingAsync(jsonPromise, paintingIdx, domColor) {
         }
 
         if (window.settings.graphMethod == 'portrait') {
-            const imgLoaded = await fabric.Image.fromURL(desc.drawUrl);
+            const getFabricImagePromise = new Promise((resolve, reject) => {
+                fabric.Image.fromURL(desc.drawUrl, (img) => {
+                    resolve(img);
+                });
+            });
+            const imgLoaded = await getFabricImagePromise;
             addFabric(imgLoaded.set(displayProperties()), paintingIdx);
-        }
-        else {
+        } else {
             addFabric(new fabric.Rect(displayProperties()), paintingIdx);
         }
     }
@@ -500,8 +497,7 @@ function filterFiles(desc) {
     const downvote = decision[2];
     if (upvote < window.settings.minUpvote) {
         return false;
-    }
-    else if (window.settings.maxDownvote !== -1 && window.settings.maxDownvote < downvote) {
+    } else if (window.settings.maxDownvote !== -1 && window.settings.maxDownvote < downvote) {
         return false;
     }
     return true;
@@ -532,6 +528,7 @@ function addYearMarkers(canvas) {
     }
     canvas.add(...items);
 }
+
 function addYearTextToCanvas(canvas) {
     const yearTextHeight = 25;
     const items = [];
@@ -557,6 +554,7 @@ function addYearTextToCanvas(canvas) {
     canvas.add(...items);
     canvas.height -= (yearTextHeight * 2);
 }
+
 function addGenderIconToCanvas(canvas, genderImageUrl) {
     fabric.Image.fromURL(genderImageUrl, imgLoaded => {
         const imFabricObj = imgLoaded.set({
@@ -579,8 +577,10 @@ function addGenderIconToCanvas(canvas, genderImageUrl) {
         canvas.add(imFabricObj)
     })
 }
+
 function addHSIBackgroundToCanvas(canvas) {
     const items = [];
+
     function hueToColor(hue) {
         [red, green, blue] = hsi2rgb(hue, 0.5, 0.5);
         return `rgb(${red},${green},${blue})`
@@ -613,13 +613,12 @@ function addHSIBackgroundToCanvas(canvas) {
     canvas.add(...items);
 
 }
+
 function addMonochromeBackgroundToCanvas(canvas) {
     const items = [];
     const height = 10;
     for (let i = 0; i < canvas.height - height; i += height) {
-        const monoLight = Math.round(yToInt(i / canvas.height)*255);
-        console.log(`(iPerc,int):(${i / canvas.height}/${monoLight})`);
-
+        const monoLight = Math.round(yToInt(i / canvas.height) * 255);
         const rect = new fabric.Rect({
             top: i + canvas.yStart,
             left: 90,
@@ -653,12 +652,10 @@ function applyParametersFromConfig(config) {
         if (config[settingsKey] != null) {
             if (isNaN(window.clothing.defaultSettings[settingsKey])) {
                 window.settings[settingsKey] = config[settingsKey];
-            }
-            else {
+            } else {
                 window.settings[settingsKey] = Number(config[settingsKey]);
             }
-        }
-        else {
+        } else {
             window.settings[settingsKey] = window.clothing.defaultSettings[settingsKey];
         }
     });
@@ -693,18 +690,19 @@ class PaintingCanvas {
 function changeUrl(url) {
     if (window.clothing.drawOnce) {
         window.location = url;
-    }
-    else {
+    } else {
         window.clothing.drawOnce = true;
     }
     if (typeof (history.pushState) != "undefined") {
-        var obj = { Title: window.title, Url: url };
+        var obj = {
+            Title: window.title,
+            Url: url
+        };
         history.pushState(obj, obj.Title, obj.Url);
     } else {
         if (window.location.href != url) {
             window.location = url;
-        }
-        else {
+        } else {
             console.log('Already in destionation address.');
         }
     }
@@ -760,8 +758,7 @@ function parseParameters() {
             $.each(window.settings, settingsKey => {
                 if (isNaN(window.settings[settingsKey])) {
                     fncAddTextField(settingsKey);
-                }
-                else {
+                } else {
                     fncAddNumericField(settingsKey);
                 }
             });
@@ -810,7 +807,7 @@ function getImofaWithThreshold(imofaColors, areaThreshold) {
     for (let c = 0; c < imofaColors.length; ++c) {
         const currentImofaColor = imofaColors[c];
         if (currentImofaColor[0] > areaThreshold) {
-            currentImofaColor.splice(0,1);
+            currentImofaColor.splice(0, 1);
             domImofaColors.push(currentImofaColor);
         }
     }
