@@ -31,10 +31,12 @@
         </div>
 
         <fieldset style='margin-left:auto;margin-right:auto;width:500px;'>
-            <label for="clustering" style='width:250px;'>Select a color extraction method</label>
+            <label for="clustering" style='width:250px;'>Select data</label>
             <select name="clustering" id="clustering">
-                <option>Annotated</option>
+                <option>k-means</option>
                 <option selected="selected">IMoFA</option>
+                <option>IMoFA Multi</option>
+                <option>IMoFA tfidf</option>
             </select>
             <label for="graphMethod" style='width:250px;'>Select a plot method</label>
             <select name="graphMethod" id="graphMethod">
@@ -42,87 +44,69 @@
                 <option>Color</option>
                 <option>Portrait</option>
             </select>
-            <label for="colorMethod" style='width:250px;'>Select a visualization technique</label>
-            <select name="colorMethod" id="colorMethod">
-                    <option selected="selected">tfidf</option>
-                    <option>tfidfs</option>
-                    <option>Dominant-Color</option>
-                <option>Dominant-Colors</option>
-            </select>
-            <a id="editEditor" href="javascript:void(0)">Advanced graph settings</a>
         </fieldset>
         <script>
-            window.settings = window.settings||{};
-            window.settings.colorMethod = window.settings.colorMethod || 'tfidf';
+            window.settings = window.settings || {};
             window.settings.graphMethod = window.settings.graphMethod || 'hue';
             $(function () {
                 $("#clustering").selectmenu({
-                    change: function (event, data) {
+                    change() {
                         const method = $('#clustering').val();
-                        window.settings.clustering = method.toLowerCase();
+                        if (method == null) {
+                            return;
+                        }
+                        let key;
+                        if (method === 'k-means') {
+                            key = 'kmeans2SingleColor';
+                        } else if (method === 'IMoFA') {
+                            key = 'imofa2SingleColor';
+                        } else if (method === 'IMoFA Multi') {
+                            key = 'imofa2Color';
+                        } else if (method === 'IMoFA tfidf') {
+                            key = 'tfidf2SingleColor';
+                        } else {
+                            alert('Unknown clustering method: ' + method);
+                        }
+                        window.settings.clustering = key;
                         window.clothing.drawResults();
                     }
                 });
                 $("#graphMethod").selectmenu({
-                    change: function (event, data) {
+                    change() {
                         const method = $('#graphMethod').val();
+                        if (method == null) {
+                            return;
+                        }
                         window.settings.graphMethod = method.toLowerCase();
                         window.clothing.drawResults();
                     }
                 });
-                $("#colorMethod").selectmenu({
-                    change: function (event, data) {
-                        const method = $('#colorMethod').val();
-                        window.settings.colorMethod = method.toLowerCase();
-                        window.clothing.drawResults();
-                    }
-                });
                 setTimeout(() => {
-                    if (window.settings.clustering == 'imofa') {
+                    if (window.settings.clustering == 'imofa2SingleColor') {
                         $('#clustering').val('IMoFA');
-                    }
-                    else if (window.settings.clustering == 'annotated') {
-                        $('#clustering').val('Annotated');
-                    } else {
-                        $('#clustering').val(window.settings.clustering);
+                    } else if (window.settings.clustering == 'kmeans2SingleColor') {
+                        $('#clustering').val('k-means');
+                    } else if (window.settings.clustering == 'imofa2Color') {
+                        $('#clustering').val('IMoFA Multi');
+                    } else if (window.settings.clustering == 'tfidf2SingleColor') {
+                        $('#clustering').val('IMoFA tfidf');
                     }
                     $("#clustering").selectmenu("refresh");
                     if (window.settings.graphMethod == 'hue') {
                         $('#graphMethod').val('Hue');
-                    }
-                    else if (window.settings.graphMethod == 'color') {
+                    } else if (window.settings.graphMethod == 'color') {
                         $('#graphMethod').val('Color');
-                    }
-                    else if (window.settings.graphMethod == 'portrait') {
+                    } else if (window.settings.graphMethod == 'portrait') {
                         $('#graphMethod').val('Portrait');
                     }
-                    else {
-                        alert(`Unknown graph method: ${window.settings.graphMethod}!`);
-                    }
                     $("#graphMethod").selectmenu("refresh");
-                    if (window.settings.colorMethod == 'dominant-colors') {
-                        $('#colorMethod').val('Dominant-Colors');
-                    }
-                    else if (window.settings.colorMethod == 'dominant-color') {
-                        $('#colorMethod').val('Dominant-Color');
-                    }
-                    else if (window.settings.colorMethod == 'tfidf') {
-                        $('#colorMethod').val('tfidf');
-                    }
-                    else if (window.settings.colorMethod == 'tfidfs') {
-                        $('#colorMethod').val('tfidfs');
-                    }
-                    else {
-                        alert(`Unknown visualization technique: ${window.settings.colorMethod}!`);
-                    }
-                    $("#colorMethod").selectmenu("refresh");
                 }, 500);
+                $(function () {
+                    showPaintingsOnCanvas();
+                    displayFiles();
+                });
             });
-            $(function () {
-                showPaintingsOnCanvas();
-                displayFiles();
-            });
-            </script>
+        </script>
         <canvas id="femaleCanvasHSI" width="1400" height="200"></canvas>
         <canvas id="femaleCanvasMonochrome" width="1400" height="150"></canvas>
         <canvas id="maleCanvasHSI" width="1400" height="200"></canvas>

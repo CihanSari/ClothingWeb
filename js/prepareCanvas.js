@@ -5,9 +5,7 @@
   window.clothing.defaultSettings = window.clothing.defaultSettings || {};
   window.clothing.defaultSettings = {
     graphMethod: window.clothing.defaultSettings.graphMethod || 'hue',
-    clustering: window.clothing.defaultSettings.clustering || 'imofa',
-    colorMethod: window.clothing.defaultSettings.colorMethod || 'tfidf',
-    tfidf: window.clothing.defaultSettings.tfidf || '12',
+    clustering: window.clothing.defaultSettings.clustering || 'imofa2Color',
     scaleYAxis: window.clothing.defaultSettings.scaleYAxis || 1,//0 or 1
     thSaturation: window.clothing.defaultSettings.thSaturation || 0.05,
     thSaturationHigh: window.clothing.defaultSettings.thSaturationHigh || 0.15,
