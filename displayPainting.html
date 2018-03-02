@@ -82,7 +82,7 @@
                 const tabsJQ = $('<div class="tab"/>');
                 let previousDivContainer = null;
                 files.forEach((file, fileIndex) => {
-                    if (file != null) {
+                    if (file != null && !Array.isArray(file)) {
                         const tabId = `${fileIndex}`;
                         const jButton = $(`<button class="tablinks">${tabId}</button>`);
                         let currentDivContainer = null;
