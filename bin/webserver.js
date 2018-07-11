@@ -19,7 +19,15 @@ class MyWebServer {
         this.app.use(bodyParser.json());
         this.app.use(bodyParser.urlencoded({ extended: false }));
         // Point static path to dist
-        serveclothing_1.serveClothing(this.app, path.join(__dirname, "../dist/"));
+        const servables = serveclothing_1.serveClothing(path.join(__dirname, "../dist/"));
+        for (let servable of servables) {
+            if (servable.path != null) {
+                this.app.use(servable.path, servable.handler);
+            }
+            else {
+                this.app.use(servable.handler);
+            }
+        }
         this.app.use((req, res) => {
             res.status(404);
             // respond with json

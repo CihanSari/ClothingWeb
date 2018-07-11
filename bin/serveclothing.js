@@ -10,9 +10,17 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express = __importStar(require("express"));
 const path = __importStar(require("path"));
 const staticZip = require("express-static-zip");
-function serveClothing(app, clothingPath) {
-    app.use(express.static(clothingPath));
-    app.use("/data", staticZip(path.join(clothingPath, "data.zip")));
+function serveClothing(clothingPath) {
+    return [
+        {
+            path: undefined,
+            handler: express.static(clothingPath)
+        },
+        {
+            path: "/data",
+            handler: staticZip(path.join(clothingPath, "data.zip"))
+        }
+    ];
 }
 exports.serveClothing = serveClothing;
 //# sourceMappingURL=serveclothing.js.map
