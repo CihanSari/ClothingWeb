@@ -15,3 +15,4 @@ function serveClothing(app, clothingPath) {
     app.use("/data", staticZip(path.join(clothingPath, "data.zip")));
 }
 exports.serveClothing = serveClothing;
+//# sourceMappingURL=serveclothing.js.map

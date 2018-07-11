@@ -15,9 +15,10 @@
     "start": "ts-node src/index.ts"
   },
   "name": "clothingweb",
-  "version": "1.0.0",
+  "version": "0.9.0-alpha.0",
   "description": "Web tools for clothing framework",
-  "main": "dist/index.html",
+  "main": "bin/index.js",
+  "typings": "bin/index.d.ts",
   "repository": "https://github.com/CihanSari/ClothingWeb",
   "author": "Cihan Sari <cihansari86@gmail.com>",
   "license": "MIT",
