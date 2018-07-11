@@ -1,8 +1,3 @@
-/data
 /.vscode
-/offline/data
-/offline/js
-/offline/node_modules
-/offline/resources
-/offline/*.html
-/offline/*.json
+/yarn-error.log
+node_modules
