@@ -1,1 +1,1 @@
-export {};
+export { serveClothing } from "./serveclothing";
