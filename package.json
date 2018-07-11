@@ -15,7 +15,7 @@
     "start": "ts-node src/run.ts"
   },
   "name": "clothingweb",
-  "version": "0.9.0-alpha.4",
+  "version": "0.9.0-alpha.5",
   "description": "Web tools for clothing framework",
   "main": "bin/index.js",
   "typings": "bin/index.d.ts",
