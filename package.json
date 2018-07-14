@@ -55,6 +55,7 @@
     "build-server": "tsc --project ./src_srv",
     "start-server": "ts-node src_srv/run.ts --project ./src_srv",
     "ng": "ng",
+    "build": "yarn run build-client & yarn run build-server",
     "build-client": "ng build --prod",
     "start-watch": "ng build --watch",
     "start": "concurrently --kill-others \"yarn run start-watch\" \"yarn run start-server\""

@@ -11,24 +11,16 @@ export interface handlerInterface {
 export function serveClothing(
   clothingPath: string,
   dataPath: string
-): handlerInterface[] {
-  return [
-    {
-      path: undefined,
-      handler: express.static(clothingPath) as express.Handler
-    },
-    {
-      path: "/data",
-      handler: staticZip(path.join(dataPath)) as express.Handler
-    },
-    {
-      handler(req, res, next) {
-        if (req.accepts("html")) {
-          res.sendFile(path.join(clothingPath, "index.html"));
-        } else {
-          next();
-        }
-      }
+): express.Router {
+  const route = express.Router();
+  route.use(express.static(clothingPath));
+  route.use("/data", staticZip(path.join(dataPath)));
+  route.use((req, res, next) => {
+    if (req.accepts("html")) {
+      res.sendFile(path.join(clothingPath, "index.html"));
+    } else {
+      next();
     }
-  ];
+  });
+  return route;
 }

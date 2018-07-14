@@ -11,16 +11,18 @@ const express = __importStar(require("express"));
 const path = __importStar(require("path"));
 const staticZip = require("express-static-zip");
 function serveClothing(clothingPath, dataPath) {
-    return [
-        {
-            path: undefined,
-            handler: express.static(clothingPath)
-        },
-        {
-            path: "/data",
-            handler: staticZip(path.join(dataPath))
+    const route = express.Router();
+    route.use(express.static(clothingPath));
+    route.use("/data", staticZip(path.join(dataPath)));
+    route.use((req, res, next) => {
+        if (req.accepts("html")) {
+            res.sendFile(path.join(clothingPath, "index.html"));
         }
-    ];
+        else {
+            next();
+        }
+    });
+    return route;
 }
 exports.serveClothing = serveClothing;
 //# sourceMappingURL=serveclothing.js.map

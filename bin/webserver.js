@@ -19,15 +19,8 @@ class MyWebServer {
         this.app.use(bodyParser.json());
         this.app.use(bodyParser.urlencoded({ extended: false }));
         // Point static path to dist
-        const servables = serveclothing_1.serveClothing(path.join(__dirname, "../gui/"), path.join(__dirname, "../data.zip"));
-        for (let servable of servables) {
-            if (servable.path != null) {
-                this.app.use(servable.path, servable.handler);
-            }
-            else {
-                this.app.use(servable.handler);
-            }
-        }
+        const clothRoute = serveclothing_1.serveClothing(path.join(__dirname, "../gui/"), path.join(__dirname, "../data.zip"));
+        this.app.use(clothRoute);
         this.app.use((req, res) => {
             res.status(404);
             // respond with json
