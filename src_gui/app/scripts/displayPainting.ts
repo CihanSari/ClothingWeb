@@ -1,6 +1,6 @@
 import * as $ from "jquery";
 let bufferCanvas, bufferCtx;
-async function prepareBuffer() {
+export async function prepareBuffer() {
   if (bufferCanvas == null) {
     const bufferCanvasJQ = $(
       `<canvas style="display:none" id="bufferCanvas"/>`
@@ -9,6 +9,7 @@ async function prepareBuffer() {
     bufferCanvas = bufferCanvasJQ[0];
     bufferCtx = bufferCanvas.getContext("2d");
   }
+  return { bufferCanvas, bufferCtx };
 }
 
 async function getImage(imagePath) {
@@ -22,7 +23,7 @@ async function getImage(imagePath) {
   });
 }
 
-async function getGrabcutImage(paintingData, grabcut, showOld = false) {
+export async function getGrabcutImage(paintingData, grabcut, showOld = false) {
   const fncParseCVYAML = yamlData => {
     const dataWithoutHeader = yamlData.substring(35);
     const dirtyPieces = dataWithoutHeader.split(": ");
@@ -140,7 +141,7 @@ function hsi2rgb(resultHue, resultSaturation, resultIntensity) {
   return [backR, backG, backB];
 }
 
-function parseImofa(imofaJson) {
+export function parseImofa(imofaJson) {
   function imofaWHSIArray2WRGBArray(WHSIArray) {
     const wrgbArray = [];
     WHSIArray.forEach(whsi => {

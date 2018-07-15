@@ -1,14 +1,14 @@
 import { NgModule } from "@angular/core";
 import { Routes, RouterModule } from "@angular/router";
-import { DisplayPaintingComponent } from "./display-painting/display-painting.component";
 import { ShowPaintingsComponent } from "./show-paintings/show-paintings.component";
+import { PaintingGalleryComponent } from "./painting-gallery/painting-gallery.component";
 
 const routes: Routes = [
-  { path: "displaypainting", component: DisplayPaintingComponent },
   { path: "showpaintings", component: ShowPaintingsComponent },
+  { path: "gallery", component: PaintingGalleryComponent },
   {
     path: "",
-    redirectTo: "displaypainting",
+    redirectTo: "showpaintings",
     pathMatch: "full"
   }
 ];

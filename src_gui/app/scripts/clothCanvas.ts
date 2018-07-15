@@ -511,7 +511,7 @@ export class ClothCanvas {
   }
 
   public async drawPaintingAsync(jsonPromise, paintingIdx, domColor) {
-    console.log('Draw painting calls')
+    // console.log('Draw painting calls')
     const getData = async () => {
       const desc = await jsonPromise;
       return {
