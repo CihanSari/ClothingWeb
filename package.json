@@ -1,6 +1,6 @@
 {
   "name": "clothingweb",
-  "version": "0.9.0-alpha.8",
+  "version": "0.9.0",
   "description": "Web tools for clothing framework",
   "main": "bin/index.js",
   "typings": "bin/index.d.ts",
