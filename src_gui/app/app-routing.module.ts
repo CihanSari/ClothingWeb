@@ -8,7 +8,7 @@ const routes: Routes = [
   { path: "gallery", component: PaintingGalleryComponent },
   {
     path: "",
-    redirectTo: "showpaintings",
+    redirectTo: "gallery",
     pathMatch: "full"
   }
 ];
