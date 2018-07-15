@@ -1,9 +1,11 @@
-<h1>Clothing Graph</h1>
-<canvas id="femaleCanvasHSI" width="1400" height="200"></canvas>
-<canvas id="femaleCanvasMonochrome" width="1400" height="150"></canvas>
-<canvas id="maleCanvasHSI" width="1400" height="200"></canvas>
-<canvas id="maleCanvasMonochrome" width="1400" height="150"></canvas>
-<h3>
+<h1 #header style="width:100%">
+  Clothing Graph</h1>
+<canvas #canvas1 id="femaleCanvasHSI" height="200"></canvas>
+<canvas #canvas2 id="femaleCanvasMonochrome" height="150"></canvas>
+<canvas #canvas3 id="maleCanvasHSI" height="200"></canvas>
+<canvas #canvas4 id="maleCanvasMonochrome" height="150"></canvas>
+<app-painting-gallery-item *ngIf="item!=null" [item]="item"></app-painting-gallery-item>
+<!-- <h3>
   <a id="editEditor" href="javascript:void(0)">Change graph settings</a>
-</h3>
+</h3> -->
 <app-navigation-button [link]="'/gallery'" [text]="'Go to painting gallery'"></app-navigation-button>

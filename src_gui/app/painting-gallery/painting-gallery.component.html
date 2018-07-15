@@ -1,4 +1,4 @@
 <app-painting-gallery-item *ngIf="item!=null" [item]="item"></app-painting-gallery-item>
-<p-paginator rows="1" (onLazyLoad)="loadData($event)" (onPageChange)="loadData($event)" [totalRecords]="itemGenerators.length">
+<p-paginator rows="1" (onLazyLoad)="loadData($event)" (onPageChange)="loadData($event)" [totalRecords]="nItems">
 </p-paginator>
 <app-navigation-button [link]="'/showpaintings'" [text]="'Go to clothing color trend'"></app-navigation-button>

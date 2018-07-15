@@ -5,9 +5,9 @@
       <td colspan="2" style="width:33%; background-color:rgba(0,0,0,0.4);">
         <h4>Original Painting</h4>
       </td>
-      <td colspan="2" style="width:33%; background-color:rgba(0,0,0,0.4);">
+      <!-- <td colspan="2" style="width:33%; background-color:rgba(0,0,0,0.4);">
         <h4>Legacy Grabcut Segmentation</h4>
-      </td>
+      </td> -->
       <td colspan="2" style="width:33%; background-color:rgba(0,0,0,0.4);">
         <h4>Fine-tuned Grabcut Segmentation</h4>
       </td>
@@ -16,16 +16,16 @@
       <td colspan="2" style="width:33%;">
         <img style="padding:2em; width: auto; height: auto;" id="original" src="{{item.ImageSrc}}">
       </td>
-      <td colspan="2" style="width:33%;">
+      <!-- <td colspan="2" style="width:33%;">
         <img style="padding:2em; width: auto; height: auto;" id="grabcut" src="{{item.GrabcutSrc}}">
-      </td>
+      </td> -->
       <td colspan="2" style="width:33%;">
         <img style="padding:2em; width: auto; height: auto;" id="grabcut2" src="{{item.Grabcut2Src}}">
       </td>
     </tr>
     <tr>
       <td colspan="2" style="width:33%;"></td>
-      <td colspan="2" style="width:33%;">
+      <!-- <td colspan="2" style="width:33%;">
         <table>
           <tr *ngFor="let wrgb of item.imofaWRGB">
             <td>{{weightToStr(wrgb[0])}}%</td>
@@ -34,7 +34,7 @@
             </td>
           </tr>
         </table>
-      </td>
+      </td> -->
       <td colspan="2" style="width:33%;">
         <table>
           <tr *ngFor="let wrgb of item.imofa2WRGB">
