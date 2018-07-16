@@ -8,4 +8,8 @@
 <!-- <h3>
   <a id="editEditor" href="javascript:void(0)">Change graph settings</a>
 </h3> -->
+<select (change)="onGraphMethodChange($event)">
+  <option value="hue" selected>Color hue</option>
+  <option value="color">Color raw</option>
+</select>
 <app-navigation-button [link]="'/gallery'" [text]="'Go to painting gallery'"></app-navigation-button>

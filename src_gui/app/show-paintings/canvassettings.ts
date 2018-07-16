@@ -1,7 +1,14 @@
 import { PaintingCanvas } from "./paintingCanvas";
+import { BehaviorSubject } from "rxjs";
+
+export enum GraphMethod {
+  Hue = "hue",
+  Color = "color",
+  Portrait = "portrait"
+}
 
 export interface ClothSettings {
-  graphMethod: string;
+  graphMethod: BehaviorSubject<GraphMethod>;
   clustering: string;
   scaleYAxis: number;
   thSaturation: number;

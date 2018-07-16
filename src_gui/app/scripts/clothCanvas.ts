@@ -2,7 +2,8 @@ import * as $ from "jquery";
 import { fabric } from "fabric";
 import {
   ClothSettings,
-  ClothingCanvasInterface
+  ClothingCanvasInterface,
+  GraphMethod
 } from "../show-paintings/canvassettings";
 import { PaintingCanvas } from "../show-paintings/paintingCanvas";
 import { Subject } from "rxjs";
@@ -268,7 +269,7 @@ export class ClothCanvas {
     }
     const x = this.yearToX(desc.year, canvasGenderColor);
 
-    const displayProperties = () => {
+    const displayProperties = (method: GraphMethod) => {
       const hueToColor = hue => {
         const [red, green, blue] = this.hsi2rgb(hue, 0.5, 0.5);
         return `rgb(${red},${green},${blue})`;
@@ -289,7 +290,7 @@ export class ClothCanvas {
         options.height = widthheight;
         return $.extend({}, defaultProperties, options);
       };
-      if (this.mySettings.graphMethod == "hue") {
+      if (method == "hue") {
         return properties(16, {
           fill: hueCanvas
             ? hueToColor(hue)
@@ -297,34 +298,43 @@ export class ClothCanvas {
                 intensity * 255
               )},${Math.round(intensity * 255)})`
         });
-      } else if (this.mySettings.graphMethod == "color") {
+      } else if (method == "color") {
         return properties(16, {
           fill: hsiToColor(hue, saturation, intensity)
         });
-      } else if (this.mySettings.graphMethod == "portrait") {
+      } else if (method == "portrait") {
         return properties(30);
       }
     };
-
-    const addFabric = fabricObj => {
+    const addFabric = (fabricObj: fabric.Object) => {
       fabricObj.on("selected", () => {
         canvasGenderColor.deactivateAll().renderAll();
         this.paintingClickedSource.next(desc);
       });
-      canvasGenderColor.add(fabricObj);
+      return canvasGenderColor.add(fabricObj);
     };
-
-    if (this.mySettings.graphMethod == "portrait") {
-      const getFabricImagePromise: any = new Promise((resolve, reject) => {
-        fabric.Image.fromURL(desc.drawUrl, img => {
-          resolve(img);
+    const elementGetter = async (
+      method: GraphMethod
+    ): Promise<fabric.Object> => {
+      if (method == "portrait") {
+        const getFabricImagePromise: any = new Promise((resolve, reject) => {
+          fabric.Image.fromURL(desc.drawUrl, img => {
+            resolve(img);
+          });
         });
-      });
-      const imgLoaded = await getFabricImagePromise;
-      addFabric(imgLoaded.set(displayProperties()));
-    } else {
-      addFabric(new fabric.Rect(displayProperties()));
-    }
+        const imgLoaded = await getFabricImagePromise;
+        return imgLoaded.set(displayProperties(method));
+      } else {
+        return new fabric.Rect(displayProperties(method));
+      }
+    };
+    let lastElement = undefined;
+    this.mySettings.graphMethod.subscribe(async method => {
+      if (lastElement != null) {
+        canvasGenderColor.canvas.remove(lastElement);
+      }
+      lastElement = await addFabric(await elementGetter(method));
+    });
   }
 
   private addYearMarkers(canvas: PaintingCanvas) {

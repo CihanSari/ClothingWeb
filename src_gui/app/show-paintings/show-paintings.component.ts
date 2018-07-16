@@ -10,9 +10,14 @@ import { Title } from "@angular/platform-browser";
 import { DisplayFiles } from "../scripts/trend";
 import { PaintingCanvas } from "./paintingCanvas";
 import { ClothCanvas } from "../scripts/clothCanvas";
-import { ClothSettings, ClothingCanvasInterface } from "./canvassettings";
+import {
+  ClothSettings,
+  ClothingCanvasInterface,
+  GraphMethod
+} from "./canvassettings";
 import { GalleryItem } from "../painting-gallery-item/painting-gallery-item.component";
 import { PaintingGalleryService } from "../painting-gallery.service";
+import { BehaviorSubject } from "rxjs";
 
 @Component({
   selector: "app-show-paintings",
@@ -21,7 +26,7 @@ import { PaintingGalleryService } from "../painting-gallery.service";
 })
 export class ShowPaintingsComponent implements OnInit, OnDestroy {
   readonly settings: ClothSettings = {
-    graphMethod: "hue",
+    graphMethod: new BehaviorSubject<GraphMethod>(GraphMethod.Hue),
     clustering: "imofa2Color",
     scaleYAxis: 1,
     thSaturation: 0.05,
@@ -63,14 +68,11 @@ export class ShowPaintingsComponent implements OnInit, OnDestroy {
     let showNext = await displayFiles.init();
     const setNextTimeout = () => {
       this.timeoutId = window.setTimeout(async () => {
-        showNext = await showNext();
-        showNext = await showNext();
-        showNext = await showNext();
-        showNext = await showNext();
-        showNext = await showNext();
-        showNext = await showNext();
-        showNext = await showNext();
-        showNext = await showNext();
+        for (let i = 0; i < 10; i += 1) {
+          if (showNext) {
+            showNext = await showNext();
+          }
+        }
         setNextTimeout();
       }, 0);
     };
@@ -90,7 +92,6 @@ export class ShowPaintingsComponent implements OnInit, OnDestroy {
     (this.canvas2.nativeElement as HTMLCanvasElement).width = width;
     (this.canvas3.nativeElement as HTMLCanvasElement).width = width;
     (this.canvas4.nativeElement as HTMLCanvasElement).width = width;
-    console.log(self.clientWidth);
     this.title.setTitle("Clothing");
     this.canvas = {
       male: {
@@ -109,5 +110,10 @@ export class ShowPaintingsComponent implements OnInit, OnDestroy {
     if (this.timeoutId) {
       window.clearTimeout(this.timeoutId);
     }
+  }
+
+  public onGraphMethodChange($event) {
+    this.settings.graphMethod.next($event.srcElement.value);
+    console.log(this.settings.graphMethod.getValue());
   }
 }
