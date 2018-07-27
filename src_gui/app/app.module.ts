@@ -9,6 +9,7 @@ import { PaintingGalleryItemComponent } from "./painting-gallery-item/painting-g
 import { PaginatorModule } from "primeng/paginator";
 import { ButtonModule } from "primeng/button";
 import { NavigationButtonComponent } from './navigation-button/navigation-button.component';
+import { FaceComponent } from './face/face.component';
 
 @NgModule({
   declarations: [
@@ -16,7 +17,8 @@ import { NavigationButtonComponent } from './navigation-button/navigation-button
     ShowPaintingsComponent,
     PaintingGalleryComponent,
     PaintingGalleryItemComponent,
-    NavigationButtonComponent
+    NavigationButtonComponent,
+    FaceComponent
   ],
   imports: [BrowserModule, AppRoutingModule, PaginatorModule, ButtonModule],
   providers: [],
