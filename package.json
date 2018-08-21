@@ -1,8 +1,8 @@
 {
   "name": "clothingweb",
-  "version": "0.9.2",
+  "version": "0.9.3",
   "description": "Web tools for clothing framework",
-  "main": "bin/index.js",
+  "main": "bin/run.js",
   "typings": "bin/index.d.ts",
   "repository": "https://github.com/CihanSari/ClothingWeb",
   "author": "Cihan Sari <cihansari86@gmail.com>",
@@ -58,11 +58,11 @@
   },
   "scripts": {
     "build-server": "tsc --project ./src_srv",
-    "start-server": "ts-node src_srv/run.ts --project ./src_srv",
+    "start": "node bin/run.js",
     "ng": "ng",
     "build": "yarn run build-client & yarn run build-server",
     "build-client": "ng build --prod",
     "start-watch": "ng build --watch",
-    "start": "concurrently --kill-others \"yarn run start-watch\" \"yarn run start-server\""
+    "start-client": "concurrently --kill-others \"yarn run start-watch\" \"yarn run start-server\""
   }
 }

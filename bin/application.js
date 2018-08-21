@@ -4,7 +4,8 @@ const webserver_1 = require("./webserver");
 function main() {
     const lastArg = Number(process.argv[process.argv.length - 1]);
     if (isNaN(lastArg)) {
-        new webserver_1.MyWebServer(80);
+        const PORT = Number(process.env.PORT) || 80;
+        new webserver_1.MyWebServer(PORT);
     }
     else {
         new webserver_1.MyWebServer(lastArg);
