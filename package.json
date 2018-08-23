@@ -1,8 +1,8 @@
 {
   "name": "clothingweb",
-  "version": "0.9.4",
+  "version": "0.9.5",
   "description": "Web tools for clothing framework",
-  "main": "bin/run.js",
+  "main": "bin/index.js",
   "typings": "bin/index.d.ts",
   "repository": "https://github.com/CihanSari/ClothingWeb",
   "author": "Cihan Sari <cihansari86@gmail.com>",
