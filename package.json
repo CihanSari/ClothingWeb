@@ -1,6 +1,6 @@
 {
   "name": "clothingweb",
-  "version": "0.9.3",
+  "version": "0.9.4",
   "description": "Web tools for clothing framework",
   "main": "bin/run.js",
   "typings": "bin/index.d.ts",
