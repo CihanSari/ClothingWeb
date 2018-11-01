@@ -4,7 +4,6 @@
 <canvas #canvas2 id="femaleCanvasMonochrome" height="150"></canvas>
 <canvas #canvas3 id="maleCanvasHSI" height="200"></canvas>
 <canvas #canvas4 id="maleCanvasMonochrome" height="150"></canvas>
-<app-painting-gallery-item *ngIf="item!=null" [item]="item"></app-painting-gallery-item>
 <!-- <h3>
   <a id="editEditor" href="javascript:void(0)">Change graph settings</a>
 </h3> -->
@@ -12,4 +11,5 @@
   <option value="hue" selected>Color hue</option>
   <option value="color">Color raw</option>
 </select>
+<app-painting-gallery-item *ngIf="item!=null" [item]="item"></app-painting-gallery-item>
 <app-navigation-button [link]="'/gallery'" [text]="'Go to painting gallery'"></app-navigation-button>

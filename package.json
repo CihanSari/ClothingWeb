@@ -1,6 +1,6 @@
 {
   "name": "clothingweb",
-  "version": "0.9.5",
+  "version": "0.9.6",
   "description": "Web tools for clothing framework",
   "main": "bin/index.js",
   "typings": "bin/index.d.ts",
@@ -63,6 +63,6 @@
     "build": "yarn run build-client & yarn run build-server",
     "build-client": "ng build --prod",
     "start-watch": "ng build --watch",
-    "start-client": "concurrently --kill-others \"yarn run start-watch\" \"yarn run start-server\""
+    "start-client": "concurrently --kill-others \"yarn run start-watch\" \"yarn run start\""
   }
 }

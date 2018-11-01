@@ -1,19 +1,20 @@
 import * as $ from "jquery";
-import { fabric } from "fabric";
+import {fabric} from "fabric";
 import {
   ClothSettings,
   ClothingCanvasInterface,
   GraphMethod
 } from "../show-paintings/canvassettings";
-import { PaintingCanvas } from "../show-paintings/paintingCanvas";
-import { Subject } from "rxjs";
+import {PaintingCanvas} from "../show-paintings/paintingCanvas";
+import {Subject} from "rxjs";
 
-const myYears: { femaleList?: number[]; maleList?: number[] } = {
-  femaleList: [],
-  maleList: []
-};
+const myYears: {
+  femaleList?: number[];
+  maleList?: number[]
+}
+= {femaleList: [], maleList: []};
 export interface PaintingDescription {
-  color: number[]; //hue, saturation, intensity
+  color: number[];  // hue, saturation, intensity
   year: number;
   gender: string;
   title: string;
@@ -23,17 +24,15 @@ export interface PaintingDescription {
   paintingIdx: number;
 }
 
+const leftYearMargin = 1475;
+const rightYearMargin = 1925;
+
 export class ClothCanvas {
   private paintingClickedSource = new Subject<PaintingDescription>();
   public paintingClicked$ = this.paintingClickedSource.asObservable();
 
   private axisMapping = [
-    {
-      hueList: [0, 360],
-      hueYList: [0, 1],
-      intList: [0, 1],
-      intYList: [0, 1]
-    },
+    {hueList: [0, 360], hueYList: [0, 1], intList: [0, 1], intYList: [0, 1]},
     {
       hueList: [0, 60, 360],
       hueYList: [0, 0.6, 0.88],
@@ -42,10 +41,8 @@ export class ClothCanvas {
     }
   ];
 
-  constructor(
-    private mySettings: ClothSettings,
-    private canvas: ClothingCanvasInterface
-  ) {
+  constructor(private mySettings: ClothSettings,
+              private canvas: ClothingCanvasInterface) {
     this.addYearTextToCanvas(canvas.male.mono);
     this.addYearTextToCanvas(canvas.female.mono);
     const yearTextHeight = 30;
@@ -59,10 +56,8 @@ export class ClothCanvas {
     this.addMonochromeBackgroundToCanvas(canvas.male.mono);
     this.addMonochromeBackgroundToCanvas(canvas.female.mono);
     this.addGenderIconToCanvas(canvas.male.color, "/assets/icons/maleDark.png");
-    this.addGenderIconToCanvas(
-      canvas.female.color,
-      "/assets/icons/femaleDark.png"
-    );
+    this.addGenderIconToCanvas(canvas.female.color,
+                               "/assets/icons/femaleDark.png");
     this.addYearMarkers(canvas.male.color);
     this.addYearMarkers(canvas.male.mono);
     this.addYearMarkers(canvas.female.color);
@@ -78,78 +73,58 @@ export class ClothCanvas {
     let backG = 0;
     let backB = 0;
     if (resultHue == 0) {
-      backR = Math.floor(
-        resultIntensity + 2 * resultIntensity * resultSaturation
-      );
+      backR =
+          Math.floor(resultIntensity + 2 * resultIntensity * resultSaturation);
       backG = Math.floor(resultIntensity - resultIntensity * resultSaturation);
       backB = Math.floor(resultIntensity - resultIntensity * resultSaturation);
     } else if (0 < resultHue && resultHue < 120) {
-      backR = Math.floor(
-        resultIntensity +
-          (resultIntensity * resultSaturation * cos(resultHue)) /
-            cos(60 - resultHue)
-      );
-      backG = Math.floor(
-        resultIntensity +
-          resultIntensity *
-            resultSaturation *
-            (1 - cos(resultHue) / cos(60 - resultHue))
-      );
+      backR = Math.floor(resultIntensity +
+                         (resultIntensity * resultSaturation * cos(resultHue)) /
+                             cos(60 - resultHue));
+      backG = Math.floor(resultIntensity +
+                         resultIntensity * resultSaturation *
+                             (1 - cos(resultHue) / cos(60 - resultHue)));
       backB = Math.floor(resultIntensity - resultIntensity * resultSaturation);
     } else if (resultHue == 120) {
       backR = Math.floor(resultIntensity - resultIntensity * resultSaturation);
-      backG = Math.floor(
-        resultIntensity + 2 * resultIntensity * resultSaturation
-      );
+      backG =
+          Math.floor(resultIntensity + 2 * resultIntensity * resultSaturation);
       backB = Math.floor(resultIntensity - resultIntensity * resultSaturation);
     } else if (120 < resultHue && resultHue < 240) {
       backR = Math.floor(resultIntensity - resultIntensity * resultSaturation);
       backG = Math.floor(
-        resultIntensity +
+          resultIntensity +
           (resultIntensity * resultSaturation * cos(resultHue - 120)) /
-            cos(180 - resultHue)
-      );
-      backB = Math.floor(
-        resultIntensity +
-          resultIntensity *
-            resultSaturation *
-            (1 - cos(resultHue - 120) / cos(180 - resultHue))
-      );
+              cos(180 - resultHue));
+      backB = Math.floor(resultIntensity +
+                         resultIntensity * resultSaturation *
+                             (1 - cos(resultHue - 120) / cos(180 - resultHue)));
     } else if (resultHue == 240) {
       backR = Math.floor(resultIntensity - resultIntensity * resultSaturation);
       backG = Math.floor(resultIntensity - resultIntensity * resultSaturation);
-      backB = Math.floor(
-        resultIntensity + 2 * resultIntensity * resultSaturation
-      );
+      backB =
+          Math.floor(resultIntensity + 2 * resultIntensity * resultSaturation);
     } else if (240 < resultHue && resultHue < 360) {
-      backR = Math.floor(
-        resultIntensity +
-          resultIntensity *
-            resultSaturation *
-            (1 - cos(resultHue - 240) / cos(300 - resultHue))
-      );
+      backR = Math.floor(resultIntensity +
+                         resultIntensity * resultSaturation *
+                             (1 - cos(resultHue - 240) / cos(300 - resultHue)));
       backG = Math.floor(resultIntensity - resultIntensity * resultSaturation);
       backB = Math.floor(
-        resultIntensity +
+          resultIntensity +
           (resultIntensity * resultSaturation * cos(resultHue - 240)) /
-            cos(300 - resultHue)
-      );
+              cos(300 - resultHue));
     }
     return [backR, backG, backB];
   }
 
   private checkIfHue(hue, saturation, intensity) {
-    if (
-      saturation < this.mySettings.thSaturation ||
-      intensity < this.mySettings.thIntensityDark ||
-      intensity > this.mySettings.thIntensityBright
-    ) {
+    if (saturation < this.mySettings.thSaturation ||
+        intensity < this.mySettings.thIntensityDark ||
+        intensity > this.mySettings.thIntensityBright) {
       return false;
     } else if (saturation < this.mySettings.thSaturationHigh) {
-      if (
-        intensity < this.mySettings.thIntensityDarkHigh ||
-        intensity > this.mySettings.thIntensityBrightLow
-      ) {
+      if (intensity < this.mySettings.thIntensityDarkHigh ||
+          intensity > this.mySettings.thIntensityBrightLow) {
         return false;
       }
     }
@@ -157,8 +132,8 @@ export class ClothCanvas {
   }
 
   private yearToX(year: number, canvas: PaintingCanvas) {
-    const firstYear = 1400;
-    const lastYear = 1900;
+    const firstYear = leftYearMargin - 35;
+    const lastYear = rightYearMargin + 35;
     return ((year - firstYear) / (lastYear - firstYear)) * canvas.width;
   }
   private mapPair(list1, list2, list1Value) {
@@ -187,41 +162,31 @@ export class ClothCanvas {
   }
 
   private yToHue(y) {
-    return this.mapPair(
-      this.axisMapping[this.mySettings.scaleYAxis].hueYList,
-      this.axisMapping[this.mySettings.scaleYAxis].hueList,
-      y
-    );
+    return this.mapPair(this.axisMapping[this.mySettings.scaleYAxis].hueYList,
+                        this.axisMapping[this.mySettings.scaleYAxis].hueList,
+                        y);
   }
 
   private hueToY(hue, canvas) {
     while (hue > 360) hue -= 360;
     while (hue < 0) hue += 360;
-    return (
-      this.mapPair(
-        this.axisMapping[this.mySettings.scaleYAxis].hueList,
-        this.axisMapping[this.mySettings.scaleYAxis].hueYList,
-        hue
-      ) * canvas.height
-    );
+    return (this.mapPair(this.axisMapping[this.mySettings.scaleYAxis].hueList,
+                         this.axisMapping[this.mySettings.scaleYAxis].hueYList,
+                         hue) *
+            canvas.height);
   }
 
   private yToInt(i) {
-    return this.mapPair(
-      this.axisMapping[this.mySettings.scaleYAxis].intYList,
-      this.axisMapping[this.mySettings.scaleYAxis].intList,
-      i
-    );
+    return this.mapPair(this.axisMapping[this.mySettings.scaleYAxis].intYList,
+                        this.axisMapping[this.mySettings.scaleYAxis].intList,
+                        i);
   }
 
   private intToY(i, canvas) {
-    return (
-      this.mapPair(
-        this.axisMapping[this.mySettings.scaleYAxis].intList,
-        this.axisMapping[this.mySettings.scaleYAxis].intYList,
-        i
-      ) * canvas.height
-    );
+    return (this.mapPair(this.axisMapping[this.mySettings.scaleYAxis].intList,
+                         this.axisMapping[this.mySettings.scaleYAxis].intYList,
+                         i) *
+            canvas.height);
   }
 
   public async drawPaintingAsync(jsonPromise, paintingIdx, domColor) {
@@ -245,8 +210,7 @@ export class ClothCanvas {
       title: descJSON.title,
       painter: descJSON.Painter,
       imageUrl: "/data/jpg/" + descJSON.Filename,
-      drawUrl: "/data/jpg/" + descJSON.Filename,
-      paintingIdx
+      drawUrl: "/data/jpg/" + descJSON.Filename, paintingIdx
     };
 
     let canvasGender = null;
@@ -256,7 +220,7 @@ export class ClothCanvas {
       canvasGender = this.canvas.female;
     }
     let hueCanvas = true;
-    let [hue, saturation, intensity] = desc.color;
+    let[hue, saturation, intensity] = desc.color;
     let y = null;
     let canvasGenderColor: PaintingCanvas = null;
     if (this.checkIfHue(hue, saturation, intensity)) {
@@ -271,12 +235,12 @@ export class ClothCanvas {
 
     const displayProperties = (method: GraphMethod) => {
       const hueToColor = hue => {
-        const [red, green, blue] = this.hsi2rgb(hue, 0.5, 0.5);
+        const[red, green, blue] = this.hsi2rgb(hue, 0.5, 0.5);
         return `rgb(${red},${green},${blue})`;
       };
 
       const hsiToColor = (hue, saturation, intensity) => {
-        const [red, green, blue] = this.hsi2rgb(hue, saturation, intensity);
+        const[red, green, blue] = this.hsi2rgb(hue, saturation, intensity);
         return `rgb(${red},${green},${blue})`;
       };
 
@@ -292,16 +256,13 @@ export class ClothCanvas {
       };
       if (method == "hue") {
         return properties(16, {
-          fill: hueCanvas
-            ? hueToColor(hue)
-            : `rgb(${Math.round(intensity * 255)},${Math.round(
+          fill: hueCanvas ? hueToColor(hue) :
+                            `rgb(${Math.round(intensity * 255)},${Math.round(
                 intensity * 255
               )},${Math.round(intensity * 255)})`
         });
       } else if (method == "color") {
-        return properties(16, {
-          fill: hsiToColor(hue, saturation, intensity)
-        });
+        return properties(16, {fill: hsiToColor(hue, saturation, intensity)});
       } else if (method == "portrait") {
         return properties(30);
       }
@@ -313,21 +274,19 @@ export class ClothCanvas {
       });
       return canvasGenderColor.add(fabricObj);
     };
-    const elementGetter = async (
-      method: GraphMethod
-    ): Promise<fabric.Object> => {
-      if (method == "portrait") {
-        const getFabricImagePromise: any = new Promise((resolve, reject) => {
-          fabric.Image.fromURL(desc.drawUrl, img => {
-            resolve(img);
-          });
-        });
-        const imgLoaded = await getFabricImagePromise;
-        return imgLoaded.set(displayProperties(method));
-      } else {
-        return new fabric.Rect(displayProperties(method));
-      }
-    };
+    const elementGetter =
+        async(method: GraphMethod): Promise<fabric.Object> => {
+          if (method == "portrait") {
+            const getFabricImagePromise: any =
+                new Promise((resolve, reject) => {
+                  fabric.Image.fromURL(desc.drawUrl, img => { resolve(img); });
+                });
+            const imgLoaded = await getFabricImagePromise;
+            return imgLoaded.set(displayProperties(method));
+          } else {
+            return new fabric.Rect(displayProperties(method));
+          }
+        };
     let lastElement = undefined;
     this.mySettings.graphMethod.subscribe(async method => {
       if (lastElement != null) {
@@ -339,7 +298,7 @@ export class ClothCanvas {
 
   private addYearMarkers(canvas: PaintingCanvas) {
     const items = [];
-    for (let year = 1450; year < 1875; year += 25) {
+    for (let year = leftYearMargin; year < rightYearMargin; year += 25) {
       const left = this.yearToX(year, canvas);
 
       const rect = new fabric.Rect({
@@ -361,7 +320,7 @@ export class ClothCanvas {
   }
 
   private addYearTextToCanvas(canvas: PaintingCanvas) {
-    for (let year = 1450; year < 1875; year += 25) {
+    for (let year = leftYearMargin; year < rightYearMargin; year += 25) {
       const left = this.yearToX(year, canvas);
       const text = new fabric.Text(year.toString(), {
         top: canvas.height - 20,
@@ -377,13 +336,11 @@ export class ClothCanvas {
     }
   }
 
-  private addGenderIconToCanvas(
-    canvas: PaintingCanvas,
-    genderImageUrl: string
-  ) {
+  private addGenderIconToCanvas(canvas: PaintingCanvas,
+                                genderImageUrl: string) {
     fabric.Image.fromURL(genderImageUrl, imgLoaded => {
       const top = canvas.height / 4 + canvas.yStart;
-      const left = this.yearToX(1420, canvas);
+      const left = this.yearToX(leftYearMargin - 30, canvas);
       const width = canvas.height / 2;
       const imFabricObj = imgLoaded.scaleToWidth(width).set({
         left,
@@ -407,7 +364,7 @@ export class ClothCanvas {
     const items = [];
 
     const hueToColor = hue => {
-      const [red, green, blue] = this.hsi2rgb(hue, 0.5, 0.5);
+      const[red, green, blue] = this.hsi2rgb(hue, 0.5, 0.5);
       return `rgb(${red},${green},${blue})`;
     };
 
@@ -417,7 +374,7 @@ export class ClothCanvas {
 
       const rect = new fabric.Rect({
         top: i + canvas.yStart,
-        left: this.yearToX(1420, canvas),
+        left: this.yearToX(leftYearMargin - 30, canvas),
         width: 10,
         height: height + 1,
         fill: hueToColor(hue),
@@ -446,7 +403,7 @@ export class ClothCanvas {
       const monoLight = Math.round(this.yToInt(i / canvas.height) * 255);
       const rect = new fabric.Rect({
         top: i + canvas.yStart,
-        left: this.yearToX(1420, canvas),
+        left: this.yearToX(leftYearMargin - 30, canvas),
         width: 10,
         height: height + 1,
         fill: `rgb(${monoLight},${monoLight},${monoLight})`,
