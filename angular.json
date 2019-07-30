@@ -4,69 +4,54 @@
   "newProjectRoot": "projects",
   "projects": {
     "ClothingWeb": {
-      "root": "",
-      "sourceRoot": "src_gui",
       "projectType": "application",
+      "schematics": {},
+      "root": "",
+      "sourceRoot": "src",
       "prefix": "app",
-      "schematics": {
-        "@schematics/angular:class": {
-          "spec": false
-        },
-        "@schematics/angular:component": {
-          "spec": false
-        },
-        "@schematics/angular:directive": {
-          "spec": false
-        },
-        "@schematics/angular:guard": {
-          "spec": false
-        },
-        "@schematics/angular:module": {
-          "spec": false
-        },
-        "@schematics/angular:pipe": {
-          "spec": false
-        },
-        "@schematics/angular:service": {
-          "spec": false
-        }
-      },
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "gui",
-            "index": "src_gui/index.html",
-            "main": "src_gui/main.ts",
-            "polyfills": "src_gui/polyfills.ts",
-            "tsConfig": "src_gui/tsconfig.app.json",
+            "outputPath": "dist/browser",
+            "index": "src/index.html",
+            "main": "src/main.ts",
+            "polyfills": "src/polyfills.ts",
+            "tsConfig": "tsconfig.app.json",
+            "aot": false,
             "assets": [
-              "src_gui/favicon.ico",
-              "src_gui/assets"
+              "src/favicon.ico",
+              "src/assets"
             ],
             "styles": [
-              "node_modules/primeicons/primeicons.css",
-              "node_modules/primeng/resources/themes/omega/theme.css",
-              "node_modules/primeng/resources/primeng.min.css",
-              "src_gui/styles.css"
+              "src/styles.css"
             ],
             "scripts": []
           },
           "configurations": {
             "production": {
-              "fileReplacements": [{
-                "replace": "src_gui/environments/environment.ts",
-                "with": "src_gui/environments/environment.prod.ts"
-              }],
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
+                }
+              ],
               "optimization": true,
-              "outputHashing": "none",
+              "outputHashing": "all",
               "sourceMap": false,
               "extractCss": true,
               "namedChunks": false,
               "aot": true,
               "extractLicenses": true,
               "vendorChunk": false,
-              "buildOptimizer": true
+              "buildOptimizer": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                }
+              ]
             }
           }
         },
@@ -90,38 +75,33 @@
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
-            "main": "src_gui/test.ts",
-            "polyfills": "src_gui/polyfills.ts",
-            "tsConfig": "src_gui/tsconfig.spec.json",
-            "karmaConfig": "src_gui/karma.conf.js",
-            "styles": [
-              "src_gui/styles.css"
-            ],
-            "scripts": [],
+            "main": "src/test.ts",
+            "polyfills": "src/polyfills.ts",
+            "tsConfig": "tsconfig.spec.json",
+            "karmaConfig": "karma.conf.js",
             "assets": [
-              "src_gui/favicon.ico",
-              "src_gui/assets"
-            ]
+              "src/favicon.ico",
+              "src/assets"
+            ],
+            "styles": [
+              "src/styles.css"
+            ],
+            "scripts": []
           }
         },
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
             "tsConfig": [
-              "src_gui/tsconfig.app.json",
-              "src_gui/tsconfig.spec.json"
+              "tsconfig.app.json",
+              "tsconfig.spec.json",
+              "e2e/tsconfig.json"
             ],
             "exclude": [
               "**/node_modules/**"
             ]
           }
-        }
-      }
-    },
-    "ClothingWeb-e2e": {
-      "root": "e2e/",
-      "projectType": "application",
-      "architect": {
+        },
         "e2e": {
           "builder": "@angular-devkit/build-angular:protractor",
           "options": {
@@ -133,18 +113,8 @@
               "devServerTarget": "ClothingWeb:serve:production"
             }
           }
-        },
-        "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
-          "options": {
-            "tsConfig": "e2e/tsconfig.e2e.json",
-            "exclude": [
-              "**/node_modules/**"
-            ]
-          }
         }
       }
-    }
-  },
+    }},
   "defaultProject": "ClothingWeb"
 }
