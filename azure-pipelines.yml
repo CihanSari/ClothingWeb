@@ -14,10 +14,8 @@ jobs:
       - task: NodeTool@0
         displayName: "Use Node 10.x"
 
-      - task: Npm@1
+      - script: npm install --loglevel=error --no-update-notifier
         displayName: "npm install"
-        inputs:
-          verbose: false
 
       - script: npm build
         displayName: "Build the package"
