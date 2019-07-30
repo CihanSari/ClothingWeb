@@ -1,15 +1,14 @@
 import * as express from "express";
 import * as path from "path";
-import { DIST_FOLDER, PORT, DATA_FOLDER } from './common';
+import { DIST_FOLDER, PORT, ARCHIVE_PATH } from './common';
+import { expressServeZip } from './express-static-zip';
 const createExpressApplication = require("express");
 
 const app: express.Application = createExpressApplication();
 
 // app.get('/api/**', (req, res) => { });
 
-app.use('/data', express.static(DATA_FOLDER, {
-  maxAge: '1y'
-}));
+app.use('/data', expressServeZip(ARCHIVE_PATH));
 
 app.use(express.static(DIST_FOLDER, {
   maxAge: '1y'

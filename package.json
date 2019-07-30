@@ -7,6 +7,7 @@
   "repository": "https://github.com/CihanSari/ClothingWeb",
   "author": "Cihan Sari <cihansari86@gmail.com>",
   "license": "MIT",
+  "bin": "dist/server.js",
   "scripts": {
     "ng": "ng",
     "start": "node dist/server",
@@ -15,7 +16,8 @@
     "lint": "ng lint",
     "e2e": "ng e2e",
     "compile:server": "tsc --project tsconfig.server.json",
-    "serve:ssr": "node dist/server"
+    "serve:ssr": "node dist/server",
+    "pkg": "pkg package.json --targets node10-linux-x64"
   },
   "private": true,
   "dependencies": {
@@ -28,9 +30,12 @@
     "@angular/platform-browser": "~8.1.3",
     "@angular/platform-browser-dynamic": "~8.1.3",
     "@angular/router": "~8.1.3",
+    "@types/adm-zip": "^0.4.32",
+    "adm-zip": "^0.4.13",
     "express": "^4.17.1",
     "fabric": "^3.3.2",
     "jquery": "^3.4.1",
+    "pkg": "^4.4.0",
     "primeicons": "^2.0.0",
     "primeng": "^8.0.2",
     "rxjs": "~6.4.0",
@@ -58,5 +63,15 @@
     "ts-node": "~7.0.0",
     "tslint": "~5.15.0",
     "typescript": "~3.4.3"
+  },
+  "pkg": {
+    "scripts": "dist/**/*.js",
+    "assets": [
+      "dist/browser/**/*",
+      "dist/data/**/*"
+    ],
+    "targets": [
+      "node10-linux-x64"
+    ]
   }
 }
