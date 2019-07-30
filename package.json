@@ -68,10 +68,7 @@
     "scripts": "dist/**/*.js",
     "assets": [
       "dist/browser/**/*",
-      "dist/data/**/*"
-    ],
-    "targets": [
-      "node10-linux-x64"
+      "data.zip"
     ]
   }
 }
