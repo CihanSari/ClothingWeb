@@ -5,11 +5,10 @@ services:
     volumes: 
       - ./:/tmp/nodelib
     working_dir: /tmp/nodelib
-    command: "npm ci && npm start"
+    command: "npm start"
     environment:
       - PORT=3000
       - NODE_ENV=production
-    restart: always
     ports:
       - "47231:3000"
     
