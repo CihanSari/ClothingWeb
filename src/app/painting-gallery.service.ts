@@ -1,5 +1,4 @@
 import { Injectable, OnInit } from "@angular/core";
-import * as $ from "jquery";
 import {
   parseImofa,
   getGrabcutImage,
@@ -7,6 +6,7 @@ import {
 } from "./scripts/displayPainting";
 import { GalleryItem } from "./painting-gallery-item/painting-gallery-item.component";
 import { ReplaySubject } from "rxjs";
+import { HttpClient } from "@angular/common/http";
 
 @Injectable({
   providedIn: "root"
@@ -19,7 +19,7 @@ export class PaintingGalleryService {
   // returns n items loaded
   private readySubject = new ReplaySubject<number>();
   public ready$ = this.readySubject.asObservable();
-  constructor() {
+  constructor(private http: HttpClient) {
     this.init();
   }
 
@@ -43,19 +43,19 @@ export class PaintingGalleryService {
     try {
       const promises = {
         json2: paintingConfig.json2
-          ? $.getJSON(this.basepath + paintingConfig.json2)
+          ? this.http.get<any>(this.basepath + paintingConfig.json2).toPromise()
           : null,
         grabcut2: paintingConfig.grabcut2
-          ? $.getJSON(this.basepath + paintingConfig.grabcut2)
+          ? this.http.get<any>(this.basepath + paintingConfig.grabcut2).toPromise()
           : null,
         grabcut: paintingConfig.grabcut
-          ? $.getJSON(this.basepath + paintingConfig.grabcut)
+          ? this.http.get<any>(this.basepath + paintingConfig.grabcut).toPromise()
           : null,
         imofaColor: paintingConfig.imofaColor
-          ? $.getJSON(this.basepath + paintingConfig.imofaColor)
+          ? this.http.get<any>(this.basepath + paintingConfig.imofaColor).toPromise()
           : null,
         imofa2Color: paintingConfig.imofa2Color
-          ? $.getJSON(this.basepath + paintingConfig.imofa2Color)
+          ? this.http.get<any>(this.basepath + paintingConfig.imofa2Color).toPromise()
           : null
       };
       const json2 = await promises.json2;
@@ -75,18 +75,16 @@ export class PaintingGalleryService {
         : null;
       const GrabcutSrc = promises.grabcut
         ? await getGrabcutImage(image, grabcutJson, true)
-        : `https://placeholdit.imgix.net/~text?txtsize=56&txt=Not%20Available&w=${
-            image.width
-          }&h=${image.height}&txttrack=0`;
+        : `https://placeholdit.imgix.net/~text?txtsize=56&txt=Not%20Available&w=${image.width
+        }&h=${image.height}&txttrack=0`;
 
       const grabcut2Json = promises.grabcut2
         ? (await promises.grabcut2).GrabCutDataV2
         : null;
       const Grabcut2Src = promises.grabcut2
         ? await getGrabcutImage(image, grabcut2Json, false)
-        : `https://placeholdit.imgix.net/~text?txtsize=56&txt=Not%20Available&w=${
-            image.width
-          }&h=${image.height}&txttrack=0`;
+        : `https://placeholdit.imgix.net/~text?txtsize=56&txt=Not%20Available&w=${image.width
+        }&h=${image.height}&txttrack=0`;
       const ImageSrc = await (async () => {
         const { bufferCanvas, bufferCtx } = await prepareBuffer();
         bufferCanvas.width = image.width;

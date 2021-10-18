@@ -9,6 +9,8 @@ import { PaintingGalleryItemComponent } from "./painting-gallery-item/painting-g
 import { PaginatorModule } from "primeng/paginator";
 import { ButtonModule } from "primeng/button";
 import { NavigationButtonComponent } from './navigation-button/navigation-button.component';
+import { HttpClientModule } from '@angular/common/http';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -21,7 +23,8 @@ import { NavigationButtonComponent } from './navigation-button/navigation-button
     BrowserModule,
     AppRoutingModule,
     PaginatorModule,
-    ButtonModule
+    ButtonModule,
+    HttpClientModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

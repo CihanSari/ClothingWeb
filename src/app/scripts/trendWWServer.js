@@ -1,19 +1,18 @@
 async function getJSON(filepath) {
-  const basepath = '../data/json/';
+  const basepath = "../data/json/";
   try {
-    return await loadJSON(`${basepath}${filepath}`)
-  }
-  catch (ex) {
-    console.error('Failted to retrieve:', filepath);
+    return await loadJSON(`${basepath}${filepath}`);
+  } catch (ex) {
+    console.error("Failted to retrieve:", filepath);
     return;
   }
 }
 
-const filesPromise = getJSON('files_v2.json');
+const filesPromise = getJSON("files_v2.json");
 
 onmessage = async function (e) {
   await loadFiles(e.data);
-}
+};
 
 async function loadFiles(fieldName) {
   fncOneArrived = sendWaitForOne();
@@ -22,12 +21,9 @@ async function loadFiles(fieldName) {
     if (file != null && file.length !== 0) {
       getFieldFromFilesIdx(fieldName, files, idx, sendWaitForOne);
     }
-  })
+  });
   fncOneArrived();
 }
-
-
-
 
 async function getFieldFromFilesIdx(fieldName, clothFiles2, idx, genCallback) {
   const fileContent2Promise = getJSON(clothFiles2[idx].json2);
@@ -42,10 +38,12 @@ async function getFieldFromFilesIdx(fieldName, clothFiles2, idx, genCallback) {
     const callbacks = [];
     for (let i = 0; i < colors.length; i += 1) {
       callbacks.push(genCallback());
-      promises.push(sendContentAsync(fileContent2Promise, idx, colors[i].slice(1, 4)));
+      promises.push(
+        sendContentAsync(fileContent2Promise, idx, colors[i].slice(1, 4))
+      );
     }
     await Promise.all(promises);
-    callbacks.forEach(callback => callback());
+    callbacks.forEach((callback) => callback());
   } else {
     // There is only one dom color
     const callback = genCallback();
@@ -54,21 +52,13 @@ async function getFieldFromFilesIdx(fieldName, clothFiles2, idx, genCallback) {
   }
 }
 
-function sendWaitForOne() {
-  return () => sendOneArrived();
-}
-
-function sendOneArrived() {
-
-}
-
 async function sendContentAsync(promise, idx, colors) {
   const json2 = await promise;
   postMessage({
     type: 10,
     json2,
     idx,
-    colors
+    colors,
   });
 }
 
@@ -82,7 +72,7 @@ async function loadJSON(path) {
           resolve(JSON.parse(xhr.responseText));
         } else {
           console.error(path);
-          reject(xhr)
+          reject(xhr);
         }
       }
     };
